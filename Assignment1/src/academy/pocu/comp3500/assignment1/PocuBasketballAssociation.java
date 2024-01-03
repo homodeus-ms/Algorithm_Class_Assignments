@@ -21,8 +21,11 @@ public final class PocuBasketballAssociation {
         if (gameStats == null || gameStats.length == 0) {
             return;
         }
-        // 정렬 한 번 하고 시작. 괜찮을지?
+        // 정렬 한 번 하고 시작. n*logN
         quickSortRecursive(gameStats, 0, gameStats.length - 1);
+        for (GameStat stat: gameStats) {
+            System.out.printf("%s: %d%s", stat.getPlayerName(), stat.getGame(), System.lineSeparator());
+        }
 
         int gameCount = 0;
         int playerIdx = 0;
@@ -31,6 +34,8 @@ public final class PocuBasketballAssociation {
 
         // 0번 인덱스의 정보를 일단 outPlayer에 넣음
         int preIdxPlayerHash = gameStats[0].getPlayerName().hashCode();
+
+
         accumulatePlayerStats(gameStats, 0, outPlayers, 0);
         ++gameCount;
 
@@ -178,49 +183,6 @@ public final class PocuBasketballAssociation {
         }
 
         return keepCount;
-
-        /*long maxTeamWorkPoint = players[0].getPassesPerGame() * players[0].getAssistsPerGame();
-        int maxTeamWorkIdx = 0;
-        long thisTeamWorkPoint;
-        boolean isThisTimeBigger = true;
-
-        for (int i = 0; i < players.length; ++i) {
-            thisTeamWorkPoint = getTeamWorkPoint(players, i, i);
-            if (thisTeamWorkPoint > maxTeamWorkPoint) {
-                maxTeamWorkIdx = i;
-                maxTeamWorkPoint = thisTeamWorkPoint;
-            }
-        }
-        scratch[0] = players[maxTeamWorkIdx];
-        players[maxTeamWorkIdx] = null;
-        int count = 1;
-
-        while (isThisTimeBigger) {
-            isThisTimeBigger = false;
-
-            for (int i = 0; i < players.length; ++i) {
-                if (players[i] != null) {
-                    scratch[count] = players[i];
-                    thisTeamWorkPoint = getTeamWorkPoint(scratch, 0, count);
-
-                    if (thisTeamWorkPoint > maxTeamWorkPoint) {
-                        maxTeamWorkIdx = i;
-                        maxTeamWorkPoint = thisTeamWorkPoint;
-                        isThisTimeBigger = true;
-                    }
-                }
-            }
-            if (isThisTimeBigger) {
-                scratch[count] = players[maxTeamWorkIdx];
-                players[maxTeamWorkIdx] = null;
-                count++;
-            } else {
-                //scratch[count] = null;
-            }
-        }
-
-        return count;*/
-
     }
     private static void sortByAssistDesc(final Player[] scratch) {
         int thisAssistCount;
@@ -259,24 +221,22 @@ public final class PocuBasketballAssociation {
         if (left >= right) {
             return;
         }
-        int pivot = partition(gameStats, 0, right);
-        quickSortRecursive(gameStats, 0, pivot - 1);
+        int pivot = partition(gameStats, left, right);
+        quickSortRecursive(gameStats, left, pivot - 1);
         quickSortRecursive(gameStats, pivot + 1, right);
     }
     private static int partition(final GameStat[] gameStats, int left, int right) {
 
+        int pivot = (left + right) / 2;
+        swap(gameStats, pivot, right);
+
         int rightIdxHash = gameStats[right].getPlayerName().hashCode();
-        int rightIdxGameNum = gameStats[right].getGame();
         int currIdxHash;
 
         for (int i = left; i < right; ++i) {
             currIdxHash = gameStats[i].getPlayerName().hashCode();
-            if (currIdxHash == rightIdxHash) {
-                if (gameStats[i].getGame() < rightIdxGameNum) {
-                    swap(gameStats, i, left);
-                    left++;
-                }
-            } else if (currIdxHash < rightIdxHash) {
+
+            if (currIdxHash < rightIdxHash) {
                 swap(gameStats, i, left);
                 left++;
             }
@@ -290,7 +250,7 @@ public final class PocuBasketballAssociation {
         gameStats[j] = temp;
     }
     private static void accumulatePlayerStats(final GameStat[] gameStats, int statIdx,
-                                           final Player[] outPlayers, int playerIdx) {
+                                              final Player[] outPlayers, int playerIdx) {
         GameStat gameStat = gameStats[statIdx];
         Player player = outPlayers[playerIdx];
 
@@ -300,7 +260,7 @@ public final class PocuBasketballAssociation {
         outPlayers[playerIdx].setPassesPerGame(player.getPassesPerGame() + gameStat.getNumPasses());
     }
     private static void updatePlayerStatsToPecentages(final Player[] outPlayers, int playerIdx, int gameCount,
-                                               int shootingPercentage) {
+                                                      int shootingPercentage) {
         outPlayers[playerIdx].setPointsPerGame(outPlayers[playerIdx].getPointsPerGame() / gameCount);
         outPlayers[playerIdx].setAssistsPerGame(outPlayers[playerIdx].getAssistsPerGame() / gameCount);
         outPlayers[playerIdx].setPassesPerGame(outPlayers[playerIdx].getPassesPerGame() / gameCount);
@@ -310,6 +270,11 @@ public final class PocuBasketballAssociation {
     private static int findPlayerPointsPerGameRecursive(final Player[] players, int targetPoint,
                                                         int left, int right, int minIdx, int minDiff) {
         if (right - left <= 1) {
+            int leftDiff = Math.abs(players[left].getPointsPerGame() - targetPoint);
+            if (leftDiff < minDiff) {
+                minDiff = leftDiff;
+                minIdx = left;
+            }
             return minIdx;
         }
         int mid = (left + right) / 2;
@@ -342,6 +307,11 @@ public final class PocuBasketballAssociation {
                                                                     int right, int minIdx,
                                                                     int minDiff) {
         if (right - left <= 1) {
+            int leftDiff = Math.abs(players[left].getShootingPercentage() - targetShootingPercentage);
+            if (leftDiff < minDiff) {
+                minDiff = leftDiff;
+                minIdx = left;
+            }
             return minIdx;
         }
         int mid = (left + right) / 2;
@@ -373,7 +343,7 @@ public final class PocuBasketballAssociation {
     }
 
     private static void findDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
-                                                   final Player[] scratch, int start, int depth, int teamSize) {
+                                               final Player[] scratch, int start, int depth, int teamSize) {
 
         if (depth == teamSize) {
             long outPlayersScore = getTeamWorkValue(outPlayers);

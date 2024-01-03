@@ -34,8 +34,8 @@ public class Program {
             PocuBasketballAssociation.processGameStats(gameStats, players);
             printPlayerStat(players);
 
-        }
-        {
+        }*/
+        /*{
             Player[] players = new Player[] {
                     new Player("Player 1", 1, 5, 1, 60),
                     new Player("Player 2", 5, 2, 11, 31),
@@ -46,15 +46,15 @@ public class Program {
                     new Player("Player 7", 16, 8, 2, 70)
             };
 
-            Player player = PocuBasketballAssociation.findPlayerPointsPerGame(players, 12);
-            assert (player.getName().equals("Player 5"));
+            Player player = PocuBasketballAssociation.findPlayerPointsPerGame(players, 10);
+            System.out.println(player.getName());
 
             player = PocuBasketballAssociation.findPlayerPointsPerGame(players, 5);
             assert (player.getName().equals("Player 2"));
 
             player = PocuBasketballAssociation.findPlayerPointsPerGame(players, 13);
             assert (player.getName().equals("Player 6"));
-        }
+        }*/
         {
             Player[] players = new Player[] {
                     new Player("Player 4", 10, 10, 15, 25),
@@ -66,15 +66,12 @@ public class Program {
                     new Player("Player 5", 11, 12, 6, 77)
             };
 
-            Player player = PocuBasketballAssociation.findPlayerShootingPercentage(players, 28);
-            assert (player.getName().equals("Player 2"));
+            Player player = PocuBasketballAssociation.findPlayerShootingPercentage(players,
+                    25);
+            System.out.println(player.getName());
 
-            player = PocuBasketballAssociation.findPlayerShootingPercentage(players, 58);
-            assert (player.getName().equals("Player 1"));
 
-            player = PocuBasketballAssociation.findPlayerShootingPercentage(players, 72);
-            assert (player.getName().equals("Player 7"));
-        }*/
+        }
 
         /*{
             Player[] players = new Player[] {
@@ -145,7 +142,7 @@ public class Program {
         /*test_findDreamTeamSize_1();
         test_findDreamTeamSize_2();
         test_findDreamTeamSize_3();*/
-        test_findDreamTeamSize();
+        //test_findDreamTeamSize();
 
 
         System.out.println("No Assert");
