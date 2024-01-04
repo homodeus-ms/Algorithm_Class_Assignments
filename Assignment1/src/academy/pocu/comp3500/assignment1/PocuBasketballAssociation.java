@@ -103,7 +103,7 @@ public final class PocuBasketballAssociation {
                                          final Player[] scratch) {
 
         sortByTeamWorkDescRecursive(players, 0, players.length - 1);
-        stableSortByAssistDesc(players, 3);
+        sortByAssistDescRecursive(players, 3, players.length - 1);
 
         int minAssist = players[0].getAssistsPerGame();
         int minPass = players[0].getPassesPerGame();
@@ -169,7 +169,7 @@ public final class PocuBasketballAssociation {
             return maxVal;
         }
         sortByTeamWorkDescRecursive(players, 0, players.length - 1);
-        stableSortByAssistDesc(players, k);
+        sortByAssistDescRecursive(players, k, players.length - 1);
 
         int minAssist = players[0].getAssistsPerGame();
         int minPass = players[0].getPassesPerGame();
@@ -291,7 +291,7 @@ public final class PocuBasketballAssociation {
         }
     }
 
-    /*private static void sortByTeamWork_AssistDescRecursive(final Player[] players,
+    private static void sortByAssistDescRecursive(final Player[] players,
                                                            int left, int right) {
         if (left >= right) {
             return;
@@ -301,10 +301,10 @@ public final class PocuBasketballAssociation {
 
         int mid = (left + right) / 2;
         swap(players, mid, right);
-        int rightValue = players[right].getPassesPerGame() * players[right].getAssistsPerGame();
+        int rightValue = players[right].getAssistsPerGame();
         int thisValue;
         for (int i = left; i < right; ++i) {
-            thisValue = players[i].getPassesPerGame() * players[i].getAssistsPerGame();
+            thisValue = players[i].getAssistsPerGame();
             if (thisValue > rightValue) {
                 swap(players, i, left);
                 ++left;
@@ -312,9 +312,9 @@ public final class PocuBasketballAssociation {
         }
         swap(players, left, right);
 
-        sortByTeamWork_AssistDescRecursive(players, preLeft, left - 1);
-        sortByTeamWork_AssistDescRecursive(players, left + 1, right);
-    }*/
+        sortByAssistDescRecursive(players, preLeft, left - 1);
+        sortByAssistDescRecursive(players, left + 1, right);
+    }
 
 
     private static void sortByTeamWorkDescRecursive(final Player[] players, int left, int right) {
@@ -535,4 +535,15 @@ public final class PocuBasketballAssociation {
         }
         return sumPasses * minAssistes;
     }
+
+    private static void print(final Player[] players) {
+        System.out.println("===== Players =====");
+        for (Player p : players) {
+            System.out.printf("%s - assist(%d), pass(%d), teamWork(%d)%s", p.getName(),
+                    p.getAssistsPerGame(), p.getPassesPerGame(), p.getAssistsPerGame() * p.getPassesPerGame(),
+                    System.lineSeparator());
+        }
+        System.out.println();
+    }
 }
+

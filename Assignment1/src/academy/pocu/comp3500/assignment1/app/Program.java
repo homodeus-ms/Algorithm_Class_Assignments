@@ -146,9 +146,9 @@ public class Program {
 
             assert (k == 6);
         }*/
-        /*for (int i = 0; i < 200; ++i) {
+        for (int i = 0; i < 200; ++i) {
             test_DreamTeam3();
-        }*/
+        }
 
 
         /*test_findDreamTeamSize_1();
@@ -308,11 +308,11 @@ public class Program {
 
 
     public static void test_DreamTeam3() {
-        final int PLAYER_SIZE = 10;
+        final int PLAYER_SIZE = 6;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(12), rand.nextInt(12), 0);
         }
         Player[] outPlayers = new Player[3];
         Player[] answers = new Player[3];
@@ -351,7 +351,7 @@ public class Program {
                         System.lineSeparator());
             }
         } else {
-
+            System.out.println("True");
         }
     }
 
