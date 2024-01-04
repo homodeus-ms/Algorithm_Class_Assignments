@@ -55,7 +55,7 @@ public class Program {
             player = PocuBasketballAssociation.findPlayerPointsPerGame(players, 13);
             assert (player.getName().equals("Player 6"));
         }*/
-        {
+        /*{
             Player[] players = new Player[] {
                     new Player("Player 4", 10, 10, 15, 25),
                     new Player("Player 2", 5, 2, 11, 31),
@@ -71,7 +71,7 @@ public class Program {
             System.out.println(player.getName());
 
 
-        }
+        }*/
 
         /*{
             Player[] players = new Player[] {
@@ -88,13 +88,20 @@ public class Program {
             Player[] scratch = new Player[3];
 
             long maxTeamwork = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
-
+            System.out.println(maxTeamwork);
             assert (maxTeamwork == 219);
 
+            Player player = getPlayerOrNull(outPlayers, "Player 4");
+            assert (player != null);
 
+            player = getPlayerOrNull(outPlayers, "Player 2");
+            assert (player != null);
+
+            player = getPlayerOrNull(outPlayers, "Player 3");
+            assert (player != null);
         }*/
 
-        /*{
+        {
             Player[] players = new Player[]{
                     new Player("Player 2", 5, 5, 17, 50),
                     new Player("Player 6", 15, 4, 10, 40),
@@ -112,9 +119,9 @@ public class Program {
             Player[] scratch = new Player[TEAM_SIZE];
 
             long maxTeamwork = PocuBasketballAssociation.findDreamTeam(players, TEAM_SIZE, outPlayers, scratch);
-
+            System.out.println(maxTeamwork);
             assert (maxTeamwork == 171);
-        }*/
+        }
 
         /*{
 
@@ -146,6 +153,15 @@ public class Program {
 
 
         System.out.println("No Assert");
+    }
+    private static Player getPlayerOrNull(final Player[] players, final String id) {
+        for (Player player : players) {
+            if (player.getName().equals(id)) {
+                return player;
+            }
+        }
+
+        return null;
     }
 
 
