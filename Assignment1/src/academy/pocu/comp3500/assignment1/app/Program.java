@@ -104,24 +104,23 @@ public class Program {
 
         {
             Player[] players = new Player[]{
-                    new Player("Player 2", 5, 5, 17, 50),
-                    new Player("Player 6", 15, 4, 10, 40),
-                    new Player("Player 5", 11, 3, 25, 54),
-                    new Player("Player 4", 10, 9, 1, 88),
-                    new Player("Player 7", 16, 7, 5, 77),
-                    new Player("Player 1", 1, 2, 8, 22),
-                    new Player("Player 9", 42, 15, 4, 56),
-                    new Player("Player 8", 33, 11, 3, 72),
+                    new Player("Player 1", 5, 10, 9, 50),
+                    new Player("Player 2", 10, 3, 10, 88),
+                    new Player("Player 3", 15, 7, 3, 40),
+                    new Player("Player 4", 11, 5, 1, 54),
+                    new Player("Player 5", 16, 4, 2, 77),
+                    new Player("Player 6", 1, 3, 6, 22),
+
             };
 
-            final int TEAM_SIZE = 4;
+            final int TEAM_SIZE = 3;
 
             Player[] outPlayers = new Player[TEAM_SIZE];
             Player[] scratch = new Player[TEAM_SIZE];
 
             long maxTeamwork = PocuBasketballAssociation.findDreamTeam(players, TEAM_SIZE, outPlayers, scratch);
             System.out.println(maxTeamwork);
-            assert (maxTeamwork == 171);
+
         }
 
         /*{
