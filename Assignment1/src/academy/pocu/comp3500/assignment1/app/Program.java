@@ -75,6 +75,7 @@ public class Program {
 
         /*{
             Player[] players = new Player[] {
+
                     new Player("Player 2", 5, 12, 14, 50),
                     new Player("Player 6", 15, 2, 5, 40),
                     new Player("Player 5", 11, 1, 11, 54),
@@ -145,6 +146,10 @@ public class Program {
 
             assert (k == 6);
         }*/
+        /*for (int i = 0; i < 200; ++i) {
+            test_DreamTeam3();
+        }*/
+
 
         /*test_findDreamTeamSize_1();
         test_findDreamTeamSize_2();
@@ -302,7 +307,53 @@ public class Program {
     }
 
 
+    public static void test_DreamTeam3() {
+        final int PLAYER_SIZE = 10;
+        Random rand = new Random();
+        Player[] players = new Player[PLAYER_SIZE];
+        for (int i = 0; i < PLAYER_SIZE; ++i) {
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
+        }
+        Player[] outPlayers = new Player[3];
+        Player[] answers = new Player[3];
+        Player[] scratch = new Player[3];
+        long answer = get3DreamTeamPerfectly(players, outPlayers, scratch);
+        for (int i = 0; i < 3; ++i) {
+            answers[i] = outPlayers[i];
+        }
 
+        long myRet = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
+
+        if (answer != myRet) {
+            System.out.println("Players");
+            for (int i = 0; i < players.length; ++i) {
+                System.out.printf("%s - assist(%d), pass(%d), point(%d)%s", players[i].getName(),
+                    players[i].getAssistsPerGame(), players[i].getPassesPerGame(),
+                    players[i].getAssistsPerGame() * players[i].getPassesPerGame(),
+                    System.lineSeparator());
+            }
+            System.out.println();
+
+            System.out.println("answers");
+            for (int i = 0; i < 3; ++i) {
+                System.out.printf("%s - assist(%d), pass(%d), point(%d)%s", answers[i].getName(),
+                        answers[i].getAssistsPerGame(), answers[i].getPassesPerGame(),
+                        answers[i].getAssistsPerGame() * answers[i].getPassesPerGame(),
+                        System.lineSeparator());
+            }
+            System.out.println();
+
+            System.out.println("mine");
+            for (int i = 0; i < 3; ++i) {
+                System.out.printf("%s - assist(%d), pass(%d), point(%d)%s", outPlayers[i].getName(),
+                        outPlayers[i].getAssistsPerGame(), outPlayers[i].getPassesPerGame(),
+                        outPlayers[i].getAssistsPerGame() * outPlayers[i].getPassesPerGame(),
+                        System.lineSeparator());
+            }
+        } else {
+
+        }
+    }
 
     public static void printGameStat(GameStat[] gameStats) {
 
@@ -391,4 +442,61 @@ public class Program {
         }
     }
 
+    public static long get3DreamTeamPerfectly(Player[] players, Player[] outPlayers, Player[] scratch) {
+        final int maxMember = 3;
+
+
+
+        long maxPoint = 0;
+        long thisPoint = 0;
+        int minAssist = players[0].getAssistsPerGame();
+        for (int i = 0; i < maxMember; ++i) {
+            outPlayers[i] = players[i];
+            maxPoint += players[i].getPassesPerGame();
+            int thisAssist = players[i].getAssistsPerGame();
+            if (thisAssist < minAssist) {
+                minAssist = thisAssist;
+            }
+        }
+        maxPoint *= minAssist;
+
+        for (int i = 0; i < players.length; ++i) {
+            for (int j = i + 1; j < players.length; ++j) {
+                for (int k = j + 1; k < players.length; ++k) {
+                    thisPoint = 0;
+                    scratch[0] = players[i];
+                    scratch[1] = players[j];
+                    scratch[2] = players[k];
+
+                    minAssist = scratch[0].getAssistsPerGame();
+                    for (int l = 0; l < maxMember; ++l) {
+                        thisPoint += scratch[l].getPassesPerGame();
+                        int thisAssist = scratch[l].getAssistsPerGame();
+                        if (thisAssist < minAssist) {
+                            minAssist = thisAssist;
+                        }
+                    }
+                    thisPoint *= minAssist;
+
+                    if (thisPoint > maxPoint) {
+                        outPlayers[0] = scratch[0];
+                        outPlayers[1] = scratch[1];
+                        outPlayers[2] = scratch[2];
+                        maxPoint = thisPoint;
+                    }
+                }
+            }
+        }
+        /*for (int i = 0; i < players.length; ++i) {
+            System.out.printf("%s - assist(%d), pass(%d), point(%d)%s", players[i].getName(),
+                    players[i].getAssistsPerGame(), players[i].getPassesPerGame(),
+                    players[i].getAssistsPerGame() * players[i].getPassesPerGame(),
+                    System.lineSeparator());
+        }
+        System.out.println();*/
+
+        /*System.out.printf("( %s, %s, %s ) : %d%s", outPlayers[0].getName(), outPlayers[1].getName(),
+                outPlayers[2].getName(), maxPoint, System.lineSeparator());*/
+        return maxPoint;
+    }
 }

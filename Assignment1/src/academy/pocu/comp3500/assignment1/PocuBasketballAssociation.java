@@ -102,14 +102,42 @@ public final class PocuBasketballAssociation {
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers,
                                          final Player[] scratch) {
 
+        sortByTeamWorkDescRecursive(players, 0, players.length - 1);
+        stableSortByAssistDesc(players, 3);
+
+        int minAssist = players[0].getAssistsPerGame();
+        int minPass = players[0].getPassesPerGame();
+
+        for (int i = 1; i < 3; ++i) {
+            int thisAssist = players[i].getAssistsPerGame();
+            int thisPass = players[i].getPassesPerGame();
+            if (thisAssist < minAssist) {
+                minAssist = thisAssist;
+            } else if (thisPass < minPass) {
+                minPass = thisPass;
+            }
+        }
+
+        int lastIndex = 2;
+        for (int i = 3; i < players.length; ++i) {
+            int thisAssist = players[i].getAssistsPerGame();
+            int thisPass = players[i].getPassesPerGame();
+            if (thisAssist >= minAssist || thisPass >= minPass) {
+                ++lastIndex;
+            } else {
+                break;
+            }
+        }
+        //System.out.printf("lastIndex: %d%s", lastIndex, System.lineSeparator());
+
         outPlayers[0] = players[0];
         outPlayers[1] = players[1];
         outPlayers[2] = players[2];
 
-        findDreamTeamRecursive(players, outPlayers, scratch, 0, 0, 3);
+        findDreamTeamRecursive(players, outPlayers, scratch, 0, 0, 3, lastIndex);
 
         long ret = 0;
-        int minAssist = outPlayers[0].getAssistsPerGame();
+        minAssist = outPlayers[0].getAssistsPerGame();
 
         for (int i = 0; i < 3; ++i) {
             ret += outPlayers[i].getPassesPerGame();
@@ -140,12 +168,39 @@ public final class PocuBasketballAssociation {
             outPlayers[0] = players[maxIdx];
             return maxVal;
         }
+        sortByTeamWorkDescRecursive(players, 0, players.length - 1);
+        stableSortByAssistDesc(players, k);
+
+        int minAssist = players[0].getAssistsPerGame();
+        int minPass = players[0].getPassesPerGame();
+
+        for (int i = 1; i < k; ++i) {
+            int thisAssist = players[i].getAssistsPerGame();
+            int thisPass = players[i].getPassesPerGame();
+            if (thisAssist < minAssist) {
+                minAssist = thisAssist;
+            } else if (thisPass < minPass) {
+                minPass = thisPass;
+            }
+        }
+
+        int lastIndex = k - 1;
+
+        for (int i = k; i < players.length; ++i) {
+            int thisAssist = players[i].getAssistsPerGame();
+            int thisPass = players[i].getPassesPerGame();
+            if (thisAssist >= minAssist || thisPass >= minPass) {
+                ++lastIndex;
+            } else {
+                break;
+            }
+        }
 
         for (int i = 0; i < k; ++i) {
             outPlayers[i] = players[i];
         }
 
-        findDreamTeamRecursive(players, outPlayers, scratch, 0, 0, k);
+        findDreamTeamRecursive(players, outPlayers, scratch, 0, 0, k, lastIndex);
 
         long teamWorkPoint = getTeamWorkPoint(outPlayers);
         return teamWorkPoint;
@@ -179,7 +234,7 @@ public final class PocuBasketballAssociation {
         keepCount = count + 1;
         count = 1;
 
-        stableSortByAssistDesc(scratch);
+        stableSortByAssistDesc(scratch, 0);
 
         for (int i = 1; i < scratch.length; ++i) {
             long getNewPoint = getTeamWorkPoint(scratch, 0, i);
@@ -195,11 +250,11 @@ public final class PocuBasketballAssociation {
 
         return keepCount;
     }
-    private static void stableSortByAssistDesc(final Player[] scratch) {
+    private static void stableSortByAssistDesc(final Player[] scratch, int start) {
         int thisAssistCount;
         int nextAssistCount;
         for (int i = 0; i < scratch.length - 1; ++i) {
-            for (int j = 0; j < scratch.length - 1 - i; ++j) {
+            for (int j = start; j < scratch.length - 1 - i; ++j) {
                 thisAssistCount = scratch[j].getAssistsPerGame();
                 nextAssistCount = scratch[j + 1].getAssistsPerGame();
                 if (thisAssistCount < nextAssistCount) {
@@ -236,8 +291,8 @@ public final class PocuBasketballAssociation {
         }
     }
 
-    private static void sortByTeamWork_AssistDescRecursive(final Player[] players,
-                                                                  int left, int right) {
+    /*private static void sortByTeamWork_AssistDescRecursive(final Player[] players,
+                                                           int left, int right) {
         if (left >= right) {
             return;
         }
@@ -246,25 +301,20 @@ public final class PocuBasketballAssociation {
 
         int mid = (left + right) / 2;
         swap(players, mid, right);
-        int rightValue= players[right].getPassesPerGame() * players[right].getAssistsPerGame();
+        int rightValue = players[right].getPassesPerGame() * players[right].getAssistsPerGame();
         int thisValue;
         for (int i = left; i < right; ++i) {
             thisValue = players[i].getPassesPerGame() * players[i].getAssistsPerGame();
             if (thisValue > rightValue) {
                 swap(players, i, left);
                 ++left;
-            } /*else if (thisValue == rightValue) {
-                if (players[i].getAssistsPerGame() > players[right].getAssistsPerGame()) {
-                    swap(players, i, left);
-                    ++left;
-                }
-            }*/
+            }
         }
         swap(players, left, right);
 
         sortByTeamWork_AssistDescRecursive(players, preLeft, left - 1);
         sortByTeamWork_AssistDescRecursive(players, left + 1, right);
-    }
+    }*/
 
 
     private static void sortByTeamWorkDescRecursive(final Player[] players, int left, int right) {
@@ -423,8 +473,14 @@ public final class PocuBasketballAssociation {
     }
 
     private static void findDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
-                                               final Player[] scratch, int index, int depth, int pickCount) {
+                                               final Player[] scratch, int index, int depth,
+                                               int pickCount, int lastIndex) {
         if (pickCount == 0) {
+            /*System.out.printf("%s ",scratch[0].getName());
+            System.out.printf("%s ",scratch[1].getName());
+            System.out.printf("%s ",scratch[2].getName());
+            System.out.println();*/
+
             long thisTeamPoint = getTeamWorkPoint(scratch);
             long maxTeamPoint = getTeamWorkPoint(outPlayers);
             if (thisTeamPoint > maxTeamPoint) {
@@ -433,32 +489,16 @@ public final class PocuBasketballAssociation {
                 }
             }
             return;
-        } else if (depth == players.length) {
+        } else if (depth == lastIndex + 1) {
             return;
         } else {
             scratch[index] = players[depth];
+
             findDreamTeamRecursive(players, outPlayers, scratch, index + 1, depth + 1,
-                    pickCount - 1);
+                    pickCount - 1, lastIndex);
             findDreamTeamRecursive(players, outPlayers, scratch, index, depth + 1,
-                    pickCount);
+                    pickCount, lastIndex);
         }
-
-        /*if (depth == teamSize) {
-            long outPlayersScore = getTeamWorkValue(outPlayers);
-            long thisPlayersScore = getTeamWorkValue(scratch);
-            if (thisPlayersScore > outPlayersScore) {
-                for (int i = 0; i < scratch.length; ++i) {
-                    outPlayers[i] = scratch[i];
-                }
-            }
-            return;
-        }
-
-        for (int i = start; i < players.length; ++i) {
-            scratch[depth] = players[i];
-            findDreamTeamRecursive(players, outPlayers, scratch, i + 1,
-                    depth + 1, teamSize);
-        }*/
     }
     private static int getTeamWorkValue(final Player[] scratch) {
         int value = 0;
