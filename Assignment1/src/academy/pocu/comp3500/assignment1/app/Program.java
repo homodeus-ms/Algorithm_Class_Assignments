@@ -104,12 +104,12 @@ public class Program {
 
         {
             Player[] players = new Player[]{
-                    new Player("Player 1", 5, 11, 7, 50),
-                    new Player("Player 2", 10, 1, 10, 88),
-                    new Player("Player 3", 15, 7, 4, 40),
-                    new Player("Player 4", 11, 3, 5, 54),
-                    new Player("Player 5", 16, 4, 2, 77),
-                    new Player("Player 6", 1, 1, 2, 22),
+                    new Player("Player 1", 5, 4, 11, 50),
+                    new Player("Player 2", 10, 4, 7, 88),
+                    new Player("Player 3", 15, 11, 4, 40),
+                    new Player("Player 4", 11, 3, 8, 54),
+                    new Player("Player 5", 16, 11, 2, 77),
+                    new Player("Player 6", 1, 6, 10, 22),
 
             };
 
@@ -361,13 +361,13 @@ public class Program {
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 6;
+        final int PLAYER_SIZE = 10;
         Random rand = new Random();
-        int k = Math.max(1, rand.nextInt(6));
+        int k = Math.max(1, rand.nextInt(11));
 
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(12), rand.nextInt(12), 0);
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
         }
         Player[] outPlayers = new Player[k];
         Player[] answers = new Player[k];

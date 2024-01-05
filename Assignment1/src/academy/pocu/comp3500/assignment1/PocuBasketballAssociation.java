@@ -169,34 +169,45 @@ public final class PocuBasketballAssociation {
             return maxVal;
         }
         if (k == players.length) {
+            for (int i = 0; i < players.length; ++i) {
+                outPlayers[i] = players[i];
+            }
             return getTeamWorkPoint(players, 0, k - 1);
         }
 
         // 기본 찾기 한 번 돌려보자
-        for (int i = 0; i < k; ++i) {
+        /*for (int i = 0; i < k; ++i) {
             outPlayers[i] = players[i];
         }
         long[] maxPointPointer = {0};
         findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0, k,
                 players.length, maxPointPointer);
 
-        return maxPointPointer[0];
+        return maxPointPointer[0];*/
 
 
-        /*long[] maxPointPointer = {0};
+        long[] maxPointPointer = {0};
         sortByAssistPassDescRecursive(players, 0, players.length - 1);
         sortByTeamWorkAssistDescRecursive(players, k, players.length - 1);
 
+
+        long minPoint = 0x7FFFFFFF;
+
         for (int i = 0; i < k; ++i) {
             outPlayers[i] = players[i];
+            long thisPoint = players[i].getPassesPerGame() * players[k - 1].getAssistsPerGame();
+            if (thisPoint < minPoint) {
+                minPoint = thisPoint;
+            }
         }
 
-        long minPoint = getTeamWorkPoint(players, 0, 0);
         int searchLength = k;
         for (int i = k; i < players.length; ++i) {
             long thisPoint = getTeamWorkPoint(players, i, i);
             if (thisPoint > minPoint) {
                 ++searchLength;
+            } else {
+                break;
             }
         }
         if (searchLength == k) {
@@ -207,7 +218,7 @@ public final class PocuBasketballAssociation {
                 maxPointPointer);
 
 
-        return maxPointPointer[0];*/
+        return maxPointPointer[0];
     }
 
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
