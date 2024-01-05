@@ -310,11 +310,11 @@ public class Program {
 
 
     public static void test_DreamTeam3() {
-        final int PLAYER_SIZE = 6;
+        final int PLAYER_SIZE = 10;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
-        int pass = Math.max(1, rand.nextInt(12));
-        int assist = rand.nextInt(Math.max(1, pass));
+        int pass = Math.max(1, rand.nextInt(20));
+        int assist = rand.nextInt(Math.max(0, pass));
         for (int i = 0; i < PLAYER_SIZE; ++i) {
             players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
