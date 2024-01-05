@@ -143,8 +143,8 @@ public class Program {
         }*/
 
 
-        for (int i = 0; i < 300; ++i) {
-            test_DreamTeam3();
+        for (int i = 0; i < 500; ++i) {
+            test_DreamTeamK();
         }
 
         /*for (int i = 0; i < 500; ++i) {
@@ -313,8 +313,8 @@ public class Program {
         final int PLAYER_SIZE = 10;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
-        int pass = Math.max(1, rand.nextInt(20));
-        int assist = rand.nextInt(Math.max(0, pass));
+        int pass = rand.nextInt(10);
+        int assist = rand.nextInt(10);
         for (int i = 0; i < PLAYER_SIZE; ++i) {
             players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
@@ -361,25 +361,25 @@ public class Program {
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 6;
+        final int PLAYER_SIZE = 10;
         Random rand = new Random();
-        int k = Math.max(4, rand.nextInt(10));
+        int k = 8; //Math.max(1, rand.nextInt(6));
 
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(12), rand.nextInt(12), 0);
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
         }
         Player[] outPlayers = new Player[k];
         Player[] answers = new Player[k];
         Player[] scratch = new Player[k];
 
-        long answer = get3DreamTeamPerfectly(players, outPlayers, scratch);
+        long answer = getKDreamTeamPerfectly(players, k, outPlayers, scratch);
 
         for (int i = 0; i < k; ++i) {
             answers[i] = outPlayers[i];
         }
 
-        long myRet = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
+        long myRet = PocuBasketballAssociation.findDreamTeam(players, k, outPlayers, scratch);
 
         if (answer != myRet) {
             System.out.println("Players");
@@ -408,7 +408,7 @@ public class Program {
                         System.lineSeparator());
             }
         } else {
-            System.out.println("True");
+            //System.out.println("True");
         }
     }
 
@@ -581,6 +581,51 @@ public class Program {
             getMaxPointTeamPerfectly(players, outPlayers, scratch, result, startIdx,
                     sourceIdx + 1, pickCount, scratchLength);
         }
+    }
+
+    public static long getKDreamTeamPerfectly(Player[] players, int k, Player[] outPlayers,
+                                              Player[] scratch) {
+        for (int i = 0; i < k; ++i) {
+            outPlayers[i] = players[i];
+        }
+        getDreamTeamRecursive(players, outPlayers, scratch, 0, 0, k);
+        return getTeamWorkPoint(outPlayers, 0, outPlayers.length - 1);
+
+    }
+    public static void getDreamTeamRecursive(Player[] players, Player[] outPlayers, Player[] scratch,
+                                             int startIdx, int srcIdx, int pickCount) {
+        if (pickCount == 0) {
+            long thisPoint = getTeamWorkPoint(scratch, 0, scratch.length - 1);
+            long maxPoint = getTeamWorkPoint(outPlayers, 0, outPlayers.length - 1);
+            if (thisPoint > maxPoint) {
+                for (int i = 0; i < scratch.length; ++i) {
+                    outPlayers[i] = scratch[i];
+                }
+            }
+            return;
+        } else if (srcIdx == players.length) {
+            return;
+        } else {
+            scratch[startIdx] = players[srcIdx];
+            getDreamTeamRecursive(players, outPlayers, scratch, startIdx + 1, srcIdx + 1,
+                    pickCount - 1);
+            getDreamTeamRecursive(players, outPlayers, scratch, startIdx, srcIdx + 1,
+                    pickCount);
+        }
+    }
+
+
+    public static long getTeamWorkPoint(Player[] players, int start, int endIdx) {
+        long ret = 0;
+        int minAssist = players[start].getAssistsPerGame();
+        for (int i = start; i <= endIdx; ++i) {
+            ret += players[i].getPassesPerGame();
+            int thisAssist = players[i].getAssistsPerGame();
+            if (thisAssist < minAssist) {
+                minAssist = thisAssist;
+            }
+        }
+        return ret * minAssist;
     }
 
     public static long get3DreamTeamPerfectly(Player[] players, Player[] outPlayers, Player[] scratch) {

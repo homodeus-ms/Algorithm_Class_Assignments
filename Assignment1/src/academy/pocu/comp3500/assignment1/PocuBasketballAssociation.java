@@ -172,38 +172,12 @@ public final class PocuBasketballAssociation {
             return getTeamWorkPoint(players, 0, k - 1);
         }
 
-        sortByAssistDescRecursive(players, 0, players.length - 1);
-        sortByTeamWorkDescRecursive(players, k, players.length - 1);
-
-        long[] maxPointPointer = {0};
-
-        long minPoint = players[0].getAssistsPerGame() * players[0].getPassesPerGame();
-
         for (int i = 0; i < k; ++i) {
-
-            //outPlayers[i] = players[i];
-
-            long thisPoint = players[i].getAssistsPerGame() * players[i].getPassesPerGame();
-
-            if (thisPoint < minPoint) {
-                minPoint = thisPoint;
-            }
+            outPlayers[i] = players[i];
         }
-
-        int lastIdx = k - 1;
-        for (int i = k; i < players.length; ++i) {
-            long thisPoint = players[i].getAssistsPerGame() * players[i].getPassesPerGame();
-            if (thisPoint >= minPoint) {
-                ++lastIdx;
-            } else {
-                break;
-            }
-        }
-
-        findDreamTeamRecursive2(players, outPlayers, scratch, 0,
-                    0, k, lastIdx + 1, maxPointPointer);
-
-
+        long[] maxPointPointer = {0};
+        findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0, k,
+                players.length, maxPointPointer);
 
         return maxPointPointer[0];
 
