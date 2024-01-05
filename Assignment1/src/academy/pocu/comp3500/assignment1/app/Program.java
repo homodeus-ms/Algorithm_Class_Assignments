@@ -102,14 +102,14 @@ public class Program {
             assert (player != null);
         }*/
 
-        /*{
+        {
             Player[] players = new Player[]{
-                    new Player("Player 1", 5, 3, 10, 50),
-                    new Player("Player 2", 10, 5, 0, 88),
-                    new Player("Player 3", 15, 4, 1, 40),
-                    new Player("Player 4", 11, 4, 8, 54),
-                    new Player("Player 5", 16, 11, 3, 77),
-                    new Player("Player 6", 1, 5, 9, 22),
+                    new Player("Player 1", 5, 11, 7, 50),
+                    new Player("Player 2", 10, 1, 10, 88),
+                    new Player("Player 3", 15, 7, 4, 40),
+                    new Player("Player 4", 11, 3, 5, 54),
+                    new Player("Player 5", 16, 4, 2, 77),
+                    new Player("Player 6", 1, 1, 2, 22),
 
             };
 
@@ -121,9 +121,9 @@ public class Program {
             long maxTeamwork = PocuBasketballAssociation.findDreamTeam(players, TEAM_SIZE, outPlayers, scratch);
             System.out.println(maxTeamwork);
 
-        }*/
+        }
 
-        {
+        /*{
 
             Player[] players = new Player[] {
                     new Player("Player 1", 2, 6, 5, 78),
@@ -140,12 +140,12 @@ public class Program {
             int k = PocuBasketballAssociation.findDreamTeamSize(players, tempPlayers);
             System.out.println(k);
 
-        }
-
-
-        /*for (int i = 0; i < 400; ++i) {
-            test_DreamTeam3();
         }*/
+
+
+        for (int i = 0; i < 300; ++i) {
+            test_DreamTeam3();
+        }
 
         /*for (int i = 0; i < 500; ++i) {
             test_DreamTeamSize();
@@ -313,8 +313,10 @@ public class Program {
         final int PLAYER_SIZE = 6;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
+        int pass = Math.max(1, rand.nextInt(12));
+        int assist = rand.nextInt(Math.max(1, pass));
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(12), rand.nextInt(12), 0);
+            players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
         Player[] outPlayers = new Player[3];
         Player[] answers = new Player[3];
