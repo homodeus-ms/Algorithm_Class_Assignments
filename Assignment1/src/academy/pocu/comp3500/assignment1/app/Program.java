@@ -102,14 +102,14 @@ public class Program {
             assert (player != null);
         }*/
 
-        {
+        /*{
             Player[] players = new Player[]{
-                    new Player("Player 1", 5, 10, 9, 50),
-                    new Player("Player 2", 10, 3, 10, 88),
-                    new Player("Player 3", 15, 7, 3, 40),
-                    new Player("Player 4", 11, 5, 1, 54),
-                    new Player("Player 5", 16, 4, 2, 77),
-                    new Player("Player 6", 1, 3, 6, 22),
+                    new Player("Player 1", 5, 3, 10, 50),
+                    new Player("Player 2", 10, 5, 0, 88),
+                    new Player("Player 3", 15, 4, 1, 40),
+                    new Player("Player 4", 11, 4, 8, 54),
+                    new Player("Player 5", 16, 11, 3, 77),
+                    new Player("Player 6", 1, 5, 9, 22),
 
             };
 
@@ -121,35 +121,35 @@ public class Program {
             long maxTeamwork = PocuBasketballAssociation.findDreamTeam(players, TEAM_SIZE, outPlayers, scratch);
             System.out.println(maxTeamwork);
 
-        }
+        }*/
 
-        /*{
+        {
 
             Player[] players = new Player[] {
-                    new Player("Player 1", 2, 5, 10, 78),
-                    new Player("Player 2", 10, 4, 5, 66),
-                    new Player("Player 3", 3, 3, 2, 22),
-                    new Player("Player 4", 1, 9, 8, 12),
-                    new Player("Player 5", 11, 1, 12, 26),
-                    new Player("Player 6", 7, 2, 10, 15),
-                    new Player("Player 7", 8, 15, 3, 11),
-                    new Player("Player 8", 5, 7, 13, 5),
-                    new Player("Player 9", 8, 2, 7, 67),
-                    new Player("Player 10", 1, 11, 1, 29),
-                    new Player("Player 11", 2, 6, 9, 88)
+                    new Player("Player 1", 2, 6, 5, 78),
+                    new Player("Player 2", 10, 3, 5, 66),
+                    new Player("Player 3", 3, 6, 1, 22),
+                    new Player("Player 4", 1, 4, 2, 12),
+                    new Player("Player 5", 11, 1, 9, 26),
+                    new Player("Player 6", 7, 6, 2, 15),
+
             };
 
             Player[] tempPlayers = new Player[players.length];
 
             int k = PocuBasketballAssociation.findDreamTeamSize(players, tempPlayers);
+            System.out.println(k);
 
-            assert (k == 6);
+        }
+
+
+        /*for (int i = 0; i < 400; ++i) {
+            test_DreamTeam3();
         }*/
 
-
-        for (int i = 0; i < 400; ++i) {
-            test_DreamTeam3();
-        }
+        /*for (int i = 0; i < 500; ++i) {
+            test_DreamTeamSize();
+        }*/
 
 
 
@@ -494,6 +494,90 @@ public class Program {
             System.out.println("나의 답ㅡ : " + player.getName() + ", " + player.getPointsPerGame());
             System.out.println(System.lineSeparator());
             System.out.println("============================ E N D ============================");
+        }
+    }
+    public static void test_DreamTeamSize() {
+        final int PLAYER_SIZE = 10;
+        Random rand = new Random();
+        Player[] players = new Player[PLAYER_SIZE];
+        for (int i = 0; i < PLAYER_SIZE; ++i) {
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
+        }
+
+        Player[] scratch = new Player[PLAYER_SIZE];
+        Player[] myScratch = new Player[PLAYER_SIZE];
+        Player[] outPlayers =new Player[PLAYER_SIZE];
+        // answer[0] = size, answer[1] = maxPoint, answer[2] = total subset Count
+        long[] answer = new long[]{0, 0, 0};
+        long[] myRet = new long[]{0, 0, 0};
+        int count = 0;
+
+        for (int i = 0; i < scratch.length; ++i) {
+            getMaxPointTeamPerfectly(players, outPlayers, scratch, answer, 0, 0,
+                    i + 1, i + 1);
+        }
+        myRet[0] = PocuBasketballAssociation.findDreamTeamSize(players, myScratch);
+
+        if (answer[0] != myRet[0]) {
+            System.out.println("=================== 문제 =====================");
+            for (int i = 0; i < PLAYER_SIZE; ++i) {
+                System.out.printf("%s - assist(%d), pass(%d)%s", players[i].getName(),
+                        players[i].getAssistsPerGame(), players[i].getPassesPerGame(),
+                        System.lineSeparator());
+            }
+            System.out.println();
+
+            System.out.printf("정답 : %d명, %d점%s", answer[0], answer[1], System.lineSeparator());
+            System.out.printf("내 대답 : %d명%s", myRet[0], System.lineSeparator());
+            System.out.println();
+
+            for (int i = 0; i < answer[0]; ++i) {
+                System.out.printf("%s - assist(%d), pass(%d)%s", outPlayers[i].getName(),
+                        outPlayers[i].getAssistsPerGame(), outPlayers[i].getPassesPerGame(),
+                        System.lineSeparator());
+            }
+            System.out.println();
+            System.out.println("============================================");
+            System.out.println();
+        } else {
+            System.out.println("true");
+        }
+
+    }
+
+    public static void getMaxPointTeamPerfectly(Player[] players, Player[] outPlayers,
+                                                Player[] scratch, long[] result,
+                                                int startIdx, int sourceIdx,
+                                                int pickCount, int scratchLength) {
+        if (pickCount == 0) {
+            long thisPoint = 0;
+            int minAssist = scratch[0].getAssistsPerGame();
+            for (int i = 0; i < scratchLength; ++i) {
+                thisPoint += scratch[i].getPassesPerGame();
+                int thisAssist = scratch[i].getAssistsPerGame();
+                if (thisAssist < minAssist) {
+                    minAssist = thisAssist;
+                }
+            }
+            thisPoint *= minAssist;
+
+            if (thisPoint >= result[1]) {
+                result[1] = thisPoint;
+                result[0] = scratchLength;
+
+                for (int i = 0; i < scratchLength; ++i) {
+                    outPlayers[i] = scratch[i];
+                }
+            }
+
+        } else if (sourceIdx == players.length) {
+            return;
+        } else {
+            scratch[startIdx] = players[sourceIdx];
+            getMaxPointTeamPerfectly(players, outPlayers, scratch, result, startIdx + 1,
+                    sourceIdx + 1, pickCount - 1, scratchLength);
+            getMaxPointTeamPerfectly(players, outPlayers, scratch, result, startIdx,
+                    sourceIdx + 1, pickCount, scratchLength);
         }
     }
 

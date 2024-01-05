@@ -174,68 +174,34 @@ public final class PocuBasketballAssociation {
 
         long maxPoint = 0;
         int minAssist = players[0].getAssistsPerGame();
-        int minPass = players[0].getPassesPerGame();
 
         for (int i = 0; i < k; ++i) {
 
             outPlayers[i] = players[i];
 
             int thisAssist = players[i].getAssistsPerGame();
-            int thisPass = players[i].getPassesPerGame();
 
             if (thisAssist < minAssist) {
                 minAssist = thisAssist;
-            }
-            if (thisPass < minPass) {
-                minPass = thisPass;
             }
 
             maxPoint += players[i].getPassesPerGame();
         }
         maxPoint *= minAssist;
 
-        long[] maxPointPointer = { maxPoint };
-
-        int lastIndex = k - 1;
-        for (int i = k; i < players.length; ++i) {
-            int thisAssist = players[i].getAssistsPerGame();
-            int thisPass = players[i].getPassesPerGame();
-            if (thisAssist > minAssist || thisPass > minPass) {
-                ++lastIndex;
-            }
-        }
+        long[] maxPointPointer = {maxPoint};
+        boolean[] bChangedPointer = {false};
 
         for (int i = 0; i < outPlayers.length; ++i) {
             scratch[0] = players[i];
             findDreamTeamRecursive2(players, outPlayers, scratch, 1,
-                    i + 1, k - 1, lastIndex, maxPointPointer);
+                    i + 1, k - 1, maxPointPointer, bChangedPointer);
+            if (bChangedPointer[0]) {
+                break;
+            }
         }
 
         return maxPointPointer[0];
-    }
-    private static void findDreamTeamRecursive2(final Player[] players, final Player[] outPlayers,
-                                                final Player[] scratch, int startIdx,
-                                                int sourceIdx, int pickCount, int lastIdx,
-                                                long[] maxPointPointer) {
-        if (pickCount == 0) {
-            long thisPoint = getTeamWorkPoint(scratch);
-            if (thisPoint > maxPointPointer[0]) {
-                for (int i = 0; i < outPlayers.length; ++i) {
-                    outPlayers[i] = scratch[i];
-                }
-                maxPointPointer[0] = thisPoint;
-            }
-            return;
-
-        } else if (sourceIdx == lastIdx + 1) {
-            return;
-        } else {
-            scratch[startIdx] = players[sourceIdx];
-            findDreamTeamRecursive2(players, outPlayers, scratch, startIdx + 1,
-                    sourceIdx + 1, pickCount - 1, lastIdx, maxPointPointer);
-            findDreamTeamRecursive2(players, outPlayers, scratch, startIdx,
-                    sourceIdx + 1, pickCount, lastIdx, maxPointPointer);
-        }
     }
 
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
@@ -246,42 +212,58 @@ public final class PocuBasketballAssociation {
             return 1;
         }
 
-        for (int i = 0; i < players.length; ++i) {
-            scratch[i] = players[i];
-        }
-        sortByTeamWorkDesc(scratch);
+        sortByAssistDescRecursive(players, 0, players.length - 1);
 
-        long maxTeamWorkPoint = getTeamWorkPoint(scratch, 0, 0);
-        int keepCount;
-        int count = 1;
+        long maxPoint = getTeamWorkPoint(players, 0, players.length - 1);
 
-        for (int i = 1; i < scratch.length; ++i) {
-            long getNewPoint = getTeamWorkPoint(scratch, 0, i);
-            if (getNewPoint > maxTeamWorkPoint) {
-                count = i;
-                maxTeamWorkPoint = getNewPoint;
+        int assistCount = players[players.length - 1].getAssistsPerGame();
+        int maxIndex = players.length;
+
+        for (int i = players.length - 1; i > 0; --i) {
+            assistCount = players[i].getAssistsPerGame();
+            int nextAssistCount = players[i - 1].getAssistsPerGame();
+            if (nextAssistCount == assistCount) {
+                continue;
+            }
+
+            long thisPoint = getTeamWorkPoint(players, 0, i - 1);
+
+            if (thisPoint > maxPoint) {
+                maxPoint = thisPoint;
+                maxIndex = i;
             }
         }
 
-        keepCount = count + 1;
-        count = 1;
-
-        stableSortByAssistDesc(scratch, 0);
-
-        for (int i = 1; i < scratch.length; ++i) {
-            long getNewPoint = getTeamWorkPoint(scratch, 0, i);
-            if (getNewPoint > maxTeamWorkPoint) {
-                count = i;
-                maxTeamWorkPoint = getNewPoint;
-            }
-        }
-
-        if (count != 1) {
-            return ++count;
-        }
-
-        return keepCount;
+        return maxIndex;
     }
+
+    private static void findDreamTeamRecursive2(final Player[] players, final Player[] outPlayers,
+                                                final Player[] scratch, int startIdx,
+                                                int sourceIdx, int pickCount,
+                                                long[] maxPointPointer, boolean[] bChanged) {
+        if (pickCount == 0) {
+            long thisPoint = getTeamWorkPoint(scratch);
+            if (thisPoint > maxPointPointer[0]) {
+                for (int i = 0; i < outPlayers.length; ++i) {
+                    outPlayers[i] = scratch[i];
+                }
+                maxPointPointer[0] = thisPoint;
+                bChanged[0] = true;
+            }
+            return;
+
+        } else if (sourceIdx == players.length) {
+            return;
+        } else {
+            scratch[startIdx] = players[sourceIdx];
+            findDreamTeamRecursive2(players, outPlayers, scratch, startIdx + 1,
+                    sourceIdx + 1, pickCount - 1, maxPointPointer, bChanged);
+            findDreamTeamRecursive2(players, outPlayers, scratch, startIdx,
+                    sourceIdx + 1, pickCount, maxPointPointer, bChanged);
+        }
+    }
+
+
     private static void stableSortByAssistDesc(final Player[] scratch, int start) {
         int thisAssistCount;
         int nextAssistCount;
@@ -307,21 +289,6 @@ public final class PocuBasketballAssociation {
         }
     }
 
-    private static void sortByTeamWorkDesc(final Player[] scratch) {
-        long thisTeamWorkPoint;
-        long nextTeamWorkPoint;
-        for (int i = 0; i < scratch.length - 1; ++i) {
-            for (int j = 0; j < scratch.length - 1 - i; ++j) {
-                thisTeamWorkPoint = getTeamWorkPoint(scratch, j, j);
-                nextTeamWorkPoint = getTeamWorkPoint(scratch, j + 1, j + 1);
-                if (thisTeamWorkPoint < nextTeamWorkPoint) {
-                    Player temp = scratch[j];
-                    scratch[j] = scratch[j + 1];
-                    scratch[j + 1] = temp;
-                }
-            }
-        }
-    }
 
     private static void sortByAssistDescRecursive(final Player[] players,
                                                   int left, int right) {
