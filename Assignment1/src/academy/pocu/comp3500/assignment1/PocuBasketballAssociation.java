@@ -176,17 +176,17 @@ public final class PocuBasketballAssociation {
         }
 
         // 기본 찾기 한 번 돌려보자
-        /*for (int i = 0; i < k; ++i) {
+        for (int i = 0; i < k; ++i) {
             outPlayers[i] = players[i];
         }
         long[] maxPointPointer = {0};
         findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0, k,
                 players.length, maxPointPointer);
 
-        return maxPointPointer[0];*/
+        return maxPointPointer[0];
 
 
-        long[] maxPointPointer = {0};
+        /*long[] maxPointPointer = {0};
         sortByAssistPassDescRecursive(players, 0, players.length - 1);
         sortByTeamWorkAssistDescRecursive(players, k, players.length - 1);
 
@@ -218,7 +218,7 @@ public final class PocuBasketballAssociation {
                 maxPointPointer);
 
 
-        return maxPointPointer[0];
+        return maxPointPointer[0];*/
     }
 
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
