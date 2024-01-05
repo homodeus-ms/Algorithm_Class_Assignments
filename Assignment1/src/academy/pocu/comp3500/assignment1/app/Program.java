@@ -361,13 +361,13 @@ public class Program {
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 10;
+        final int PLAYER_SIZE = 6;
         Random rand = new Random();
-        int k = 8; //Math.max(1, rand.nextInt(6));
+        int k = Math.max(1, rand.nextInt(6));
 
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(12), rand.nextInt(12), 0);
         }
         Player[] outPlayers = new Player[k];
         Player[] answers = new Player[k];
@@ -407,6 +407,7 @@ public class Program {
                         outPlayers[i].getAssistsPerGame() * outPlayers[i].getPassesPerGame(),
                         System.lineSeparator());
             }
+            System.out.println();
         } else {
             //System.out.println("True");
         }

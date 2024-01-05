@@ -172,6 +172,7 @@ public final class PocuBasketballAssociation {
             return getTeamWorkPoint(players, 0, k - 1);
         }
 
+        // 기본 찾기 한 번 돌려보자
         for (int i = 0; i < k; ++i) {
             outPlayers[i] = players[i];
         }
@@ -181,37 +182,30 @@ public final class PocuBasketballAssociation {
 
         return maxPointPointer[0];
 
-        /*sortByTeamWorkDescRecursive(players, 0, players.length - 1);
 
-        long maxPoint = 0;
-        int minAssist = players[0].getAssistsPerGame();
+        /*long[] maxPointPointer = {0};
+        sortByAssistPassDescRecursive(players, 0, players.length - 1);
+        sortByTeamWorkAssistDescRecursive(players, k, players.length - 1);
 
         for (int i = 0; i < k; ++i) {
-
             outPlayers[i] = players[i];
-
-            int thisAssist = players[i].getAssistsPerGame();
-
-            if (thisAssist < minAssist) {
-                minAssist = thisAssist;
-            }
-
-            maxPoint += players[i].getPassesPerGame();
         }
-        maxPoint *= minAssist;
 
-        // 포인터처럼 쓰기 위해서 꼼수(?)
-        long[] maxPointPointer = {maxPoint};
-        boolean[] bMaxPointChanged = {false};
-
-        for (int i = 0; i < outPlayers.length; ++i) {
-            scratch[0] = players[i];
-            findDreamTeamRecursive2(players, outPlayers, scratch, 1,
-                    i + 1, k - 1, maxPointPointer, bMaxPointChanged);
-            if (bMaxPointChanged[0]) {
-                break;
+        long minPoint = getTeamWorkPoint(players, 0, 0);
+        int searchLength = k;
+        for (int i = k; i < players.length; ++i) {
+            long thisPoint = getTeamWorkPoint(players, i, i);
+            if (thisPoint > minPoint) {
+                ++searchLength;
             }
         }
+        if (searchLength == k) {
+            return getTeamWorkPoint(outPlayers, 0, k - 1);
+        }
+
+        findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0, k, searchLength,
+                maxPointPointer);
+
 
         return maxPointPointer[0];*/
     }
@@ -256,6 +250,9 @@ public final class PocuBasketballAssociation {
         if (pickCount == 0) {
             long thisPoint = getTeamWorkPoint(scratch);
             if (thisPoint > maxPointPointer[0]) {
+                for (int i = 0; i < outPlayers.length; ++i) {
+                    outPlayers[i] = scratch[i];
+                }
                 maxPointPointer[0] = thisPoint;
             }
             return;
