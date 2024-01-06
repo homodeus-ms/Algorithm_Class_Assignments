@@ -143,7 +143,7 @@ public class Program {
         }*/
 
 
-        for (int i = 0; i < 500; ++i) {
+        for (int i = 0; i < 100; ++i) {
             test_DreamTeamK();
         }
 
@@ -361,9 +361,9 @@ public class Program {
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 10;
+        final int PLAYER_SIZE = 6;
         Random rand = new Random();
-        int k = 4; //Math.max(1, rand.nextInt(7));
+        int k = 4;  //Math.max(0, rand.nextInt(11));
 
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
@@ -413,6 +413,37 @@ public class Program {
             }
             System.out.println();
         } else {
+            boolean isSame;
+            for (int i = 0; i < k; ++i) {
+                isSame = false;
+                for (int j = 0; j < k; ++j) {
+                    if (answers[i] == outPlayers[j]) {
+                        isSame = true;
+                    }
+                }
+                if (!isSame) {
+                    System.out.println("FALSE");
+                    System.out.println("--------------------------------------------------");
+            System.out.printf("%s %s %s %s%s", answers[0].getName(), answers[1].getName(),
+                    answers[2].getName(), answers[3].getName(), System.lineSeparator());
+            System.out.printf("%s %s %s %s%s", outPlayers[0].getName(), outPlayers[1].getName(),
+                    outPlayers[2].getName(), outPlayers[3].getName(), System.lineSeparator());
+            System.out.println("--------------------------------------------------");
+            System.out.println();
+
+                for (int l = 0; l < players.length; ++l) {
+                    System.out.printf("%s - %d, %d%s", players[l].getName(), players[l].getAssistsPerGame(),
+                            players[l].getPassesPerGame(), System.lineSeparator());
+                }
+                }
+            }
+            /*System.out.println("--------------------------------------------------");
+            System.out.printf("%s %s %s %s%s", answers[0].getName(), answers[1].getName(),
+                    answers[2].getName(), answers[3].getName(), System.lineSeparator());
+            System.out.printf("%s %s %s %s%s", outPlayers[0].getName(), outPlayers[1].getName(),
+                    outPlayers[2].getName(), outPlayers[3].getName(), System.lineSeparator());
+            System.out.println("--------------------------------------------------");
+            System.out.println();*/
             //System.out.println("True");
         }
     }

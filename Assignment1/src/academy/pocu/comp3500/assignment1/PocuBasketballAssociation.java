@@ -177,7 +177,6 @@ public final class PocuBasketballAssociation {
         }
 
         sortByAssistPassDescRecursive(players, 0, players.length - 1);
-        //sortByPassAssistDescRecursive(players, k, players.length - 1);
 
         long[] maxPointPointer = {getTeamWorkPoint(players, 0, k - 1)};
         for (int i = 0; i < k; ++i) {
@@ -185,13 +184,15 @@ public final class PocuBasketballAssociation {
         }
 
         for (int i = k; i < players.length; ++i) {
-            int minPassIdx = getMinPassIndex(outPlayers, 0, k - 1);
+            int minPassIdx = getMinPassIndex(players, 0, k - 1);
             swap(players, minPassIdx, i);
-            outPlayers[minPassIdx] = players[minPassIdx];
 
-            long thisPoint = getTeamWorkPoint(outPlayers, 0, k - 1);
+            long thisPoint = getTeamWorkPoint(players, 0, k - 1);
             if (thisPoint > maxPointPointer[0]) {
                 maxPointPointer[0] = thisPoint;
+                for (int j = 0; j < k; ++j) {
+                    outPlayers[j] = players[j];
+                }
             }
         }
 
