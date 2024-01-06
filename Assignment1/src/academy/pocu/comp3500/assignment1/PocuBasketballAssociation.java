@@ -152,6 +152,7 @@ public final class PocuBasketballAssociation {
     }
 
     public static long findDreamTeam(final Player[] players, int k, final Player[] outPlayers, final Player[] scratch) {
+        // 바로 리턴 할 수 있는 조건들
         if (k == 0) {
             return 0;
         }
@@ -175,16 +176,62 @@ public final class PocuBasketballAssociation {
             return getTeamWorkPoint(players, 0, k - 1);
         }
 
-        // 기본 찾기 한 번 돌려보자
-        for (int i = 0; i < k; ++i) {
-            outPlayers[i] = players[i];
+        sortByAssistPassDescRecursive(players, 0, players.length - 1);
+
+        int pivotIdx = 0;
+        int startIdx = 0;
+        int lastIdx = players.length - 1;
+
+        int minAssistValue = players[k - 1].getAssistsPerGame();
+        int j = 0;
+
+        while (true) {
+            int count = 0;
+            int pivotPassCount = players[pivotIdx++].getPassesPerGame();
+            j = pivotIdx;
+
+            while (j < players.length - 1) {
+                int thisPassCount = players[j].getPassesPerGame();
+                if (thisPassCount > pivotPassCount) {
+                    ++count;
+                }
+                j++;
+                if (j > k - 1 && players[j].getAssistsPerGame() != minAssistValue) {
+                   break;
+                }
+            }
+
+            if (count == k) {
+                startIdx++;
+            }
+
+            count = 0;
+            pivotPassCount = players[players.length - pivotIdx].getPassesPerGame();
+            for (int i = players.length - pivotIdx - 1; i >= 0; --i) {
+                int thisPassCount = players[i].getPassesPerGame();
+                if (thisPassCount > pivotPassCount) {
+                    ++count;
+                }
+            }
+
+            if (count == k) {
+                lastIdx--;
+            } else {
+                break;
+            }
         }
+
         long[] maxPointPointer = {0};
-        findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0, k,
-                players.length, maxPointPointer);
+
+        for (int i = startIdx; i < k + startIdx; ++i) {
+            outPlayers[i - startIdx] = players[i - startIdx];
+        }
+
+        findDreamTeamRecursive2(players, outPlayers, scratch, 0, startIdx, k, lastIdx + 1,
+                maxPointPointer);
+
 
         return maxPointPointer[0];
-
 
         /*long[] maxPointPointer = {0};
         sortByAssistPassDescRecursive(players, 0, players.length - 1);
@@ -278,6 +325,8 @@ public final class PocuBasketballAssociation {
                     sourceIdx + 1, pickCount, searchLength, maxPointPointer);
         }
     }
+
+
 
     private static void sortByAssistPassDescRecursive(final Player[] players, int left, int right) {
         if (left >= right) {
@@ -657,6 +706,34 @@ public final class PocuBasketballAssociation {
             }
         }
         return sumPasses * minAssistes;
+    }
+    private static int getMinAssistCount(Player[] players, int startIdx, int endIdx) {
+        int minAssist = 0x7FFFFFFF;
+        for (int i = startIdx; i <= endIdx; ++i) {
+            int thisAssist = players[i].getAssistsPerGame();
+            if (thisAssist < minAssist) {
+                minAssist = thisAssist;
+            }
+        }
+        return minAssist;
+    }
+    private static int getMinPassCount(Player[] players, int startIdx, int endIdx) {
+        int minPass = 0x7FFFFFFF;
+        for (int i = startIdx; i <= endIdx; ++i) {
+            int thisPass = players[i].getPassesPerGame();
+            if (thisPass < minPass) {
+                minPass = thisPass;
+            }
+        }
+        return minPass;
+    }
+
+    private static int getPassesSum(Player[] players, int startIdx, int endIdx) {
+        int sum = 0;
+        for (int  i = startIdx; i <= endIdx; ++i) {
+            sum += players[i].getPassesPerGame();
+        }
+        return sum;
     }
 
     private static void print(final Player[] players) {

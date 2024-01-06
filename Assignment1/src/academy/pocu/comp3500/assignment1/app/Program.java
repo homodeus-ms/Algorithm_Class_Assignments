@@ -104,16 +104,16 @@ public class Program {
 
         {
             Player[] players = new Player[]{
-                    new Player("Player 1", 5, 4, 11, 50),
-                    new Player("Player 2", 10, 4, 7, 88),
-                    new Player("Player 3", 15, 11, 4, 40),
-                    new Player("Player 4", 11, 3, 8, 54),
-                    new Player("Player 5", 16, 11, 2, 77),
-                    new Player("Player 6", 1, 6, 10, 22),
+                    new Player("Player 1", 5, 4, 6, 50),
+                    new Player("Player 2", 10, 2, 2, 88),
+                    new Player("Player 3", 15, 7, 8, 40),
+                    new Player("Player 4", 11, 2, 3, 54),
+                    new Player("Player 5", 16, 2, 11, 77),
+                    new Player("Player 6", 1, 11, 2, 22),
 
             };
 
-            final int TEAM_SIZE = 3;
+            final int TEAM_SIZE = 4;
 
             Player[] outPlayers = new Player[TEAM_SIZE];
             Player[] scratch = new Player[TEAM_SIZE];
@@ -361,13 +361,13 @@ public class Program {
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 10;
+        final int PLAYER_SIZE = 6;
         Random rand = new Random();
-        int k = Math.max(1, rand.nextInt(11));
+        int k = 4; //Math.max(1, rand.nextInt(7));
 
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(20), rand.nextInt(20), 0);
+            players[i] = new Player(String.valueOf(i + 1), 0, rand.nextInt(12), rand.nextInt(12), 0);
         }
         Player[] outPlayers = new Player[k];
         Player[] answers = new Player[k];
@@ -382,6 +382,10 @@ public class Program {
         long myRet = PocuBasketballAssociation.findDreamTeam(players, k, outPlayers, scratch);
 
         if (answer != myRet) {
+            System.out.printf("answer : %d%s", answer, System.lineSeparator());
+            System.out.printf("answer : %d%s", myRet, System.lineSeparator());
+            System.out.println();
+
             System.out.println("Players");
             for (int i = 0; i < players.length; ++i) {
                 System.out.printf("%s - assist(%d), pass(%d), point(%d)%s", players[i].getName(),
