@@ -104,11 +104,11 @@ public class Program {
 
         {
             Player[] players = new Player[]{
-                    new Player("Player 1", 5, 4, 6, 50),
-                    new Player("Player 2", 10, 2, 2, 88),
-                    new Player("Player 3", 15, 7, 8, 40),
-                    new Player("Player 4", 11, 2, 3, 54),
-                    new Player("Player 5", 16, 2, 11, 77),
+                    new Player("Player 1", 5, 4, 5, 50),
+                    new Player("Player 2", 10, 10, 11, 88),
+                    new Player("Player 3", 15, 2, 7, 40),
+                    new Player("Player 4", 11, 4, 9, 54),
+                    new Player("Player 5", 16, 7, 0, 77),
                     new Player("Player 6", 1, 11, 2, 22),
 
             };
@@ -361,7 +361,7 @@ public class Program {
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 6;
+        final int PLAYER_SIZE = 10;
         Random rand = new Random();
         int k = 4; //Math.max(1, rand.nextInt(7));
 
