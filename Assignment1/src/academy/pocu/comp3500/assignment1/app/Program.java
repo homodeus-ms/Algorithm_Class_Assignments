@@ -102,7 +102,7 @@ public class Program {
             assert (player != null);
         }*/
 
-        {
+        /*{
             Player[] players = new Player[]{
                     new Player("Player 1", 5, 4, 5, 50),
                     new Player("Player 2", 10, 10, 11, 88),
@@ -121,7 +121,7 @@ public class Program {
             long maxTeamwork = PocuBasketballAssociation.findDreamTeam(players, TEAM_SIZE, outPlayers, scratch);
             System.out.println(maxTeamwork);
 
-        }
+        }*/
 
         /*{
 
@@ -143,8 +143,8 @@ public class Program {
         }*/
 
 
-        for (int i = 0; i < 100; ++i) {
-            test_DreamTeamK();
+        for (int i = 0; i < 500; ++i) {
+            test_DreamTeam3();
         }
 
         /*for (int i = 0; i < 500; ++i) {
@@ -313,8 +313,8 @@ public class Program {
         final int PLAYER_SIZE = 10;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
-        int pass = rand.nextInt(10);
-        int assist = rand.nextInt(10);
+        int pass = rand.nextInt(20);
+        int assist = rand.nextInt(20);
         for (int i = 0; i < PLAYER_SIZE; ++i) {
             players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
@@ -326,8 +326,8 @@ public class Program {
             answers[i] = outPlayers[i];
         }
 
-        //long myRet = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
-        long myRet = PocuBasketballAssociation.findDreamTeam(players, 3, outPlayers, scratch);
+        long myRet = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
+        //long myRet = PocuBasketballAssociation.findDreamTeam(players, 3, outPlayers, scratch);
 
         if (answer != myRet) {
             System.out.println("Players");
@@ -356,14 +356,14 @@ public class Program {
                         System.lineSeparator());
             }
         } else {
-            System.out.println("True");
+            //System.out.println("True");
         }
     }
 
     public static void test_DreamTeamK() {
-        final int PLAYER_SIZE = 6;
+        final int PLAYER_SIZE = 7;
         Random rand = new Random();
-        int k = 4;  //Math.max(0, rand.nextInt(11));
+        int k = 3;  //Math.max(0, rand.nextInt(11));
 
         Player[] players = new Player[PLAYER_SIZE];
         for (int i = 0; i < PLAYER_SIZE; ++i) {
@@ -437,14 +437,6 @@ public class Program {
                 }
                 }
             }
-            /*System.out.println("--------------------------------------------------");
-            System.out.printf("%s %s %s %s%s", answers[0].getName(), answers[1].getName(),
-                    answers[2].getName(), answers[3].getName(), System.lineSeparator());
-            System.out.printf("%s %s %s %s%s", outPlayers[0].getName(), outPlayers[1].getName(),
-                    outPlayers[2].getName(), outPlayers[3].getName(), System.lineSeparator());
-            System.out.println("--------------------------------------------------");
-            System.out.println();*/
-            //System.out.println("True");
         }
     }
 
