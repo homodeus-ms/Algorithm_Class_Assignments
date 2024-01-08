@@ -262,8 +262,8 @@ public class Program {
         //testInterleaveEdge2();
         //testInterleaveEdge();
         //testInvalidInterleave();
-        //testStack();
-        testQueue();
+        testStack();
+        //testQueue();
 
 
         System.out.println("NoAssert!");
@@ -496,10 +496,22 @@ public class Program {
     public static void testStack() {
         Stack stack = new Stack();
         stack.push(1);
-        /*stack.pop();
+        assert (stack.peek() == 1);
+        assert (stack.getSize() == 1);
+        stack.pop();
+        System.out.println(stack.getSize());
+
         stack.push(5);
         stack.push(6);
-        stack.push(7);*/
+        stack.push(7);
+        System.out.printf("pop: %d%s", stack.pop(), System.lineSeparator());
+
+        stack.push(7);
+        stack.push(8);
+
+        System.out.printf("pop: %d%s", stack.pop(), System.lineSeparator());
+        System.out.printf("pop: %d%s", stack.pop(), System.lineSeparator());
+        System.out.printf("pop: %d%s", stack.pop(), System.lineSeparator());
         System.out.printf("pop: %d%s", stack.pop(), System.lineSeparator());
 
 
@@ -521,7 +533,7 @@ public class Program {
         assert (b2);
         assert (b3);*/
 
-        assert (queue.dequeue() == 1);
+        //assert ((queue.dequeue() == 1));
         //assert (queue.getSize() == 1);
         //assert (queue.peek() == 2);
         /*queue.dequeue();
