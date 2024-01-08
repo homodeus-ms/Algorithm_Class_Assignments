@@ -86,9 +86,10 @@ public final class LinkedList {
         for (int i = 0; i < index - 1; ++i) {
             p = p.getNextOrNull();
             if (p == null) {
-                break;
+                return rootOrNull;
             }
         }
+
         preNode = p;
         p = preNode.getNextOrNull();
         if (p == null) {

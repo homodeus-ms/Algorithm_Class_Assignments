@@ -256,8 +256,9 @@ public class Program {
         //testReverse();
         //testInterleave();
         //testInsertAt();
-        testInsertAt2();
+        //testInsertAt2();
         //testRemoveAt();
+        testRemoveAt2();
         //testInterleaveEdge2();
         //testInterleaveEdge();
         //testInvalidInterleave();
@@ -424,6 +425,15 @@ public class Program {
         root = LinkedList.insertAt(root, 3, 4);
 
         assert (root == null);
+        printNode(root);
+    }
+
+    public static void testRemoveAt2() {
+        Node root = LinkedList.append(null, 2);
+        root = LinkedList.append(root, 3);
+        root = LinkedList.append(root, 4);
+        root = LinkedList.removeAt(root, 6);
+
         printNode(root);
     }
 
