@@ -29,15 +29,20 @@ public final class Queue {
     }
 
     public int dequeue() {
-        Node temp = root.getNextOrNull();
         int ret;
-        if (temp == null) {
+        if (size == 1) {
+            assert (root == lastNode);
+            assert (root.getNextOrNull() == null);
             ret = root.getData();
             root = null;
+            lastNode = null;
+
         } else {
-            root.setNext(null);
-            root = temp;
             ret = root.getData();
+            Node temp = root.getNextOrNull();
+            root.setNext(null);
+            root = null;
+            root = temp;
         }
 
         --size;

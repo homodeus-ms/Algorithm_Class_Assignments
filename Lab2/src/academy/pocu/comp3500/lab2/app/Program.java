@@ -496,24 +496,65 @@ public class Program {
     public static void testStack() {
         Stack stack = new Stack();
         stack.push(1);
-        stack.pop();
+        /*stack.pop();
         stack.push(5);
+        stack.push(6);
+        stack.push(7);*/
+        System.out.printf("pop: %d%s", stack.pop(), System.lineSeparator());
 
 
-        //System.out.println(stack.getSize());
-        printStack(stack);
+        System.out.println(stack.getSize());
+        //printStack(stack);
     }
 
     public static void testQueue() {
         Queue queue = new Queue();
-        queue.enqueue(1);
-
-        int ret = queue.dequeue();
-        queue.enqueue(10);
-        queue.enqueue(11);
-        queue.enqueue(12);
-        queue.dequeue();
         //System.out.println(queue.getSize());
+        queue.enqueue(1);
+        queue.enqueue(2);
+
+        /*boolean b1 = queue.dequeue() == 1;
+        boolean b2 = queue.getSize() == 1;
+        boolean b3 = queue.peek() == 2;
+
+        assert (b1);
+        assert (b2);
+        assert (b3);*/
+
+        assert (queue.dequeue() == 1);
+        //assert (queue.getSize() == 1);
+        //assert (queue.peek() == 2);
+        /*queue.dequeue();
+        queue.getSize();
+        queue.peek();*/
+
+        queue.enqueue(1);
+        queue.enqueue(0);
+
+        assert (queue.peek() == 2);
+        assert (queue.getSize() == 3);
+
+        queue.enqueue(-1);
+        queue.enqueue(-2);
+        assert (queue.peek() == 2);
+        assert (queue.getSize() == 5);
+
+        assert (queue.dequeue() == 2);
+        assert (queue.getSize() == 4);
+        assert (queue.dequeue() == 1);
+        assert (queue.getSize() == 3);
+        assert (queue.dequeue() == 0);
+        assert (queue.getSize() == 2);
+        assert (queue.dequeue() == -1);
+        assert (queue.getSize() == 1);
+        queue.dequeue();
+        //assert (queue.dequeue() == -2);
+        assert (queue.getSize() == 0);
+
+        queue.enqueue(5);
+
+
+
         printQueue(queue);
     }
     private static void printStack(Stack stack) {
@@ -522,7 +563,7 @@ public class Program {
     }
     private static void printQueue(Queue queue) {
 
-        System.out.printf("stackSize: %d, peekValue: %d%s", queue.getSize(), queue.peek(),
+        System.out.printf("QueueSize: %d, peekValue: %d%s", queue.getSize(), queue.peek(),
                 System.lineSeparator());
     }
 
