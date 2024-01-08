@@ -18,7 +18,7 @@ public final class Stack {
     }
 
     public int peek() {
-        return LinkedList.getIndexOf(root, size - 1);
+        return LinkedList.getOrNull(root, size - 1).getData();
     }
 
     public int pop() {
@@ -27,7 +27,7 @@ public final class Stack {
         if (size == 1) {
             ret = root.getData();
             root = null;
-            return ret;
+
         } else {
             Node preLastNode = LinkedList.getOrNull(root, size - 2);
             ret = preLastNode.getNextOrNull().getData();

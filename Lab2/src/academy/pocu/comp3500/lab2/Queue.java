@@ -4,14 +4,23 @@ import academy.pocu.comp3500.lab2.datastructure.Node;
 
 public final class Queue {
     private Node root;
+    private Node lastNode;
     private int size;
 
     public Queue() {
         root = null;
+        lastNode = null;
         size = 0;
     }
     public void enqueue(final int data) {
-        root = LinkedList.append(root, data);
+        if (root == null) {
+            root = LinkedList.append(root, data);
+            lastNode = root;
+        } else {
+            lastNode = LinkedList.append(lastNode, data);
+            lastNode = lastNode.getNextOrNull();
+        }
+
         ++size;
     }
 

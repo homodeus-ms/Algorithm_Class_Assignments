@@ -140,10 +140,25 @@ public final class LinkedList {
             return rootOrNull;
         }
 
-        Node newRoot = reverseRecursive(rootOrNull, rootOrNull.getNextOrNull());
-        rootOrNull.setNext(null);
+        Node p = rootOrNull;
+        Node next;
+        Node keep = p.getNextOrNull();
 
-        return newRoot;
+        while (true) {
+            next = keep;
+            if (next == null) {
+                break;
+            }
+            keep = next.getNextOrNull();
+
+            next.setNext(p);
+            p = next;
+        }
+        rootOrNull.setNext(null);
+        /*Node newRoot = reverseRecursive(rootOrNull, rootOrNull.getNextOrNull());
+        rootOrNull.setNext(null);*/
+
+        return p;
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {

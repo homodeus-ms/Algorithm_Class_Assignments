@@ -258,10 +258,12 @@ public class Program {
         //testInsertAt();
         //testInsertAt2();
         //testRemoveAt();
-        testRemoveAt2();
+        //testRemoveAt2();
         //testInterleaveEdge2();
         //testInterleaveEdge();
         //testInvalidInterleave();
+        //testStack();
+        testQueue();
 
 
         System.out.println("NoAssert!");
@@ -286,6 +288,7 @@ public class Program {
         Node root = LinkedList.append(null, 10);
         root = LinkedList.append(root, 11);
         root = LinkedList.append(root, 12);
+        root = LinkedList.append(root, 13);
 
         Node newRoot = LinkedList.reverse(root);
         printNode(newRoot);
@@ -490,7 +493,38 @@ public class Program {
         assert linked2 == head2;
     }
 
+    public static void testStack() {
+        Stack stack = new Stack();
+        stack.push(1);
+        stack.pop();
+        stack.push(5);
 
+
+        //System.out.println(stack.getSize());
+        printStack(stack);
+    }
+
+    public static void testQueue() {
+        Queue queue = new Queue();
+        queue.enqueue(1);
+
+        int ret = queue.dequeue();
+        queue.enqueue(10);
+        queue.enqueue(11);
+        queue.enqueue(12);
+        queue.dequeue();
+        //System.out.println(queue.getSize());
+        printQueue(queue);
+    }
+    private static void printStack(Stack stack) {
+        System.out.printf("stackSize: %d, peekValue: %d%s", stack.getSize(), stack.peek(),
+                System.lineSeparator());
+    }
+    private static void printQueue(Queue queue) {
+
+        System.out.printf("stackSize: %d, peekValue: %d%s", queue.getSize(), queue.peek(),
+                System.lineSeparator());
+    }
 
     private static void printNode(Node root) {
          while (root != null) {
