@@ -256,6 +256,7 @@ public class Program {
         //testReverse();
         //testInterleave();
         //testInsertAt();
+        testInsertAt2();
         //testRemoveAt();
         //testInterleaveEdge2();
         //testInterleaveEdge();
@@ -367,9 +368,7 @@ public class Program {
 
     public static void testInsertAt() {
         Node root = LinkedList.append(null, 20);
-
         root = LinkedList.insertAt(root, -1, -100);
-
         root = LinkedList.insertAt(root, 0, 10);
 
         root = LinkedList.insertAt(root, 2, 40);
@@ -411,6 +410,21 @@ public class Program {
         node = LinkedList.insertAt(null, 100, 10);
 
         assert(node == null);
+    }
+
+    public static void testInsertAt2() {
+        Node root = LinkedList.insertAt(null, 1, 1);
+
+        assert (root == null);
+
+        root = LinkedList.insertAt(root, -1, 2);
+        assert (root == null);
+        root = LinkedList.insertAt(root, 1, 2);
+        root = LinkedList.insertAt(root, 2, 3);
+        root = LinkedList.insertAt(root, 3, 4);
+
+        assert (root == null);
+        printNode(root);
     }
 
     public static void testInterleaveEdge2() {

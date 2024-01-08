@@ -3,7 +3,8 @@ package academy.pocu.comp3500.lab2;
 import academy.pocu.comp3500.lab2.datastructure.Node;
 
 public final class LinkedList {
-    private LinkedList() { }
+    private LinkedList() {
+    }
 
     public static Node append(final Node rootOrNull, final int data) {
         if (rootOrNull == null) {
@@ -32,7 +33,11 @@ public final class LinkedList {
 
     public static Node insertAt(final Node rootOrNull, final int index, final int data) {
         if (rootOrNull == null) {
-            return new Node(data);
+            if (index == 0) {
+                return new Node(data);
+            } else {
+                return null;
+            }
 
         } else if (index == 0) {
             Node newNode = new Node(data);
@@ -156,8 +161,9 @@ public final class LinkedList {
         while (p != null && q != null) {
             keep0 = p.getNextOrNull();
             keep1 = q.getNextOrNull();
-            if (q != null)
+
             p.setNext(q);
+
             if (keep0 != null) {
                 q.setNext(keep0);
             }
