@@ -123,16 +123,20 @@ public final class LinkedList {
             return rootOrNull;
         }
         Node start = rootOrNull;
-        Node next = start.getNextOrNull();
+        Node next;
+        Node keep = start.getNextOrNull();
         start.setNext(null);
 
-        Node temp;
+        while (true) {
+            next = keep;
 
-        while (next != null) {
-            temp = next.getNextOrNull();
+            if (next == null) {
+                break;
+            }
+            keep = next.getNextOrNull();
+
             next.setNext(start);
             start = next;
-            next = temp;
         }
 
         return start;
