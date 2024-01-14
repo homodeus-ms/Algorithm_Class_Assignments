@@ -8,7 +8,7 @@ import academy.pocu.comp3500.lab2.Stack;
 public class Program {
 
     public static void main(String[] args) {
-        {
+        /*{
             Node root = LinkedList.append(null, 10);
 
             root = LinkedList.append(root, 11);
@@ -250,7 +250,7 @@ public class Program {
             queue.enqueue(21);
 
             assert (queue.getSize() == 2);
-        }
+        }*/
 
         /*testRemove();
         testReverse();
@@ -264,6 +264,8 @@ public class Program {
         testInvalidInterleave();*/
         //testStack();
         //testQueue();
+
+        testReverse();
 
 
         System.out.println("NoAssert!");

@@ -146,7 +146,7 @@ public final class LinkedList {
             p = next;
         }
 
-        return p;
+        return prev;
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {
