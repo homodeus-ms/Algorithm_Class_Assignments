@@ -139,19 +139,23 @@ public final class LinkedList {
             return rootOrNull;
         }
 
-        Node p = rootOrNull.getNextOrNull();
-        Node prev = rootOrNull;
-        prev.setNext(null);
+        Node p = rootOrNull;
         Node next;
+        Node keep = p.getNextOrNull();
 
-        while (p != null) {
-            next = p.getNextOrNull();
-            p.setNext(prev);
-            prev = p;
+        while (true) {
+            next = keep;
+            if (next == null) {
+                break;
+            }
+            keep = next.getNextOrNull();
+
+            next.setNext(p);
             p = next;
         }
+        rootOrNull.setNext(null);
 
-        return prev;
+        return p;
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {
