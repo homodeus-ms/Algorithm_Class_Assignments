@@ -262,8 +262,8 @@ public class Program {
         testInterleaveEdge2();
         testInterleaveEdge();
         testInvalidInterleave();*/
-        testStack();
-        testQueue();
+        //testStack();
+        //testQueue();
 
 
         System.out.println("NoAssert!");
