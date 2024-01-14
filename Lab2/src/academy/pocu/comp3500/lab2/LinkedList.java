@@ -150,7 +150,7 @@ public final class LinkedList {
         while (next != null) {
             temp = start.getNextOrNull();
             start.setNext(next);
-            next = start;
+            start = next;
             next = temp;
         }
 
