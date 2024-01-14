@@ -119,27 +119,29 @@ public final class LinkedList {
     }
 
     public static Node reverse(final Node rootOrNull) {
-        if (rootOrNull == null || rootOrNull.getNextOrNull() == null) {
+        if (rootOrNull == null) {
+            return null;
+        } else if (rootOrNull.getNextOrNull() == null) {
             return rootOrNull;
         }
-        Node start = rootOrNull;
+
+        Node p = rootOrNull;
         Node next;
-        Node keep = start.getNextOrNull();
-        start.setNext(null);
+        Node keep = p.getNextOrNull();
 
         while (true) {
             next = keep;
-
             if (next == null) {
                 break;
             }
             keep = next.getNextOrNull();
 
-            next.setNext(start);
-            start = next;
+            next.setNext(p);
+            p = next;
         }
+        rootOrNull.setNext(null);
 
-        return start;
+        return p;
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {
