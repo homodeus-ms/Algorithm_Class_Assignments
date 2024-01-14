@@ -252,7 +252,7 @@ public class Program {
             assert (queue.getSize() == 2);
         }*/
 
-        /*testRemove();
+        testRemove();
         testReverse();
         testInterleave();
         testInsertAt();
@@ -261,7 +261,7 @@ public class Program {
         testRemoveAt2();
         testInterleaveEdge2();
         testInterleaveEdge();
-        testInvalidInterleave();*/
+        testInvalidInterleave();
         //testStack();
         //testQueue();
 
