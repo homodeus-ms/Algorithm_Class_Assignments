@@ -3,45 +3,38 @@ package academy.pocu.comp3500.lab2;
 import academy.pocu.comp3500.lab2.datastructure.Node;
 
 public final class Stack {
-
-    private Node root;
+    private Node bottom;
+    private Node top;
     private int size;
 
     public Stack() {
-        root = null;
-        size = 0;
     }
-
     public void push(final int data) {
-        if (root == null) {
-            root = LinkedList.append(root, data);
+        if (size == 0) {
+            bottom = new Node(data);
+            top = bottom;
         } else {
-            root = LinkedList.prepend(root, data);
+            Node newNode = new Node(data);
+            newNode.setNext(top);
+            top = newNode;
         }
-
         ++size;
     }
 
     public int peek() {
-        return root.getData();
+        return top.getData();
     }
 
     public int pop() {
-        int ret;
-
-        if (size == 1) {
-            ret = root.getData();
-            root = null;
-
-        } else {
-            ret = root.getData();
-            Node temp = root.getNextOrNull();
-            root.setNext(null);
-            root = null;
-            root = temp;
-        }
+        int res = top.getData();
+        Node temp = top.getNextOrNull();
+        top.setNext(null);
+        top = temp;
         --size;
-        return ret;
+        if (size == 0) {
+            bottom = null;
+        }
+        return res;
     }
 
     public int getSize() {

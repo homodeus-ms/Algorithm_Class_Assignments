@@ -9,70 +9,54 @@ public final class LinkedList {
     public static Node append(final Node rootOrNull, final int data) {
         if (rootOrNull == null) {
             return new Node(data);
-        } else {
-            Node p = rootOrNull;
-
-            while (p.getNextOrNull() != null) {
-                p = p.getNextOrNull();
-            }
-            p.setNext(new Node(data));
-
-            return rootOrNull;
         }
-    }
 
+        Node p = rootOrNull;
+
+        while (p.getNextOrNull() != null) {
+            p = p.getNextOrNull();
+        }
+        p.setNext(new Node(data));
+
+        return rootOrNull;
+    }
     public static Node prepend(final Node rootOrNull, final int data) {
         if (rootOrNull == null) {
             return new Node(data);
-        } else {
+        }
+        Node newNode = new Node(data);
+        newNode.setNext(rootOrNull);
+
+        return newNode;
+    }
+    public static Node insertAt(final Node rootOrNull, final int index, final int data) {
+
+        if (index == 0) {
             Node newNode = new Node(data);
             newNode.setNext(rootOrNull);
             return newNode;
         }
-    }
-
-    public static Node insertAt(final Node rootOrNull, final int index, final int data) {
-        if (rootOrNull == null) {
-            if (index == 0) {
-                return new Node(data);
-            } else {
-                return null;
-            }
-
-        } else if (index == 0) {
-            Node newNode = new Node(data);
-            newNode.setNext(rootOrNull);
-            return newNode;
-
-        } else if (index < 0) {
+        if (index < 0 || rootOrNull == null) {
             return rootOrNull;
+        }
 
-        } else {
-            Node p = rootOrNull;
+        Node p = rootOrNull;
 
-            for (int i = 0; i < index - 1; ++i) {
-                p = p.getNextOrNull();
-                if (p == null) {
-                    return rootOrNull;
-                }
-            }
-            Node preNode = p;
-            p = preNode.getNextOrNull();
+        for (int i = 0; i < index - 1; ++i) {
+            p = p.getNextOrNull();
             if (p == null) {
-                preNode.setNext(new Node(data));
                 return rootOrNull;
             }
-
-            Node newNode = new Node(data);
-            preNode.setNext(newNode);
-            newNode.setNext(p);
-
-            return rootOrNull;
         }
+        Node newNode = new Node(data);
+        newNode.setNext(p.getNextOrNull());
+        p.setNext(newNode);
+
+        return rootOrNull;
     }
 
     public static Node removeAt(final Node rootOrNull, final int index) {
-        if (rootOrNull == null || index < 0) {
+        if (index < 0 || rootOrNull == null) {
             return rootOrNull;
         }
         if (index == 0) {
@@ -80,9 +64,9 @@ public final class LinkedList {
             rootOrNull.setNext(null);
             return temp;
         }
-
         Node p = rootOrNull;
-        Node preNode;
+        Node target;
+
         for (int i = 0; i < index - 1; ++i) {
             p = p.getNextOrNull();
             if (p == null) {
@@ -90,26 +74,30 @@ public final class LinkedList {
             }
         }
 
-        preNode = p;
-        p = preNode.getNextOrNull();
-        if (p == null) {
+        target = p.getNextOrNull();
+        if (target == null) {
             return rootOrNull;
         }
-        preNode.setNext(p.getNextOrNull());
+
+        p.setNext(target.getNextOrNull());
+        target.setNext(null);
 
         return rootOrNull;
     }
 
     public static int getIndexOf(final Node rootOrNull, final int data) {
+        if (rootOrNull == null) {
+            return -1;
+        }
 
         Node p = rootOrNull;
-        int index = -1;
+        int index = 0;
 
         while (p != null) {
-            ++index;
             if (p.getData() == data) {
                 return index;
             }
+            ++index;
             p = p.getNextOrNull();
         }
 
@@ -117,48 +105,37 @@ public final class LinkedList {
     }
 
     public static Node getOrNull(final Node rootOrNull, final int index) {
-        if (rootOrNull == null || index < 0) {
+        if (index < 0) {
             return null;
         }
-
         Node p = rootOrNull;
+        int count = index;
 
-        for (int i = 0; i < index; ++i) {
+        while (p != null && count-- != 0) {
             p = p.getNextOrNull();
-            if (p == null) {
-                return null;
-            }
         }
 
         return p;
     }
 
     public static Node reverse(final Node rootOrNull) {
-        if (rootOrNull == null) {
-            return null;
-        } else if (rootOrNull.getNextOrNull() == null) {
+        if (rootOrNull == null || rootOrNull.getNextOrNull() == null) {
             return rootOrNull;
         }
+        Node start = rootOrNull;
+        Node next = start.getNextOrNull();
+        start.setNext(null);
 
-        Node p = rootOrNull;
-        Node next;
-        Node keep = p.getNextOrNull();
+        Node temp;
 
-        while (true) {
-            next = keep;
-            if (next == null) {
-                break;
-            }
-            keep = next.getNextOrNull();
-
-            next.setNext(p);
-            p = next;
+        while (next != null) {
+            temp = next.getNextOrNull();
+            next.setNext(start);
+            start = next;
+            next = temp;
         }
-        rootOrNull.setNext(null);
-        /*Node newRoot = reverseRecursive(rootOrNull, rootOrNull.getNextOrNull());
-        rootOrNull.setNext(null);*/
 
-        return p;
+        return start;
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {
@@ -169,37 +146,18 @@ public final class LinkedList {
             return root0OrNull;
         }
 
-        Node p = root0OrNull;
-        Node q = root1OrNull;
-        Node keep0;
-        Node keep1;
+        Node start = root0OrNull;
+        Node next = root1OrNull;
+        Node temp;
 
-        while (p != null && q != null) {
-            keep0 = p.getNextOrNull();
-            keep1 = q.getNextOrNull();
-
-            p.setNext(q);
-
-            if (keep0 != null) {
-                q.setNext(keep0);
-            }
-
-            p = keep0;
-            q = keep1;
+        while (start.getNextOrNull() != null) {
+            temp = start.getNextOrNull();
+            start.setNext(next);
+            start = next;
+            next = temp;
         }
+        start.setNext(next);
 
         return root0OrNull;
     }
-
-    private static Node reverseRecursive(final Node p, final Node pNext) {
-        if (pNext.getNextOrNull() == null) {
-            pNext.setNext(p);
-            return pNext;
-        }
-
-        Node newRoot = reverseRecursive(pNext, pNext.getNextOrNull());
-        pNext.setNext(p);
-        return newRoot;
-    }
 }
-

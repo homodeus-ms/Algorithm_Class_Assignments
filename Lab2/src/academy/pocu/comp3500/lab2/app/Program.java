@@ -252,18 +252,18 @@ public class Program {
             assert (queue.getSize() == 2);
         }
 
-        //testRemove();
-        //testReverse();
-        //testInterleave();
-        //testInsertAt();
-        //testInsertAt2();
-        //testRemoveAt();
-        //testRemoveAt2();
-        //testInterleaveEdge2();
-        //testInterleaveEdge();
-        //testInvalidInterleave();
+        /*testRemove();
+        testReverse();
+        testInterleave();
+        testInsertAt();
+        testInsertAt2();
+        testRemoveAt();
+        testRemoveAt2();
+        testInterleaveEdge2();
+        testInterleaveEdge();
+        testInvalidInterleave();*/
         testStack();
-        //testQueue();
+        testQueue();
 
 
         System.out.println("NoAssert!");
@@ -525,20 +525,20 @@ public class Program {
         queue.enqueue(1);
         queue.enqueue(2);
 
-        /*boolean b1 = queue.dequeue() == 1;
+        boolean b1 = queue.dequeue() == 1;
         boolean b2 = queue.getSize() == 1;
         boolean b3 = queue.peek() == 2;
 
         assert (b1);
         assert (b2);
-        assert (b3);*/
+        assert (b3);
 
         //assert ((queue.dequeue() == 1));
         //assert (queue.getSize() == 1);
         //assert (queue.peek() == 2);
-        /*queue.dequeue();
-        queue.getSize();
-        queue.peek();*/
+        //queue.dequeue();
+        //queue.getSize();
+        //queue.peek();
 
         queue.enqueue(1);
         queue.enqueue(0);
