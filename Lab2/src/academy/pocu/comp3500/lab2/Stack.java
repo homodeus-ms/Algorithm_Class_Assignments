@@ -3,7 +3,6 @@ package academy.pocu.comp3500.lab2;
 import academy.pocu.comp3500.lab2.datastructure.Node;
 
 public final class Stack {
-    private Node bottom;
     private Node top;
     private int size;
 
@@ -11,8 +10,7 @@ public final class Stack {
     }
     public void push(final int data) {
         if (size == 0) {
-            bottom = new Node(data);
-            top = bottom;
+            top = new Node(data);
         } else {
             Node newNode = new Node(data);
             newNode.setNext(top);
@@ -31,9 +29,7 @@ public final class Stack {
         top.setNext(null);
         top = temp;
         --size;
-        if (size == 0) {
-            bottom = null;
-        }
+
         return res;
     }
 
