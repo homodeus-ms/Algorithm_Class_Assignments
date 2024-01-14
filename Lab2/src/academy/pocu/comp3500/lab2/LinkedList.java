@@ -135,9 +135,14 @@ public final class LinkedList {
 
     public static Node reverse(final Node rootOrNull) {
 
-        Node p = rootOrNull;
-        Node prev = null;
-        Node next = null;
+        if (rootOrNull == null || rootOrNull.getNextOrNull() == null) {
+            return rootOrNull;
+        }
+
+        Node p = rootOrNull.getNextOrNull();
+        Node prev = rootOrNull;
+        prev.setNext(null);
+        Node next;
 
         while (p != null) {
             next = p.getNextOrNull();
