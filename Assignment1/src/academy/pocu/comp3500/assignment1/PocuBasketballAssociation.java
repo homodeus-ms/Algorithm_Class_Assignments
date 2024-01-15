@@ -102,7 +102,7 @@ public final class PocuBasketballAssociation {
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers,
                                          final Player[] scratch) {
 
-        sortByAssistPassDescRecursive(players, 0, players.length - 1);
+        /*sortByAssistPassDescRecursive(players, 0, players.length - 1);
 
         long[] maxPoint = {0};
         long sum = 0;
@@ -120,9 +120,9 @@ public final class PocuBasketballAssociation {
 
         get3ManDreamTeamRecursive(players, outPlayers, maxPoint, 3, minPassIdx, sum);
 
-        return maxPoint[0];
+        return maxPoint[0];*/
 
-        /*sortByTeamWorkDescRecursive(players, 0, players.length - 1);
+        sortByTeamWorkDescRecursive(players, 0, players.length - 1);
         sortByAssistDescRecursive(players, 3, players.length - 1);
 
         int minAssist = players[0].getAssistsPerGame();
@@ -167,7 +167,7 @@ public final class PocuBasketballAssociation {
         }
         ret *= minAssist;
 
-        return ret;*/
+        return ret;
     }
 
     private static void get3ManDreamTeamRecursive(final Player[] players, final Player[] outPlayers,

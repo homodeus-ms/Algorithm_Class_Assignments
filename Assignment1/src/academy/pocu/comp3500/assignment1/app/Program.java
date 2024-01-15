@@ -134,7 +134,7 @@ public class Program {
         }*/
 
 
-        for (int i = 0; i < 300; ++i) {
+        for (int i = 0; i < 1000; ++i) {
             test_DreamTeam3();
         }
 
@@ -301,13 +301,13 @@ public class Program {
 
 
     public static void test_DreamTeam3() {
-        final int PLAYER_SIZE = 15;
+        final int PLAYER_SIZE = 10;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
 
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            int pass = rand.nextInt(20);
-            int assist = rand.nextInt(20);
+            int pass = rand.nextInt(12);
+            int assist = rand.nextInt(12);
             players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
         Player[] outPlayers = new Player[3];
