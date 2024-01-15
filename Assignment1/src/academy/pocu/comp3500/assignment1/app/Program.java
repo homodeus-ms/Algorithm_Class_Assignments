@@ -76,13 +76,13 @@ public class Program {
         {
             Player[] players = new Player[] {
 
-                    new Player("Player 1", 5, 5, 7, 50),
-                    new Player("Player 2", 15, 4, 9, 40),
-                    new Player("Player 3", 11, 1, 6, 54),
-                    new Player("Player 4", 10, 2, 0, 88),
-                    new Player("Player 5", 16, 3, 6, 77),
-                    new Player("Player 6", 1, 6, 2, 22),
-                    new Player("Player 7", 7, 1, 1, 66),
+                    new Player("Player 1", 5, 2, 8, 50),
+                    new Player("Player 2", 15, 2, 5, 40),
+                    new Player("Player 3", 11, 3, 6, 54),
+                    new Player("Player 4", 10, 3, 4, 88),
+                    new Player("Player 5", 16, 9, 2, 77),
+                    //new Player("Player 6", 1, 6, 2, 22),
+                    //new Player("Player 7", 7, 1, 1, 66),
                     //new Player("Player 8", 7, 5, 8, 66),
             };
 
@@ -134,7 +134,7 @@ public class Program {
         }*/
 
 
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 300; ++i) {
             test_DreamTeam3();
         }
 
@@ -301,13 +301,13 @@ public class Program {
 
 
     public static void test_DreamTeam3() {
-        final int PLAYER_SIZE = 10;
+        final int PLAYER_SIZE = 12;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
 
         for (int i = 0; i < PLAYER_SIZE; ++i) {
-            int pass = rand.nextInt(12);
-            int assist = rand.nextInt(12);
+            int pass = rand.nextInt(20);
+            int assist = rand.nextInt(20);
             players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
         Player[] outPlayers = new Player[3];

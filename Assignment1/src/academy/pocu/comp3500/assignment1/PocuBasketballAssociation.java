@@ -102,14 +102,14 @@ public final class PocuBasketballAssociation {
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers,
                                          final Player[] scratch) {
 
-        /*sortByAssistPassDescRecursive(players, 0, players.length - 1);
+        sortByAssistPassDescRecursive(players, 0, players.length - 1);
 
         long[] maxPoint = {0};
         long sum = 0;
         int minPassIdx = 0;
 
         for (int i = 0; i < 3; ++i) {
-            outPlayers[i] = players[i];
+            //outPlayers[i] = players[i];
             sum += players[i].getPassesPerGame();
             int thisPassCount = players[i].getPassesPerGame();
             if (thisPassCount < players[minPassIdx].getPassesPerGame()) {
@@ -118,86 +118,34 @@ public final class PocuBasketballAssociation {
         }
         maxPoint[0] = sum * players[2].getAssistsPerGame();
 
-        get3ManDreamTeamRecursive(players, outPlayers, maxPoint, 3, minPassIdx, sum);
+        int minPassCount = players[minPassIdx].getPassesPerGame();
+        int thisPassCount;
+        long thisPoint;
 
-        return maxPoint[0];*/
-
-        sortByTeamWorkDescRecursive(players, 0, players.length - 1);
-        sortByAssistDescRecursive(players, 3, players.length - 1);
-
-        int minAssist = players[0].getAssistsPerGame();
-        int minPass = players[0].getPassesPerGame();
-
-        for (int i = 1; i < 3; ++i) {
-            int thisAssist = players[i].getAssistsPerGame();
-            int thisPass = players[i].getPassesPerGame();
-            if (thisAssist < minAssist) {
-                minAssist = thisAssist;
-            } else if (thisPass < minPass) {
-                minPass = thisPass;
-            }
-        }
-
-        int lastIndex = 2;
         for (int i = 3; i < players.length; ++i) {
-            int thisAssist = players[i].getAssistsPerGame();
-            int thisPass = players[i].getPassesPerGame();
-            if (thisAssist >= minAssist || thisPass >= minPass) {
-                ++lastIndex;
-            } else {
-                break;
+            thisPassCount = players[i].getPassesPerGame();
+
+            if (thisPassCount > minPassCount) {
+                sum += thisPassCount - minPassCount;
+                thisPoint = sum * players[i].getAssistsPerGame();
+                swap(players, i, minPassIdx);
+                minPassIdx = getMinPassIndex(players, 0, 2);
+                minPassCount = players[minPassIdx].getPassesPerGame();
+
+                if (thisPoint > maxPoint[0]) {
+                    maxPoint[0] = thisPoint;
+                }
             }
         }
-
         outPlayers[0] = players[0];
         outPlayers[1] = players[1];
         outPlayers[2] = players[2];
 
-        findDreamTeamRecursive(players, outPlayers, scratch, 0, 0, 3, lastIndex);
+        //get3ManDreamTeamRecursive(players, outPlayers, maxPoint, 3, minPassIdx, sum);
 
-        long ret = 0;
-        minAssist = outPlayers[0].getAssistsPerGame();
-
-        for (int i = 0; i < 3; ++i) {
-            ret += outPlayers[i].getPassesPerGame();
-            int thisAssist = outPlayers[i].getAssistsPerGame();
-            if (thisAssist < minAssist) {
-                minAssist = thisAssist;
-            }
-        }
-        ret *= minAssist;
-
-        return ret;
+        return maxPoint[0];
     }
 
-    private static void get3ManDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
-                                                  long[] outMaxPoint, int index, int minPassIdx,
-                                                  long sum) {
-        if (index == players.length) {
-            return;
-        }
-
-        if (players[minPassIdx].getPassesPerGame() >= players[index].getPassesPerGame()) {
-            get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
-            return;
-        }
-        sum -= players[minPassIdx].getPassesPerGame();
-        sum += players[index].getPassesPerGame();
-        swap(players, minPassIdx, index);
-
-        long thisTeamWorkPoint = sum * players[minPassIdx].getAssistsPerGame();
-
-        minPassIdx = getMinPassIndex(players, 0, 2);
-
-        if (thisTeamWorkPoint > outMaxPoint[0]) {
-            outMaxPoint[0] = thisTeamWorkPoint;
-            outPlayers[0] = players[0];
-            outPlayers[1] = players[1];
-            outPlayers[2] = players[2];
-        }
-
-        get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
-    }
 
     public static long findDreamTeam(final Player[] players, int k, final Player[] outPlayers, final Player[] scratch) {
         // 바로 리턴 할 수 있는 조건들
@@ -286,6 +234,60 @@ public final class PocuBasketballAssociation {
         }
 
         return maxIndex;
+    }
+
+    private static void get3ManDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
+                                                  long[] outMaxPoint, int index, int minPassIdx,
+                                                  long sum) {
+        if (index == players.length) {
+            return;
+        }
+
+        if (players[minPassIdx].getPassesPerGame() >= players[index].getPassesPerGame()) {
+            get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
+            return;
+        }
+        sum -= players[minPassIdx].getPassesPerGame();
+        sum += players[index].getPassesPerGame();
+        swap(players, minPassIdx, index);
+
+        long thisTeamWorkPoint = sum * players[minPassIdx].getAssistsPerGame();
+
+        minPassIdx = getMinPassIndex(players, 0, 2);
+
+        if (thisTeamWorkPoint > outMaxPoint[0]) {
+            outMaxPoint[0] = thisTeamWorkPoint;
+            outPlayers[0] = players[0];
+            outPlayers[1] = players[1];
+            outPlayers[2] = players[2];
+        }
+
+        get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
+    }
+
+    private static void findDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
+                                               final Player[] scratch, int index, int depth,
+                                               int pickCount, int lastIndex) {
+        if (pickCount == 0) {
+
+            long thisTeamPoint = getTeamWorkPoint(scratch);
+            long maxTeamPoint = getTeamWorkPoint(outPlayers);
+            if (thisTeamPoint > maxTeamPoint) {
+                for (int i = 0; i < outPlayers.length; ++i) {
+                    outPlayers[i] = scratch[i];
+                }
+            }
+            return;
+        } else if (depth == lastIndex + 1) {
+            return;
+        } else {
+            scratch[index] = players[depth];
+
+            findDreamTeamRecursive(players, outPlayers, scratch, index + 1, depth + 1,
+                    pickCount - 1, lastIndex);
+            findDreamTeamRecursive(players, outPlayers, scratch, index, depth + 1,
+                    pickCount, lastIndex);
+        }
     }
 
     private static void findDreamTeamRecursive2(final Player[] players, final Player[] outPlayers,
@@ -634,30 +636,7 @@ public final class PocuBasketballAssociation {
         }
     }
 
-    private static void findDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
-                                               final Player[] scratch, int index, int depth,
-                                               int pickCount, int lastIndex) {
-        if (pickCount == 0) {
 
-            long thisTeamPoint = getTeamWorkPoint(scratch);
-            long maxTeamPoint = getTeamWorkPoint(outPlayers);
-            if (thisTeamPoint > maxTeamPoint) {
-                for (int i = 0; i < outPlayers.length; ++i) {
-                    outPlayers[i] = scratch[i];
-                }
-            }
-            return;
-        } else if (depth == lastIndex + 1) {
-            return;
-        } else {
-            scratch[index] = players[depth];
-
-            findDreamTeamRecursive(players, outPlayers, scratch, index + 1, depth + 1,
-                    pickCount - 1, lastIndex);
-            findDreamTeamRecursive(players, outPlayers, scratch, index, depth + 1,
-                    pickCount, lastIndex);
-        }
-    }
     private static int getTeamWorkValue(final Player[] scratch) {
         int value = 0;
         int minAssist = 0x7FFFFFFF;
@@ -744,5 +723,7 @@ public final class PocuBasketballAssociation {
         }
         System.out.println();
     }
+
+
 }
 
