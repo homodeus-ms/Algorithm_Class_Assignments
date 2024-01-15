@@ -73,34 +73,25 @@ public class Program {
 
         }*/
 
-        /*{
+        {
             Player[] players = new Player[] {
 
-                    new Player("Player 2", 5, 12, 14, 50),
-                    new Player("Player 6", 15, 2, 5, 40),
-                    new Player("Player 5", 11, 1, 11, 54),
-                    new Player("Player 4", 10, 3, 51, 88),
-                    new Player("Player 7", 16, 8, 5, 77),
-                    new Player("Player 1", 1, 15, 2, 22),
-                    new Player("Player 3", 7, 5, 8, 66)
+                    new Player("Player 1", 7, 7, 4, 50),
+                    new Player("Player 2", 15, 5, 1, 40),
+                    new Player("Player 3", 11, 9, 1, 54),
+                    new Player("Player 4", 10, 6, 3, 88),
+                    new Player("Player 5", 16, 9, 1, 77),
+                    new Player("Player 6", 1, 1, 2, 22),
+                    new Player("Player 7", 7, 4, 9, 66),
+                    new Player("Player 8", 7, 5, 8, 66),
             };
 
             Player[] outPlayers = new Player[3];
             Player[] scratch = new Player[3];
 
-            long maxTeamwork = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
-            System.out.println(maxTeamwork);
-            assert (maxTeamwork == 219);
-
-            Player player = getPlayerOrNull(outPlayers, "Player 4");
-            assert (player != null);
-
-            player = getPlayerOrNull(outPlayers, "Player 2");
-            assert (player != null);
-
-            player = getPlayerOrNull(outPlayers, "Player 3");
-            assert (player != null);
-        }*/
+            long ret = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
+            System.out.println(ret);
+        }
 
         /*{
             Player[] players = new Player[]{
@@ -310,15 +301,17 @@ public class Program {
 
 
     public static void test_DreamTeam3() {
-        final int PLAYER_SIZE = 10;
+        final int PLAYER_SIZE = 15;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
-        int pass = rand.nextInt(20);
-        int assist = rand.nextInt(20);
+
         for (int i = 0; i < PLAYER_SIZE; ++i) {
+            int pass = rand.nextInt(15);
+            int assist = rand.nextInt(15);
             players[i] = new Player(String.valueOf(i + 1), 0, assist, pass, 0);
         }
         Player[] outPlayers = new Player[3];
+        //Player[] myOutPlayers = new Player[3];
         Player[] answers = new Player[3];
         Player[] scratch = new Player[3];
         long answer = get3DreamTeamPerfectly(players, outPlayers, scratch);
@@ -328,6 +321,22 @@ public class Program {
 
         long myRet = PocuBasketballAssociation.find3ManDreamTeam(players, outPlayers, scratch);
         //long myRet = PocuBasketballAssociation.findDreamTeam(players, 3, outPlayers, scratch);
+
+        boolean outPlayerIsSame = false;
+
+        for (int i = 0; i < 3; ++i) {
+            outPlayerIsSame = false;
+            for (int j = 0; j < 3; ++j) {
+                if (answers[i] == outPlayers[j]) {
+                    outPlayerIsSame = true;
+                    break;
+                }
+            }
+            if (!outPlayerIsSame) {
+                break;
+            }
+        }
+
 
         if (answer != myRet) {
             System.out.println("Players");
