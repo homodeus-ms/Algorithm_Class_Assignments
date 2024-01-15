@@ -138,7 +138,7 @@ public class Program {
             test_DreamTeam3();
         }
 
-        /*for (int i = 0; i < 500; ++i) {
+        /*for (int i = 0; i < 50; ++i) {
             test_DreamTeamSize();
         }*/
 

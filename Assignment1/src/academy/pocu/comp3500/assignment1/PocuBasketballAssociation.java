@@ -106,14 +106,19 @@ public final class PocuBasketballAssociation {
 
         long[] maxPoint = {0};
         long sum = 0;
+        int minPassIdx = 0;
 
         for (int i = 0; i < 3; ++i) {
             outPlayers[i] = players[i];
             sum += players[i].getPassesPerGame();
+            int thisPassCount = players[i].getPassesPerGame();
+            if (thisPassCount < players[minPassIdx].getPassesPerGame()) {
+                minPassIdx = i;
+            }
         }
         maxPoint[0] = sum * players[2].getAssistsPerGame();
 
-        get3ManDreamTeamRecursive(players, outPlayers, maxPoint, 3, 2, sum);
+        get3ManDreamTeamRecursive(players, outPlayers, maxPoint, 3, minPassIdx, sum);
 
         return maxPoint[0];
 
@@ -166,17 +171,23 @@ public final class PocuBasketballAssociation {
     }
 
     private static void get3ManDreamTeamRecursive(final Player[] players, final Player[] outPlayers,
-                                                  long[] outMaxPoint, int index, int minAssistIdx,
+                                                  long[] outMaxPoint, int index, int minPassIdx,
                                                   long sum) {
         if (index == players.length) {
             return;
         }
-        int minPassIdx = getMinPassIndex(players, 0, 2);
+
+        if (players[minPassIdx].getPassesPerGame() >= players[index].getPassesPerGame()) {
+            get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
+            return;
+        }
         sum -= players[minPassIdx].getPassesPerGame();
         sum += players[index].getPassesPerGame();
         swap(players, minPassIdx, index);
 
         long thisTeamWorkPoint = sum * players[minPassIdx].getAssistsPerGame();
+
+        minPassIdx = getMinPassIndex(players, 0, 2);
 
         if (thisTeamWorkPoint > outMaxPoint[0]) {
             outMaxPoint[0] = thisTeamWorkPoint;
@@ -185,7 +196,7 @@ public final class PocuBasketballAssociation {
             outPlayers[2] = players[2];
         }
 
-        get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minAssistIdx, sum);
+        get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
     }
 
     public static long findDreamTeam(final Player[] players, int k, final Player[] outPlayers, final Player[] scratch) {
