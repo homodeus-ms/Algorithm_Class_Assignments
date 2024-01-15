@@ -24,7 +24,6 @@ public final class MissionControl {
                 return 0;
             } else {
                 return findMaxIndex(altitudes, altitudes[mid], mid);
-
             }
         } else {
             return findMaxIndex(altitudes, altitudes[mid], mid);
@@ -42,12 +41,16 @@ public final class MissionControl {
             return bounds;
         }
 
-        for (int i = 0; i < altitudes.length; ++i) {
-            int currAltitude = altitudes[i];
-            if (currAltitude == targetAltitude) {
-                bounds.add(i);
-            }
+        int maxIdx = findMaxAltitudeTime(altitudes);
+        if (maxIdx == lastIdx) {
+            findTargetAltitudeRecursive(bounds, altitudes, 0, altitudes.length, targetAltitude, true);
+        } else if (maxIdx == 0) {
+            findTargetAltitudeRecursive(bounds, altitudes, 0, altitudes.length, targetAltitude, false);
+        } else {
+            findTargetAltitudeRecursive(bounds, altitudes, 0, maxIdx, targetAltitude, true);
+            findTargetAltitudeRecursive(bounds, altitudes, maxIdx, altitudes.length, targetAltitude, false);
         }
+
         return bounds;
     }
     private static int findMaxIndex(final int[] altitudes, int max, int midIdx) {
@@ -68,6 +71,33 @@ public final class MissionControl {
             }
 
             return max > altitudes[midIdx] ? index + 1 : midIdx;
+        }
+    }
+    private static void findTargetAltitudeRecursive(ArrayList<Integer> bounds, final int[] altitudes,
+                                                    int left, int right, int target, boolean bAscending) {
+        if (right - left <= 1) {
+            if (altitudes[left] == target) {
+                bounds.add(left);
+            }
+            return;
+        }
+        int mid = (left + right) / 2;
+        int midValue = altitudes[mid];
+
+        if (midValue == target) {
+            bounds.add(mid);
+        } else if (target > midValue) {
+            if (bAscending) {
+                findTargetAltitudeRecursive(bounds, altitudes, mid, right, target, bAscending);
+            } else {
+                findTargetAltitudeRecursive(bounds, altitudes, left, mid, target, bAscending);
+            }
+        } else {
+            if (bAscending) {
+                findTargetAltitudeRecursive(bounds, altitudes, left, mid, target, bAscending);
+            } else {
+                findTargetAltitudeRecursive(bounds, altitudes, mid, right, target, bAscending);
+            }
         }
     }
 }
