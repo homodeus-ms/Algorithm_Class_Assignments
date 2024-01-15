@@ -101,49 +101,25 @@ public final class PocuBasketballAssociation {
 
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers,
                                          final Player[] scratch) {
-
-        sortByAssistPassDescRecursive(players, 0, players.length - 1);
-
-        long[] maxPoint = {0};
-        long sum = 0;
-        int minPassIdx = 0;
-
+        long[] maxPointPointer = {0};
+        int minAssistIdx = 0;
+        int minAssistCount = players[minAssistIdx].getAssistsPerGame();
         for (int i = 0; i < 3; ++i) {
             //outPlayers[i] = players[i];
-            sum += players[i].getPassesPerGame();
-            int thisPassCount = players[i].getPassesPerGame();
-            if (thisPassCount < players[minPassIdx].getPassesPerGame()) {
-                minPassIdx = i;
+            //scratch[i] = players[i];
+            int thisAssistCount = players[i].getAssistsPerGame();
+            if (thisAssistCount < minAssistCount) {
+                minAssistIdx = i;
+                minAssistCount = thisAssistCount;
             }
+            maxPointPointer[0] += players[i].getPassesPerGame();
         }
-        maxPoint[0] = sum * players[2].getAssistsPerGame();
+        maxPointPointer[0] = maxPointPointer[0] * minAssistCount;
 
-        int minPassCount = players[minPassIdx].getPassesPerGame();
-        int thisPassCount;
-        long thisPoint;
+        findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0,
+                3, players.length, maxPointPointer);
 
-        for (int i = 3; i < players.length; ++i) {
-            thisPassCount = players[i].getPassesPerGame();
-
-            if (thisPassCount > minPassCount) {
-                sum += thisPassCount - minPassCount;
-                thisPoint = sum * players[i].getAssistsPerGame();
-                swap(players, i, minPassIdx);
-                minPassIdx = getMinPassIndex(players, 0, 2);
-                minPassCount = players[minPassIdx].getPassesPerGame();
-
-                if (thisPoint > maxPoint[0]) {
-                    maxPoint[0] = thisPoint;
-                }
-            }
-        }
-        outPlayers[0] = players[0];
-        outPlayers[1] = players[1];
-        outPlayers[2] = players[2];
-
-        //get3ManDreamTeamRecursive(players, outPlayers, maxPoint, 3, minPassIdx, sum);
-
-        return maxPoint[0];
+        return maxPointPointer[0];
     }
 
 
@@ -243,10 +219,6 @@ public final class PocuBasketballAssociation {
             return;
         }
 
-        if (players[minPassIdx].getPassesPerGame() >= players[index].getPassesPerGame()) {
-            get3ManDreamTeamRecursive(players, outPlayers, outMaxPoint, index + 1, minPassIdx, sum);
-            return;
-        }
         sum -= players[minPassIdx].getPassesPerGame();
         sum += players[index].getPassesPerGame();
         swap(players, minPassIdx, index);

@@ -76,12 +76,12 @@ public class Program {
         {
             Player[] players = new Player[] {
 
-                    new Player("Player 1", 5, 2, 8, 50),
-                    new Player("Player 2", 15, 2, 5, 40),
-                    new Player("Player 3", 11, 3, 6, 54),
-                    new Player("Player 4", 10, 3, 4, 88),
-                    new Player("Player 5", 16, 9, 2, 77),
-                    //new Player("Player 6", 1, 6, 2, 22),
+                    new Player("Player 1", 5, 4, 7, 50),
+                    new Player("Player 2", 15, 6, 4, 40),
+                    new Player("Player 3", 11, 2, 4, 54),
+                    new Player("Player 4", 10, 7, 0, 88),
+                    new Player("Player 5", 16, 6, 2, 77),
+                    new Player("Player 6", 1, 4, 1, 22),
                     //new Player("Player 7", 7, 1, 1, 66),
                     //new Player("Player 8", 7, 5, 8, 66),
             };
@@ -301,7 +301,7 @@ public class Program {
 
 
     public static void test_DreamTeam3() {
-        final int PLAYER_SIZE = 12;
+        final int PLAYER_SIZE = 15;
         Random rand = new Random();
         Player[] players = new Player[PLAYER_SIZE];
 
