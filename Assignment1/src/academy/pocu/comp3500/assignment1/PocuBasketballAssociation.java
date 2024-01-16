@@ -102,13 +102,13 @@ public final class PocuBasketballAssociation {
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers,
                                          final Player[] scratch) {
         sortByAssistPassDescRecursive(players, 0, players.length - 1);
-        //sortByPassAssistDescRecursive(players, 3, players.length - 1);
+
         long maxPoint = 0;
         long passSum = 0;
         int minPassIdx = 0;
         int minPassCount = players[minPassIdx].getPassesPerGame();
 
-        for (int i = 0 ; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i) {
             scratch[i] = players[i];
             outPlayers[i] = players[i];
             int thisPassCount = players[i].getPassesPerGame();
@@ -130,7 +130,6 @@ public final class PocuBasketballAssociation {
 
             passSum += thisPassCount - minPassCount;
             thisTeamPoint = passSum * thisAssistCount;
-            //swap(players, minPassIdx, i);
             scratch[minPassIdx] = players[i];
 
             if (maxPoint < thisTeamPoint) {
