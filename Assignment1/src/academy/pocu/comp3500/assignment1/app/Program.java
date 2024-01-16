@@ -10,7 +10,7 @@ import java.util.Random;
 public class Program {
 
     public static void main(String[] args) {
-        /*{
+        {
             GameStat[] gameStats = new GameStat[]{
                     new GameStat("Player 1", 1, 13, 5, 6, 10, 1),
                     new GameStat("Player 2", 2, 5, 2, 5, 0, 10),
@@ -34,8 +34,8 @@ public class Program {
             PocuBasketballAssociation.processGameStats(gameStats, players);
             printPlayerStat(players);
 
-        }*/
-        /*{
+        }
+        {
             Player[] players = new Player[] {
                     new Player("Player 1", 1, 5, 1, 60),
                     new Player("Player 2", 5, 2, 11, 31),
@@ -54,8 +54,8 @@ public class Program {
 
             player = PocuBasketballAssociation.findPlayerPointsPerGame(players, 13);
             assert (player.getName().equals("Player 6"));
-        }*/
-        /*{
+        }
+        {
             Player[] players = new Player[] {
                     new Player("Player 4", 10, 10, 15, 25),
                     new Player("Player 2", 5, 2, 11, 31),
@@ -71,7 +71,7 @@ public class Program {
             System.out.println(player.getName());
 
 
-        }*/
+        }
 
         {
             Player[] players = new Player[] {
@@ -93,7 +93,7 @@ public class Program {
             System.out.println(ret);
         }
 
-        /*{
+        {
             Player[] players = new Player[]{
                     new Player("Player 1", 5, 4, 5, 50),
                     new Player("Player 2", 10, 10, 11, 88),
@@ -112,9 +112,9 @@ public class Program {
             long maxTeamwork = PocuBasketballAssociation.findDreamTeam(players, TEAM_SIZE, outPlayers, scratch);
             System.out.println(maxTeamwork);
 
-        }*/
+        }
 
-        /*{
+        {
 
             Player[] players = new Player[] {
                     new Player("Player 1", 2, 6, 5, 78),
@@ -131,7 +131,7 @@ public class Program {
             int k = PocuBasketballAssociation.findDreamTeamSize(players, tempPlayers);
             System.out.println(k);
 
-        }*/
+        }
 
 
         for (int i = 0; i < 100; ++i) {
