@@ -101,25 +101,55 @@ public final class PocuBasketballAssociation {
 
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers,
                                          final Player[] scratch) {
-        long[] maxPointPointer = {0};
-        int minAssistIdx = 0;
-        int minAssistCount = players[minAssistIdx].getAssistsPerGame();
-        for (int i = 0; i < 3; ++i) {
-            //outPlayers[i] = players[i];
-            //scratch[i] = players[i];
-            int thisAssistCount = players[i].getAssistsPerGame();
-            if (thisAssistCount < minAssistCount) {
-                minAssistIdx = i;
-                minAssistCount = thisAssistCount;
+        sortByAssistPassDescRecursive(players, 0, players.length - 1);
+        //sortByPassAssistDescRecursive(players, 3, players.length - 1);
+        long maxPoint = 0;
+        long passSum = 0;
+        int minPassIdx = 0;
+        int minPassCount = players[minPassIdx].getPassesPerGame();
+
+        for (int i = 0 ; i < 3; ++i) {
+            scratch[i] = players[i];
+            outPlayers[i] = players[i];
+            int thisPassCount = players[i].getPassesPerGame();
+            if (minPassCount > thisPassCount) {
+                minPassCount = thisPassCount;
+                minPassIdx = i;
             }
-            maxPointPointer[0] += players[i].getPassesPerGame();
+            passSum += thisPassCount;
         }
-        maxPointPointer[0] = maxPointPointer[0] * minAssistCount;
+        maxPoint = passSum * players[2].getAssistsPerGame();
 
-        findDreamTeamRecursive2(players, outPlayers, scratch, 0, 0,
-                3, players.length, maxPointPointer);
+        int thisPassCount;
+        int thisAssistCount;
+        long thisTeamPoint = 0;
 
-        return maxPointPointer[0];
+        for (int i = 3; i < players.length; ++i) {
+            thisPassCount = players[i].getPassesPerGame();
+            thisAssistCount = players[i].getAssistsPerGame();
+
+            passSum += thisPassCount - minPassCount;
+            thisTeamPoint = passSum * thisAssistCount;
+            //swap(players, minPassIdx, i);
+            scratch[minPassIdx] = players[i];
+
+            if (maxPoint < thisTeamPoint) {
+                outPlayers[0] = scratch[0];
+                outPlayers[1] = scratch[1];
+                outPlayers[2] = scratch[2];
+                maxPoint = thisTeamPoint;
+            }
+
+            minPassIdx = 0;
+            for (int j = 0; j < 3; ++j) {
+                if (scratch[minPassIdx].getPassesPerGame() > scratch[j].getPassesPerGame()) {
+                    minPassIdx = j;
+                }
+            }
+            minPassCount = scratch[minPassIdx].getPassesPerGame();
+        }
+
+        return maxPoint;
     }
 
 

@@ -76,14 +76,14 @@ public class Program {
         {
             Player[] players = new Player[] {
 
-                    new Player("Player 1", 5, 4, 7, 50),
-                    new Player("Player 2", 15, 6, 4, 40),
-                    new Player("Player 3", 11, 2, 4, 54),
-                    new Player("Player 4", 10, 7, 0, 88),
-                    new Player("Player 5", 16, 6, 2, 77),
-                    new Player("Player 6", 1, 4, 1, 22),
-                    //new Player("Player 7", 7, 1, 1, 66),
-                    //new Player("Player 8", 7, 5, 8, 66),
+                    new Player("Player 1", 5, 5, 5, 50),
+                    new Player("Player 2", 1, 8, 3, 40),
+                    new Player("Player 3", 1, 4, 0, 54),
+                    new Player("Player 4", 1, 8, 3, 88),
+                    new Player("Player 5", 1, 8, 2, 77),
+                    new Player("Player 6", 1, 5, 4, 22),
+                    new Player("Player 7", 7, 3, 4, 66),
+                    new Player("Player 8", 7, 7, 4, 66),
             };
 
             Player[] outPlayers = new Player[3];
@@ -134,7 +134,7 @@ public class Program {
         }*/
 
 
-        for (int i = 0; i < 300; ++i) {
+        for (int i = 0; i < 100; ++i) {
             test_DreamTeam3();
         }
 
