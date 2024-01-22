@@ -15,7 +15,7 @@ public final class Cracker {
     private User[] userTable;
     private String email;
     private String password;
-    public String[] myPassWordHashs = new String[5];
+    //public String[] myPassWordHashs = new String[5];
     /*public String crcValue;
     public String md2Value;
     public String md5Value;
@@ -27,7 +27,7 @@ public final class Cracker {
         this.email = email;
         this.password = password;
 
-        byte[] buffer = password.getBytes(StandardCharsets.UTF_8);
+        /*byte[] buffer = password.getBytes(StandardCharsets.UTF_8);
         byte[] res;
 
         CRC32 crc32 = new CRC32();
@@ -63,7 +63,7 @@ public final class Cracker {
             myPassWordHashs[4] = getStringFromByteArr(res);
         } catch (NoSuchAlgorithmException e) {
             assert (false);
-        }
+        }*/
     }
 
     // crc32 : 9자리 이하 문자열?
@@ -75,14 +75,28 @@ public final class Cracker {
         assert (rainbowTables.length == 5) : "Input Length is always 5";
 
         String[] result = new String[userTable.length];
+        boolean bExist;
+        for (int i = 0; i < userTable.length; ++i) {
+            bExist = false;
+            for (int j = 0; j < 5; ++j) {
+                if (rainbowTables[j].contains(userTable[i].getPasswordHash())) {
+                    bExist = true;
+                    result[i] = rainbowTables[j].get(userTable[i].getPasswordHash());
+                    break;
+                }
+            }
+            if (!bExist) {
+                result[i] = null;
+            }
+        }
 
-        for (int i = 0; i < 5; ++i) {
+        /*for (int i = 0; i < 5; ++i) {
             if (rainbowTables[i].contains(myPassWordHashs[i])) {
                 for (int j = 0; j < userTable.length; ++j) {
                     result[j] = rainbowTables[i].get(userTable[j].getPasswordHash());
                 }
             }
-        }
+        }*/
         return result;
     }
     private String getStringFromByteArr(byte[] bytes) {
