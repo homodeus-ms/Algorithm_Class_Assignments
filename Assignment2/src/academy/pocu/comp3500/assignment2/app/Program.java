@@ -24,7 +24,8 @@ public class Program {
         basicTest2();
         basicTest3();
         basicTest4();*/
-        test1();
+        //test1();
+        test2();
 
         System.out.println("NoAssert!");
     }
@@ -138,6 +139,42 @@ public class Program {
         Logger.clear();
         writer.close();
     }
+    public static void test2() throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test2.log"));
 
+        log("First");
+        Indent parent = Logger.indent();
+        {
+            log("Second");
+
+            Logger.indent();
+            {
+                log("Cleard");
+                log("Third");
+                parent.discard();
+            }
+            Logger.indent();
+            log("Fourth");
+        }
+        Logger.unindent();
+        log("Third");
+        Logger.unindent();
+        log("Second");
+
+        Indent in = Logger.indent();
+        log("will be erased");
+        Logger.unindent();
+        in.discard();
+
+        Logger.unindent();
+        log("again First");
+
+
+        Logger.printTo(writer);
+
+        Logger.clear();
+        writer.close();
+    }
 
 }

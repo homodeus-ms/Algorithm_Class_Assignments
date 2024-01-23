@@ -54,7 +54,7 @@ public final class Logger {
 
         writer.flush();
     }
-    public static void printTo(final BufferedWriter writer, final String filter) throws  IOException {
+    public static void printTo(final BufferedWriter writer, final String filter) throws IOException {
         int idx = 0;
         int indentCount = 0;
         currIndent = logs.get(idx++);
