@@ -20,7 +20,26 @@ public class Program {
 
     public static void main(String[] args) throws IOException {
 
-        /*BufferedWriter writer = new BufferedWriter(new FileWriter("mylog1.log"));
+        /*basicTest1();
+        basicTest2();
+        basicTest3();
+        basicTest4();*/
+        test1();
+
+        System.out.println("NoAssert!");
+    }
+
+    private static void doMagic() {
+        Indent indent = Logger.indent();
+        {
+            log("you can also nest an indent");
+            log("like this!");
+        }
+        Logger.unindent();
+    }
+    public static void basicTest1() throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("basicTest1.log"));
 
         log("first level 1");
 
@@ -36,13 +55,14 @@ public class Program {
         Logger.unindent();
 
         log("first level 2");
-        Logger.printTo(writer);*/
+        Logger.printTo(writer);
 
-
-
-
-
-        /*BufferedWriter writer = new BufferedWriter(new FileWriter("mylog1.log"));
+        Logger.clear();
+        writer.close();
+    }
+    public static void basicTest2() throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("basicTest2.log"));
 
         int x = 10;
 
@@ -60,17 +80,27 @@ public class Program {
         Logger.unindent();
 
         log("first level 2");
-        Logger.printTo(writer);*/
+        Logger.printTo(writer);
 
-        /*final BufferedWriter writer1 = new BufferedWriter(new FileWriter("quicksort1.log"));
+        Logger.clear();
+        writer.close();
+    }
+    public static void basicTest3() throws IOException
+    {
+        final BufferedWriter writer1 = new BufferedWriter(new FileWriter("basicTest3.log"));
 
         int[] nums = new int[]{30, 10, 80, 90, 50, 70, 40};
 
         Sort.quickSort(nums);
 
-        Logger.printTo(writer1);*/
+        Logger.printTo(writer1);
 
-        final BufferedWriter writer2 = new BufferedWriter(new FileWriter("quicksort2.log"));
+        Logger.clear();
+        writer1.close();
+    }
+    public static void basicTest4() throws IOException
+    {
+        final BufferedWriter writer2 = new BufferedWriter(new FileWriter("basicTest4.log"));
 
         int[] nums = new int[]{30, 10, 80, 90, 50, 70, 40};
 
@@ -78,52 +108,34 @@ public class Program {
 
         Logger.printTo(writer2, "90");
 
-
-        System.out.println("NoAssert!");
-    }
-
-    private static void doMagic() {
-        Indent indent = Logger.indent();
-        {
-            log("you can also nest an indent");
-            log("like this!");
-        }
-        Logger.unindent();
-    }
-    public static void depth_hell_test() throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter("depth_hell.txt"));
         Logger.clear();
-        Logger.log("depth 0");
-        Indent ParentIndent = Logger.indent();
+        writer2.close();
+    }
+    public static void test1() throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test1.log"));
+
+        log("First");
+        Indent parent = Logger.indent();
         {
-            Logger.log("depth 1 - discarded");
-            Indent indent1 = Logger.indent();
+            log("Second");
+
+            Logger.indent();
             {
-                Logger.log("depth2 - discarded");
-                Indent indent2 = Logger.indent();
-                {
-                    Logger.log("depth3 - discarded");
+                log("Cleard");
+                parent.discard();
 
-                    Indent indent3 = Logger.indent();
-                    {
-                        Logger.log("depth4 - discarded");
-
-                        ParentIndent.discard();
-
-                        Logger.log("depth4 - stay");
-
-                    }
-                    Logger.unindent();
-
-                    Logger.log("depth3 - stay");
-
-                }
-                Logger.unindent();
+                log("Third");
             }
             Logger.unindent();
+            log("Second");
         }
         Logger.unindent();
+        log("againFirst?");
+
         Logger.printTo(writer);
+
+        Logger.clear();
         writer.close();
     }
 

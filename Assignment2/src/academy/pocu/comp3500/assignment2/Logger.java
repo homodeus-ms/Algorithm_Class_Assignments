@@ -122,14 +122,9 @@ public final class Logger {
         return currIndent;
     }
     public static void unindent() {
-        Indent parent = currIndent.getParentOrNull();
-        if (parent != null && parent.getStrsOrNull().getSize() == 0) {
-            currIndent = parent;
-        } else {
-            Indent newIndent = new Indent();
-            logs.addLast(newIndent);
-            currIndent = newIndent;
-        }
+        Indent newIndent = new Indent();
+        logs.addLast(newIndent);
+        currIndent = newIndent;
     }
     public static void deleteIndent(Indent indent) {
         logs.remove(indent);
