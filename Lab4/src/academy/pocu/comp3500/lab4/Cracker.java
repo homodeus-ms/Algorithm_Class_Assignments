@@ -8,8 +8,6 @@ import academy.pocu.comp3500.lab4.pocuhacker.RainbowTable;
 import academy.pocu.comp3500.lab4.pocuhacker.User;
 import java.nio.charset.StandardCharsets;
 
-import java.util.Locale;
-
 public final class Cracker {
     private final int RAINBOW_TABLE_COUNT = 5;
     private User[] userTable;
@@ -37,29 +35,29 @@ public final class Cracker {
         crc32.update(password.getBytes(StandardCharsets.UTF_8));
         String getHash = String.valueOf(crc32.getValue());
 
-        if (myHashFromUserTable.equals(getHash)) {
+        if (myHashFromUserTable.hashCode() == getHash.hashCode()) {
             targetIdx = 0;
             return;
         }
 
         try {
             getHash = getHash(password, "MD2");
-            if (myHashFromUserTable.equals(getHash)) {
+            if (myHashFromUserTable.hashCode() == getHash.hashCode()) {
                 targetIdx = 1;
                 return;
             }
             getHash = getHash(password, "MD5");
-            if (myHashFromUserTable.equals(getHash)) {
+            if (myHashFromUserTable.hashCode() == getHash.hashCode()) {
                 targetIdx = 2;
                 return;
             }
             getHash = getHash(password, "SHA-1");
-            if (myHashFromUserTable.equals(getHash)) {
+            if (myHashFromUserTable.hashCode() == getHash.hashCode()) {
                 targetIdx = 3;
                 return;
             }
             getHash = getHash(password, "SHA-256");
-            if (myHashFromUserTable.equals(getHash)) {
+            if (myHashFromUserTable.hashCode() == getHash.hashCode()) {
                 targetIdx = 4;
                 return;
             }
