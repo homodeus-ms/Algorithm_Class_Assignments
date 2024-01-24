@@ -82,7 +82,7 @@ public final class Cracker {
             int hashGetLength = hashGet.length();
             String valueOrNull = null;
 
-            if (hashGetLength <= 8) {
+            if (hashGetLength <= 16) {
                 valueOrNull = rainbowTables[0].get(hashGet);
             }
             if (valueOrNull == null && hashGetLength <= 32) {
