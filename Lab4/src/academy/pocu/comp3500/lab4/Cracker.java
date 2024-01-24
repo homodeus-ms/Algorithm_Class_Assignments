@@ -32,7 +32,7 @@ public final class Cracker {
                 break;
             }
         }
-        myHashFromUserTable = myHashFromUserTable.replaceFirst("^0+", "");
+        //myHashFromUserTable = myHashFromUserTable.replaceFirst("^0+", "");
 
         CRC32 crc32 = new CRC32();
         crc32.update(password.getBytes(StandardCharsets.UTF_8));
