@@ -79,12 +79,14 @@ public final class Logger {
         }*/
 
         writer.flush();
+
     }
     public static void printTo(final BufferedWriter writer, final String filter) throws IOException {
 
         int logsSize = logs.getSize();
 
-        for (int i = 0; i < logsSize - 1; ++i) {
+
+        for (int i = 0; i < logsSize; ++i) {
             Indent temp = logs.get(i);
 
             Exit:
@@ -96,9 +98,11 @@ public final class Logger {
                 while (temp != null) {
                     if (!hasFilter(list, filter)) {
                         temp = temp.getChildOrNull();
-                        list = temp.getStrsOrNull();
-                        listSize = list.getSize();
-                        indentCount = temp.getIndentCount();
+                        if (temp != null) {
+                            list = temp.getStrsOrNull();
+                            listSize = list.getSize();
+                            indentCount = temp.getIndentCount();
+                        }
                     } else {
                         break;
                     }
@@ -115,9 +119,9 @@ public final class Logger {
                     writer.write(String.format("%s%s", list.get(j), System.lineSeparator()));
                 }
 
-
-                temp = temp.getChildOrNull();
-
+                if (temp != null) {
+                    temp = temp.getChildOrNull();
+                }
             }
         }
         /*int idx = 0;

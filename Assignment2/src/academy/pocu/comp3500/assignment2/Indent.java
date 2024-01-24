@@ -14,7 +14,9 @@ public final class Indent {
     public Indent() {
         strs = new ArrayList<>();
     }
-    public int getIndentCount() { return this.indentCount; }
+    public int getIndentCount() {
+        return this.indentCount;
+    }
     public void setIndentCount(int count) {
         this.indentCount += count;
     }

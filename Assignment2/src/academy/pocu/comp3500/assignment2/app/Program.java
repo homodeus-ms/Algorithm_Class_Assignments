@@ -20,14 +20,16 @@ public class Program {
 
     public static void main(String[] args) throws IOException {
 
-        //basicTest1();
-        //basicTest2();
-        //basicTest3();
-        //basicTest4();
+        basicTest1();
+        basicTest2();
+        basicTest3();
+        basicTest4();
         test1();
         test2();
         test3();
         test4();
+        test5();
+        test6();
         System.out.println("NoAssert!");
     }
 
@@ -105,7 +107,7 @@ public class Program {
 
         Sort.quickSort(nums);
 
-        Logger.printTo(writer2, "50");
+        Logger.printTo(writer2, "90");
 
         Logger.clear();
         writer2.close();
@@ -231,5 +233,35 @@ public class Program {
         Logger.clear();
         writer.close();
 
+    }
+    public static void test5() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test5.txt"));
+        Logger.clear();
+        Logger.clear();
+        Logger.log("810 755 266");
+        Indent indent = Logger.indent();
+        {
+            Logger.log("L: 266");
+            Logger.log("R: 755 810");
+            Indent indent1 = Logger.indent();
+            {
+                Logger.log("L: 755 810");
+                Logger.log("R: ");
+                Logger.log("X: 755 810");
+            }
+            Logger.unindent();
+            Logger.log("X: 266 755 810");
+        }
+        Logger.unindent();
+        Logger.printTo(writer, "266"); // 이거 지워서도 확인해보세요~
+        Logger.printTo(writer, "755");
+        Logger.clear();
+    }
+    public static void test6() throws  IOException {
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test6.log"));
+        log("755");
+        Logger.printTo(writer, "755");
+        Logger.clear();
     }
 }
