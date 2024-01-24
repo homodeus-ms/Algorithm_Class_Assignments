@@ -16,13 +16,7 @@ public final class Cracker {
     private String email;
     private String password;
     private String myHashFromUserTable = "";
-
-    /*//public String[] myPassWordHashs = new String[5];
-    public String crcValue;
-    public String md2Value;
-    public String md5Value;
-    public String sha1Value;
-    public String sha256Value;*/
+    private int targetIdx = -1;
 
     public Cracker(User[] userTable, String email, String password) {
         this.userTable = userTable;
@@ -30,7 +24,6 @@ public final class Cracker {
         this.password = password;
 
         String userEmail;
-        String[] result = new String[userTable.length];
 
         for (int i = 0; i < userTable.length; ++i) {
             userEmail = userTable[i].getEmail();
@@ -40,23 +33,50 @@ public final class Cracker {
             }
         }
         myHashFromUserTable = myHashFromUserTable.replaceFirst("^0+", "");
+
+        CRC32 crc32 = new CRC32();
+        crc32.update(password.getBytes(StandardCharsets.UTF_8));
+        String getHash = String.valueOf(crc32.getValue());
+
+        if (myHashFromUserTable.equals(getHash)) {
+            targetIdx = 0;
+            return;
+        }
+
+        try {
+            getHash = getHash(password, "MD2");
+            if (myHashFromUserTable.equals(getHash)) {
+                targetIdx = 1;
+                return;
+            }
+            getHash = getHash(password, "MD5");
+            if (myHashFromUserTable.equals(getHash)) {
+                targetIdx = 2;
+                return;
+            }
+            getHash = getHash(password, "SHA-1");
+            if (myHashFromUserTable.equals(getHash)) {
+                targetIdx = 3;
+                return;
+            }
+            getHash = getHash(password, "SHA-256");
+            if (myHashFromUserTable.equals(getHash)) {
+                targetIdx = 4;
+                return;
+            }
+        } catch (NoSuchAlgorithmException e) {
+            assert (false);
+        }
+
+
     }
-    // crc32 : 9자리 이하 문자열?
-    // md2, md5 : 128비트 16진수 문자열
-    // sha1 : 160비트 문자열
-    // shar256 : 64 * 4 = 256비트 문자열
+
     public String[] run(final RainbowTable[] rainbowTables) {
 
         assert (rainbowTables.length == 5) : "Input Length is always 5";
 
         String[] result = new String[userTable.length];
-        int targetIdx = -1;
-        for (int i = 0; i < RAINBOW_TABLE_COUNT; ++i) {
-            if (rainbowTables[i].contains(myHashFromUserTable)) {
-                targetIdx = i;
-                break;
-            }
-        }
+
         if (targetIdx != -1) {
             for (int i = 0; i < result.length; ++i) {
                 result[i] = rainbowTables[targetIdx].get(userTable[i].getPasswordHash());
@@ -65,39 +85,10 @@ public final class Cracker {
 
         return result;
     }
-    private boolean hasStringSameBit(String a, String b) {
-        int aLength = a.length();
-        int bLength = b.length();
-
-        if (aLength == bLength) {
-            return a.equals(b);
-        }
-
-        if (bLength > aLength) {
-            String temp = a;
-            a = b;
-            b = temp;
-
-            aLength ^= bLength;
-            bLength ^= aLength;
-            aLength ^= bLength;
-        }
-        int lengthDiff = aLength - bLength;
-
-        for (int i = 0; i < bLength; ++i) {
-            if (a.charAt(i + lengthDiff) != b.charAt(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    private boolean hashHashKey(final RainbowTable[] rainbowTable, int index, String key) {
-        if (rainbowTable[index].contains(key)) {
-            return true;
-        }
-        return false;
+    private String getHash(String str, String algorithm) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        byte[] hashBytes = md.digest(str.getBytes(StandardCharsets.UTF_8));
+        return getStringFromByteArr(hashBytes);
     }
     private String getStringFromByteArr(byte[] bytes) {
         StringBuilder builder = new StringBuilder(256);

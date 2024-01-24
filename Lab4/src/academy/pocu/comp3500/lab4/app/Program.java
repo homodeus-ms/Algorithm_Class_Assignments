@@ -12,13 +12,11 @@ public class Program {
 
     public static void main(String[] args) {
         HashMap<String, String> crc32Map = new HashMap<>(Map.of(
-                "632000577", "email",
                 "211534962", "0000",
                 "477404077", "letmein",
                 "55151997", "qwerty",
                 "901924565", "password"));
         HashMap<String, String> md2Map = new HashMap<>(Map.of(
-                "507903338904402d4952c5c43cddd070", "email",
                 "ca244d081350810113cfafa278ffd581", "0000",
                 "11f225d2c77a99c2e84b8e70002a9352", "letmein",
                 "c2cb085c24f850986e55f1c44abe6876", "qwerty",
@@ -27,17 +25,14 @@ public class Program {
                 "4a7d1ed414474e4033ac29ccb8653d9b", "0000",
                 "0d107d09f5bbe40cade3de5c71e9e9b7", "letmein",
                 "d8578edf8458ce06fbc5bb76a58c5ca4", "qwerty",
-                "9501a4e4eb71f74287f797ca036e40ba", "email",
                 "5f4dcc3b5aa765d61d8327deb882cf99", "password"));
         HashMap<String, String> sha1Map = new HashMap<>(Map.of(
                 "39dfa55283318d31afe5a3ff4a0e3253e2045e43", "0000",
                 "b7a875fc1ea228b9061041b7cec4bd3c52ab3ce3", "letmein",
-                "2e172f9ea021d7f4e67b4ad8a86d91dfbf89f1a9", "email",
                 "b1b3773a05c0ed0176787a4f1574ff0075f7521e", "qwerty",
                 "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8", "password"));
         HashMap<String, String> sha256Map = new HashMap<>(Map.of(
                 "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0", "0000",
-                "d3c588495ef2196b10a5409796712b365ea579dbabc31ee94613c6892df38480", "email",
                 "1c8bfe8f801d79745c4631d09fff36c82aa37fc4cce4fc946683d7b336b63032", "letmein",
                 "65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5", "qwerty",
                 "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", "password"));
@@ -68,7 +63,7 @@ public class Program {
             String[] plainTexts = cracker.run(rainbowTables);
 
             assert (plainTexts[0] == null);
-            assert (plainTexts[1] != null);
+            assert (plainTexts[1] == null);
             assert (plainTexts[2] != null && plainTexts[2].equals("letmein"));
         }
 
@@ -85,7 +80,7 @@ public class Program {
 
             assert(plainTexts[0] != null && plainTexts[0].equals("password"));
             assert(plainTexts[1] != null && plainTexts[1].equals("0000"));
-            assert(plainTexts[2] != null);
+            assert(plainTexts[2] == null);
         }
 
         // MD5
@@ -99,7 +94,7 @@ public class Program {
             Cracker cracker = new Cracker(userTable, email, password);
             String[] plainTexts = cracker.run(rainbowTables);
 
-            assert(plainTexts[0] != null);
+            assert(plainTexts[0] == null);
             assert(plainTexts[1] != null && plainTexts[1].equals("qwerty"));
             assert(plainTexts[2] == null);
         }
@@ -116,7 +111,7 @@ public class Program {
             String[] plainTexts = cracker.run(rainbowTables);
 
             assert(plainTexts[0] != null && plainTexts[0].equals("0000"));
-            assert(plainTexts[1] != null);
+            assert(plainTexts[1] == null);
             assert(plainTexts[2] == null);
         }
 
@@ -131,7 +126,7 @@ public class Program {
             Cracker cracker = new Cracker(userTable, email, password);
             String[] plainTexts = cracker.run(rainbowTables);
 
-            assert(plainTexts[0] != null);
+            assert(plainTexts[0] == null);
             assert(plainTexts[1] != null && plainTexts[1].equals("password"));
             assert(plainTexts[2] == null);
         }
