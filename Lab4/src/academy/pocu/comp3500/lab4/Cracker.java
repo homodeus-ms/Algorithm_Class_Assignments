@@ -15,7 +15,7 @@ public final class Cracker {
     private User[] userTable;
     private String email;
     private String password;
-    private int myPasswordHashLength;
+    //private int myPasswordHashLength;
     //public String[] myPassWordHashs = new String[5];
     /*public String crcValue;
     public String md2Value;
@@ -28,13 +28,13 @@ public final class Cracker {
         this.email = email;
         this.password = password;
 
-        for (int i = 0; i < userTable.length; ++i) {
+        /*for (int i = 0; i < userTable.length; ++i) {
             User get = userTable[i];
             if (get.getEmail().equals(email)) {
                 myPasswordHashLength = get.getPasswordHash().length();
                 break;
             }
-        }
+        }*/
 
         /*byte[] buffer = password.getBytes(StandardCharsets.UTF_8);
         byte[] res;
@@ -89,17 +89,18 @@ public final class Cracker {
         for (int i = 0; i < userTable.length; ++i) {
             String hashGet = userTable[i].getPasswordHash();
             String valueOrNull = null;
+            int hashGetLength = hashGet.length();
 
-            if (myPasswordHashLength == 64) {
+            if (hashGetLength == 64) {
                 valueOrNull = rainbowTables[4].get(hashGet);
-            } else if (myPasswordHashLength == 40) {
+            } else if (hashGetLength == 40) {
                 valueOrNull = rainbowTables[3].get(hashGet);
-            } else if (myPasswordHashLength == 32) {
+            } else if (hashGetLength == 32) {
                 valueOrNull = rainbowTables[2].get(hashGet);
                 if (valueOrNull == null) {
                     valueOrNull = rainbowTables[1].get(hashGet);
                 }
-            } else if (myPasswordHashLength <= 16){
+            } else if (hashGetLength <= 16) {
                 valueOrNull = rainbowTables[0].get(hashGet);
             }
 
