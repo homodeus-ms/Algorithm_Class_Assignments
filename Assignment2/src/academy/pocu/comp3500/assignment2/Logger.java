@@ -14,6 +14,7 @@ public final class Logger {
     private static LinkedList<Indent> logs = new LinkedList<>();
     private static Indent currIndent = new Indent();
 
+
     static {
         logs.addLast(currIndent);
     }
@@ -21,9 +22,34 @@ public final class Logger {
     public static void log(final String text) {
         currIndent.addStr(text);
     }
+    public static Indent getCurrentIndent() {
+        return currIndent;
+    }
     public static void printTo(final BufferedWriter writer) throws IOException {
+        int logsSize = logs.getSize();
 
-        int idx = 0;
+        for (int i = 0; i < logsSize; ++i) {
+            Indent temp = logs.get(i);
+
+            while (temp != null) {
+                ArrayList<String> list = temp.getStrsOrNull();
+                int listSize = list.getSize();
+                int indentCount = temp.getIndentCount();
+
+                for (int j = 0; j < listSize; ++j) {
+
+                    for (int k = 0; k < indentCount; ++k) {
+                        writer.write(INDENT);
+                    }
+
+                    writer.write(String.format("%s%s", list.get(j), System.lineSeparator()));
+                }
+
+                temp = temp.getChildOrNull();
+            }
+        }
+
+        /*int idx = 0;
         int indentCount = 0;
         currIndent = logs.get(idx);
 
@@ -50,12 +76,51 @@ public final class Logger {
                 }
                 currIndent = logs.get(idx);
             }
-        }
+        }*/
 
         writer.flush();
     }
     public static void printTo(final BufferedWriter writer, final String filter) throws IOException {
-        int idx = 0;
+
+        int logsSize = logs.getSize();
+
+        for (int i = 0; i < logsSize - 1; ++i) {
+            Indent temp = logs.get(i);
+
+            Exit:
+            while (temp != null) {
+                ArrayList<String> list = temp.getStrsOrNull();
+                int listSize = list.getSize();
+                int indentCount = temp.getIndentCount();
+
+                while (temp != null) {
+                    if (!hasFilter(list, filter)) {
+                        temp = temp.getChildOrNull();
+                        list = temp.getStrsOrNull();
+                        listSize = list.getSize();
+                        indentCount = temp.getIndentCount();
+                    } else {
+                        break;
+                    }
+                }
+
+                for (int j = 0; j < listSize; ++j) {
+                    if (!list.get(j).contains(filter)) {
+                        continue;
+                    }
+                    for (int k = 0; k < indentCount; ++k) {
+                        writer.write(INDENT);
+                    }
+
+                    writer.write(String.format("%s%s", list.get(j), System.lineSeparator()));
+                }
+
+
+                temp = temp.getChildOrNull();
+
+            }
+        }
+        /*int idx = 0;
         int indentCount = 0;
         currIndent = logs.get(idx++);
         //getFilteredStringRecursive(writer, filter, currIndent, idx, indentCount);
@@ -88,12 +153,12 @@ public final class Logger {
                 --indentCount;
                 currIndent = logs.get(idx++);
             }
-        }
+        }*/
 
         writer.flush();
     }
     public static void clear() {
-        for (int i = 0; i < logs.getSize(); ++i) {
+        /*for (int i = 0; i < logs.getSize(); ++i) {
             Indent temp = logs.get(i);
             Indent next;
 
@@ -104,7 +169,7 @@ public final class Logger {
                 temp = next;
             }
             temp.setParent(null);
-        }
+        }*/
         logs.clear();
         currIndent = new Indent();
         logs.addLast(currIndent);
@@ -115,6 +180,8 @@ public final class Logger {
         while (currIndent.getChildOrNull() != null) {
             currIndent = currIndent.getChildOrNull();
         }
+        int parentIndentCount = currIndent.getIndentCount();
+        newIndent.setIndentCount(parentIndentCount + 1);
         currIndent.setChild(newIndent);
         newIndent.setParent(currIndent);
         currIndent = newIndent;
@@ -123,8 +190,25 @@ public final class Logger {
     }
     public static void unindent() {
         Indent newIndent = new Indent();
-        logs.addLast(newIndent);
+        //newIndent.setParent(currIndent);
+        if (currIndent.getIndentCount() > 1) {
+            newIndent.setIndentCount(currIndent.getIndentCount() - 1);
+            currIndent.setChild(newIndent);
+            newIndent.setParent(currIndent);
+        } else {
+            logs.addLast(newIndent);
+        }
+
         currIndent = newIndent;
+    }
+    public static boolean hasFilter(ArrayList<String> list, String filter) {
+        int size = list.getSize();
+        for (int i = 0; i < size; ++i) {
+            if (list.get(i).contains(filter)) {
+                return true;
+            }
+        }
+        return false;
     }
     public static void deleteIndent(Indent indent) {
         logs.remove(indent);

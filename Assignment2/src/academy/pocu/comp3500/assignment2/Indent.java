@@ -9,9 +9,20 @@ public final class Indent {
     private ArrayList<String> strs;
     private Indent parent = null;
     private Indent child = null;
+    private int indentCount = 0;
 
     public Indent() {
         strs = new ArrayList<>();
+    }
+    public int getIndentCount() { return this.indentCount; }
+    public void setIndentCount(int count) {
+        this.indentCount += count;
+    }
+    public void increaseIndentCount() {
+        ++indentCount;
+    }
+    public void decreaseIndentCount() {
+        indentCount = Math.max(0, indentCount - 1);
     }
     public void setParent(final Indent indent) {
         this.parent = indent;
@@ -33,13 +44,45 @@ public final class Indent {
     }
 
     public void discard() {
+
+        Indent parent = this.parent;
+
+        if (this.parent != null) {
+            this.parent.child = Logger.getCurrentIndent();
+            this.parent = null;
+        }
         this.strs.clear();
-        Indent temp = this;
-        while (temp.getChildOrNull() != null) {
-            temp = temp.getChildOrNull();
-            temp.getStrsOrNull().clear();
+        Indent temp = this.child;
+        Indent tempChild;
+        this.child = null;
+
+        while (temp != null) {
+            temp.strs.clear();
+            tempChild = temp.getChildOrNull();
+            temp.parent = null;
+            temp.child = null;
+            temp = tempChild;
         }
 
-        //Logger.deleteIndent(this);
+        Logger.getCurrentIndent().setParent(parent);
+
+        /*this.strs = null;
+
+        if (this.parent == null && this.child == null) {
+
+        } else if (this.parent != null && this.child != null) {
+            this.parent.child = this.child;
+            this.child.parent = this.parent;
+            this.parent = null;
+            this.child = null;
+        } else if (this.parent != null) {
+            this.parent.child = null;
+            this.parent = null;
+        } else {
+
+        }
+
+
+        Logger.deleteIndent(this);*/
     }
 }

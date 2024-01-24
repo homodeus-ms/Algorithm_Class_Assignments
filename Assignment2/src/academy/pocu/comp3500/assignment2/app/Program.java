@@ -20,13 +20,14 @@ public class Program {
 
     public static void main(String[] args) throws IOException {
 
-        /*basicTest1();
-        basicTest2();
-        basicTest3();
-        basicTest4();*/
-        //test1();
+        //basicTest1();
+        //basicTest2();
+        //basicTest3();
+        //basicTest4();
+        test1();
         test2();
-
+        test3();
+        test4();
         System.out.println("NoAssert!");
     }
 
@@ -38,15 +39,15 @@ public class Program {
         }
         Logger.unindent();
     }
-    public static void basicTest1() throws IOException
-    {
+    public static void basicTest1() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("basicTest1.log"));
 
         log("first level 1");
 
-        Logger.indent();
+        Indent indent = Logger.indent();
         {
             log("second level 1");
+            indent.discard();
             log("second level 2");
 
             doMagic();
@@ -61,8 +62,7 @@ public class Program {
         Logger.clear();
         writer.close();
     }
-    public static void basicTest2() throws IOException
-    {
+    public static void basicTest2() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("basicTest2.log"));
 
         int x = 10;
@@ -86,8 +86,7 @@ public class Program {
         Logger.clear();
         writer.close();
     }
-    public static void basicTest3() throws IOException
-    {
+    public static void basicTest3() throws IOException {
         final BufferedWriter writer1 = new BufferedWriter(new FileWriter("basicTest3.log"));
 
         int[] nums = new int[]{30, 10, 80, 90, 50, 70, 40};
@@ -99,48 +98,59 @@ public class Program {
         Logger.clear();
         writer1.close();
     }
-    public static void basicTest4() throws IOException
-    {
+    public static void basicTest4() throws IOException {
         final BufferedWriter writer2 = new BufferedWriter(new FileWriter("basicTest4.log"));
 
         int[] nums = new int[]{30, 10, 80, 90, 50, 70, 40};
 
         Sort.quickSort(nums);
 
-        Logger.printTo(writer2, "90");
+        Logger.printTo(writer2, "50");
 
         Logger.clear();
         writer2.close();
     }
-    public static void test1() throws IOException
-    {
+    public static void test1() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("test1.log"));
 
+
         log("First");
-        Indent parent = Logger.indent();
+        Logger.indent();
         {
-            log("Second");
-
-            Logger.indent();
-            {
-                log("Cleard");
-                parent.discard();
-
-                log("Third");
-            }
-            Logger.unindent();
             log("Second");
         }
         Logger.unindent();
-        log("againFirst?");
+
+        Logger.indent();
+        {
+            log("Second2");
+        }
+        Indent parent = Logger.indent();
+        {
+            log("blind");
+
+            Logger.indent();
+            {
+                log("blind");
+            }
+            Logger.unindent();
+
+            log("this?");
+
+
+            parent.discard();
+        }
+        Logger.unindent();
+
+        log("End");
+
 
         Logger.printTo(writer);
 
         Logger.clear();
         writer.close();
     }
-    public static void test2() throws IOException
-    {
+    public static void test2() throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter("test2.log"));
 
         log("First");
@@ -176,5 +186,50 @@ public class Program {
         Logger.clear();
         writer.close();
     }
+    public static void test3() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test3.log"));
 
+        Logger.indent();
+        log("plz i want clear the test");
+
+        Indent indent = Logger.indent();
+        {
+            log("you can't see me");
+            Logger.indent();
+            {
+                log("you can't see me");
+            }
+            Logger.unindent();
+            indent.discard();
+        }
+        Logger.unindent();
+
+        Logger.printTo(writer);
+
+
+        Logger.clear();
+
+    }
+    public static void test4() throws IOException {
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("test4.log"));
+
+        Logger.indent();
+        {
+            Logger.log("[That] Rings a bell");
+        }
+        Logger.unindent();
+
+        Logger.log("Count your chickens before they are hatched");
+        Logger.indent();
+        {
+            Logger.log("Pulling one's leg");
+            Logger.printTo(writer);
+        }
+        //  code by [조교] 보쿠린
+
+        Logger.clear();
+        writer.close();
+
+    }
 }
