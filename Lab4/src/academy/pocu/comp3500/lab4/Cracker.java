@@ -15,6 +15,7 @@ public final class Cracker {
     private User[] userTable;
     private String email;
     private String password;
+    private int myPasswordHashLength;
     //public String[] myPassWordHashs = new String[5];
     /*public String crcValue;
     public String md2Value;
@@ -26,6 +27,14 @@ public final class Cracker {
         this.userTable = userTable;
         this.email = email;
         this.password = password;
+
+        for (int i = 0; i < userTable.length; ++i) {
+            User get = userTable[i];
+            if (get.getEmail().equals(email)) {
+                myPasswordHashLength = get.getPasswordHash().length();
+                break;
+            }
+        }
 
         /*byte[] buffer = password.getBytes(StandardCharsets.UTF_8);
         byte[] res;
@@ -75,42 +84,36 @@ public final class Cracker {
         assert (rainbowTables.length == 5) : "Input Length is always 5";
 
         String[] result = new String[userTable.length];
-        boolean bExist;
+
+        Exit:
         for (int i = 0; i < userTable.length; ++i) {
-            //bExist = false;
             String hashGet = userTable[i].getPasswordHash();
-            int hashGetLength = hashGet.length();
             String valueOrNull = null;
 
-            if (hashGetLength <= 16) {
-                valueOrNull = rainbowTables[0].get(hashGet);
-            }
-            if (valueOrNull == null && hashGetLength <= 32) {
-                valueOrNull = rainbowTables[1].get(hashGet);
-                if (valueOrNull == null) {
-                    valueOrNull = rainbowTables[2].get(hashGet);
-                }
-            }
-            if (valueOrNull == null && hashGetLength <= 40) {
-                valueOrNull = rainbowTables[3].get(hashGet);
-            }
-            if (valueOrNull == null) {
+            if (myPasswordHashLength == 64) {
                 valueOrNull = rainbowTables[4].get(hashGet);
+            } else if (myPasswordHashLength == 40) {
+                valueOrNull = rainbowTables[3].get(hashGet);
+            } else if (myPasswordHashLength == 32) {
+                valueOrNull = rainbowTables[2].get(hashGet);
+                if (valueOrNull == null) {
+                    valueOrNull = rainbowTables[1].get(hashGet);
+                }
+            } else {
+                for (int j = 0; j < 5; ++j) {
+                    valueOrNull = rainbowTables[j].get(hashGet);
+                    if (valueOrNull != null) {
+                        result[i] = valueOrNull;
+                        break Exit;
+                    } 
+                }
             }
 
             result[i] = valueOrNull;
-
-            /*for (int j = 0; j < 5; ++j) {
-                if (rainbowTables[j].contains(userTable[i].getPasswordHash())) {
-                    bExist = true;
-                    result[i] = rainbowTables[j].get(userTable[i].getPasswordHash());
-                    break;
-                }
-            }
-            if (!bExist) {
-                result[i] = null;
-            }*/
         }
+
+
+
 
         /*for (int i = 0; i < 5; ++i) {
             if (rainbowTables[i].contains(myPassWordHashs[i])) {
@@ -121,6 +124,7 @@ public final class Cracker {
         }*/
         return result;
     }
+
     private boolean hashHashKey(final RainbowTable[] rainbowTable, int index, String key) {
         if (rainbowTable[index].contains(key)) {
             return true;
