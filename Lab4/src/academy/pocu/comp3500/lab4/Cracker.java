@@ -11,13 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public final class Cracker {
-
+    private final int RAINBOW_TABLE_COUNT = 5;
     private User[] userTable;
     private String email;
     private String password;
-    //private int myPasswordHashLength;
-    //public String[] myPassWordHashs = new String[5];
-    /*public String crcValue;
+    private HashFuncs usedHashFunc = HashFuncs.NONE;
+    private String myHashFromUserTable = "";
+
+    /*//public String[] myPassWordHashs = new String[5];
+    public String crcValue;
     public String md2Value;
     public String md5Value;
     public String sha1Value;
@@ -28,53 +30,18 @@ public final class Cracker {
         this.email = email;
         this.password = password;
 
-        /*for (int i = 0; i < userTable.length; ++i) {
-            User get = userTable[i];
-            if (get.getEmail().equals(email)) {
-                myPasswordHashLength = get.getPasswordHash().length();
+        String userEmail;
+        String[] result = new String[userTable.length];
+
+        for (int i = 0; i < userTable.length; ++i) {
+            userEmail = userTable[i].getEmail();
+            if (userEmail.hashCode() == email.hashCode()) {
+                myHashFromUserTable = userTable[i].getPasswordHash();
                 break;
             }
-        }*/
-
-        /*byte[] buffer = password.getBytes(StandardCharsets.UTF_8);
-        byte[] res;
-
-        CRC32 crc32 = new CRC32();
-        crc32.update(buffer);
-        myPassWordHashs[0] = String.valueOf(crc32.getValue());
-
-        MessageDigest md;
-
-        try {
-            md = MessageDigest.getInstance("MD2");
-            res = md.digest(buffer);
-            myPassWordHashs[1] = getStringFromByteArr(res);
-        } catch (NoSuchAlgorithmException e) {
-            assert (false);
         }
-        try {
-            md = MessageDigest.getInstance("MD5");
-            res = md.digest(buffer);
-            myPassWordHashs[2] = getStringFromByteArr(res);
-        } catch (NoSuchAlgorithmException e) {
-            assert (false);
-        }
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-            res = md.digest(buffer);
-            myPassWordHashs[3] = getStringFromByteArr(res);
-        } catch (NoSuchAlgorithmException e) {
-            assert (false);
-        }
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-            res = md.digest(buffer);
-            myPassWordHashs[4] = getStringFromByteArr(res);
-        } catch (NoSuchAlgorithmException e) {
-            assert (false);
-        }*/
+        myHashFromUserTable = myHashFromUserTable.replaceFirst("^0+", "");
     }
-
     // crc32 : 9자리 이하 문자열?
     // md2, md5 : 128비트 16진수 문자열
     // sha1 : 160비트 문자열
@@ -84,32 +51,48 @@ public final class Cracker {
         assert (rainbowTables.length == 5) : "Input Length is always 5";
 
         String[] result = new String[userTable.length];
-
-        Exit:
-        for (int i = 0; i < userTable.length; ++i) {
-            String hashGet = userTable[i].getPasswordHash();
-            String valueOrNull = null;
-            int hashGetLength = hashGet.length();
-
-            if (hashGetLength == 64) {
-                valueOrNull = rainbowTables[4].get(hashGet);
-            } else if (hashGetLength == 40) {
-                valueOrNull = rainbowTables[3].get(hashGet);
-            } else if (hashGetLength == 32) {
-                valueOrNull = rainbowTables[2].get(hashGet);
-                if (valueOrNull == null) {
-                    valueOrNull = rainbowTables[1].get(hashGet);
-                }
-            } else if (hashGetLength <= 16) {
-                valueOrNull = rainbowTables[0].get(hashGet);
+        int targetIdx = -1;
+        for (int i = 0; i < RAINBOW_TABLE_COUNT; ++i) {
+            if (rainbowTables[i].contains(myHashFromUserTable)) {
+                targetIdx = i;
+                break;
             }
-
-            result[i] = valueOrNull;
         }
-
+        if (targetIdx != -1) {
+            for (int i = 0; i < result.length; ++i) {
+                result[i] = rainbowTables[targetIdx].get(userTable[i].getPasswordHash());
+            }
+        }
 
         return result;
     }
+    private boolean hasStringSameBit(String a, String b) {
+        int aLength = a.length();
+        int bLength = b.length();
+
+        if (aLength == bLength) {
+            return a.equals(b);
+        }
+
+        if (bLength > aLength) {
+            String temp = a;
+            a = b;
+            b = temp;
+
+            aLength ^= bLength;
+            bLength ^= aLength;
+            aLength ^= bLength;
+        }
+        int lengthDiff = aLength - bLength;
+
+        for (int i = 0; i < bLength; ++i) {
+            if (a.charAt(i + lengthDiff) != b.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     private boolean hashHashKey(final RainbowTable[] rainbowTable, int index, String key) {
         if (rainbowTable[index].contains(key)) {
