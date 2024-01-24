@@ -99,29 +99,14 @@ public final class Cracker {
                 if (valueOrNull == null) {
                     valueOrNull = rainbowTables[1].get(hashGet);
                 }
-            } else {
-                for (int j = 0; j < 5; ++j) {
-                    valueOrNull = rainbowTables[j].get(hashGet);
-                    if (valueOrNull != null) {
-                        result[i] = valueOrNull;
-                        break Exit;
-                    } 
-                }
+            } else if (myPasswordHashLength <= 16){
+                valueOrNull = rainbowTables[0].get(hashGet);
             }
 
             result[i] = valueOrNull;
         }
 
 
-
-
-        /*for (int i = 0; i < 5; ++i) {
-            if (rainbowTables[i].contains(myPassWordHashs[i])) {
-                for (int j = 0; j < userTable.length; ++j) {
-                    result[j] = rainbowTables[i].get(userTable[j].getPasswordHash());
-                }
-            }
-        }*/
         return result;
     }
 
