@@ -4,6 +4,9 @@ import academy.pocu.comp3500.lab4.Cracker;
 import academy.pocu.comp3500.lab4.pocuhacker.RainbowTable;
 import academy.pocu.comp3500.lab4.pocuhacker.User;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +14,17 @@ import java.util.Map;
 public class Program {
 
     public static void main(String[] args) {
+
+
+        /*byte[] bytes = {1, 0, 1, 2};
+        String get = getStringFromByteArr(bytes);
+        System.out.println(get);*/
+
+        basicTest();
+
+        System.out.println("No Assert");
+    }
+    public static void basicTest() {
         HashMap<String, String> crc32Map = new HashMap<>(Map.of(
                 "211534962", "0000",
                 "477404077", "letmein",
@@ -130,7 +144,32 @@ public class Program {
             assert(plainTexts[1] != null && plainTexts[1].equals("password"));
             assert(plainTexts[2] == null);
         }
+    }
 
-        System.out.println("No Assert");
+    private static String getHash(String str, String algorithm) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        byte[] hashBytes = md.digest(str.getBytes(StandardCharsets.UTF_8));
+
+        for (int i = 0; i < hashBytes.length; ++i) {
+            System.out.printf("%02x", hashBytes[i]);
+        }
+        String res = getStringFromByteArr(hashBytes);
+        System.out.println();
+        System.out.println(res);
+
+        return getStringFromByteArr(hashBytes);
+    }
+    private static String getStringFromByteArr(byte[] bytes) {
+        StringBuilder builder = new StringBuilder(256);
+        boolean isZeroFirst = bytes[0] == 0;
+
+        for (int i = 0; i < bytes.length; ++i) {
+            if (!isZeroFirst) {
+                builder.append(String.format("%02x", bytes[i]));
+            } else {
+                isZeroFirst = bytes[i + 1] == 0;
+            }
+        }
+        return builder.toString();
     }
 }

@@ -32,8 +32,7 @@ public final class Cracker {
                 break;
             }
         }
-        //myHashFromUserTable = myHashFromUserTable.replaceFirst("^0+", "");
-
+        
         CRC32 crc32 = new CRC32();
         crc32.update(password.getBytes(StandardCharsets.UTF_8));
         String getHash = String.valueOf(crc32.getValue());
@@ -92,10 +91,15 @@ public final class Cracker {
     }
     private String getStringFromByteArr(byte[] bytes) {
         StringBuilder builder = new StringBuilder(256);
+        boolean isZeroFirst = bytes[0] == 0;
+
         for (int i = 0; i < bytes.length; ++i) {
-            builder.append(String.format("%02x", bytes[i]));
+            if (!isZeroFirst) {
+                builder.append(String.format("%02x", bytes[i]));
+            } else {
+                isZeroFirst = bytes[i + 1] == 0;
+            }
         }
         return builder.toString();
     }
-
 }
