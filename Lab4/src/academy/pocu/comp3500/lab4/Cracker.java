@@ -77,8 +77,30 @@ public final class Cracker {
         String[] result = new String[userTable.length];
         boolean bExist;
         for (int i = 0; i < userTable.length; ++i) {
-            bExist = false;
-            for (int j = 0; j < 5; ++j) {
+            //bExist = false;
+            String hashGet = userTable[i].getPasswordHash();
+            int hashGetLength = hashGet.length();
+            String valueOrNull = null;
+
+            if (hashGetLength <= 8) {
+                valueOrNull = rainbowTables[0].get(hashGet);
+            }
+            if (valueOrNull == null && hashGetLength <= 32) {
+                valueOrNull = rainbowTables[1].get(hashGet);
+                if (valueOrNull == null) {
+                    valueOrNull = rainbowTables[2].get(hashGet);
+                }
+            }
+            if (valueOrNull == null && hashGetLength <= 40) {
+                valueOrNull = rainbowTables[3].get(hashGet);
+            }
+            if (valueOrNull == null) {
+                valueOrNull = rainbowTables[4].get(hashGet);
+            }
+
+            result[i] = valueOrNull;
+
+            /*for (int j = 0; j < 5; ++j) {
                 if (rainbowTables[j].contains(userTable[i].getPasswordHash())) {
                     bExist = true;
                     result[i] = rainbowTables[j].get(userTable[i].getPasswordHash());
@@ -87,7 +109,7 @@ public final class Cracker {
             }
             if (!bExist) {
                 result[i] = null;
-            }
+            }*/
         }
 
         /*for (int i = 0; i < 5; ++i) {
@@ -98,6 +120,12 @@ public final class Cracker {
             }
         }*/
         return result;
+    }
+    private boolean hashHashKey(final RainbowTable[] rainbowTable, int index, String key) {
+        if (rainbowTable[index].contains(key)) {
+            return true;
+        }
+        return false;
     }
     private String getStringFromByteArr(byte[] bytes) {
         StringBuilder builder = new StringBuilder(256);
