@@ -1,7 +1,6 @@
 package academy.pocu.comp3500.lab4.app;
 
 import academy.pocu.comp3500.lab4.Cracker;
-import academy.pocu.comp3500.lab4.HashFuncs;
 import academy.pocu.comp3500.lab4.pocuhacker.RainbowTable;
 import academy.pocu.comp3500.lab4.pocuhacker.User;
 

@@ -15,7 +15,6 @@ public final class Cracker {
     private User[] userTable;
     private String email;
     private String password;
-    private HashFuncs usedHashFunc = HashFuncs.NONE;
     private String myHashFromUserTable = "";
 
     /*//public String[] myPassWordHashs = new String[5];
