@@ -1,7 +1,12 @@
 package academy.pocu.comp3500.lab5;
 
 import java.math.BigInteger;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
@@ -18,8 +23,8 @@ public class Bank {
             return;
         }
 
-        for (int i = 0 ; i < pubKeys.length; ++i) {
-            map.put(pubKeys[i], amounts[i]);
+        for (int i = 0; i < pubKeys.length; ++i) {
+            map.put(pubKeys[i], amounts[i] < 0 ? 0 : amounts[i]);
         }
     }
     public long getBalance(final byte[] pubKey) {
@@ -40,9 +45,19 @@ public class Bank {
 
         try {
             bResult = tryDecryptWithPubKey(signature, from, hash);
+
             if (bResult) {
+                if (map.get(from) == null || map.get(to) == null) {
+                    return false;
+                }
+
                 long fromAmount = getBalance(from);
                 long toAmount = getBalance(to);
+
+                if (fromAmount - amount < 0) {
+                    return false;
+                }
+
                 map.put(from, fromAmount - amount);
                 map.put(to, toAmount + amount);
             }
@@ -143,12 +158,12 @@ public class Bank {
         return result.toString();
     }
     private static byte[] longToByteArr(long number) {
-        final int longByteSize = 8;
-        byte[] res = new byte[longByteSize];
+        final int LONG_BYTE_SIZE = 8;
+        byte[] res = new byte[LONG_BYTE_SIZE];
 
-        for (int i = 0; i < longByteSize; ++i) {
+        for (int i = 0; i < LONG_BYTE_SIZE; ++i) {
             byte b = (byte) ((number >> (i * 8)) & 0xFF);
-            res[longByteSize - i - 1] = b;
+            res[LONG_BYTE_SIZE - i - 1] = b;
         }
 
         return res;

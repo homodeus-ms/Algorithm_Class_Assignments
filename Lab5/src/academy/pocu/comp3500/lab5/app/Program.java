@@ -30,6 +30,7 @@ public class Program {
         assert (KeyGenerator.isPrime(BigInteger.valueOf(5)));
         assert (!KeyGenerator.isPrime(BigInteger.valueOf(6)));
         assert (KeyGenerator.isPrime(BigInteger.valueOf(7)));
+        assert (!KeyGenerator.isPrime(BigInteger.valueOf(636804)));
 
         assert (!KeyGenerator.isPrime(BigInteger.valueOf(2475)));
         assert (!KeyGenerator.isPrime(BigInteger.valueOf(2476)));
@@ -56,7 +57,7 @@ public class Program {
 
         byte[] senderPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_1);
         byte[] receiverPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_2);
-        long senderInitialBalance = 20000;
+        long senderInitialBalance = 4999;
         long receiverInitialBalance = 3000;
 
         Bank bank = new Bank(new byte[][]{senderPublicKey, receiverPublicKey}, new long[]{senderInitialBalance, receiverInitialBalance});
@@ -81,15 +82,17 @@ public class Program {
         assert (!wrongAmountTransferResult);
 
         boolean transferResult = bank.transfer(senderPublicKey, receiverPublicKey, AMOUNT, signature);
-        assert (transferResult);
+        assert (!transferResult);
 
 
         senderBalance = bank.getBalance(senderPublicKey);
         receiverBalance = bank.getBalance(receiverPublicKey);
 
-        assert (senderBalance == senderInitialBalance - AMOUNT);
-        assert (receiverBalance == receiverInitialBalance + AMOUNT);
+        assert (senderBalance == senderInitialBalance);
+        assert (receiverBalance == receiverInitialBalance);
 
+        /*assert (senderBalance == 0);
+        assert (receiverBalance == 8000);*/
 
 
 
