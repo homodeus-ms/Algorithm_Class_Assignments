@@ -40,7 +40,7 @@ public class Program {
 
 
         //assert (KeyGenerator.isPrime(BigInteger.valueOf(40961)));
-        //basicTest();
+        basicTest();
         //smallPrimeNumberTest();
         long[] amounts = {Long.MAX_VALUE - 1, 0};
         long amount1 = 10;

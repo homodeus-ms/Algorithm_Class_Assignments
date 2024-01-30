@@ -4,10 +4,17 @@ public class ByteArrayWrapper {
     private byte[] bytes;
 
     public ByteArrayWrapper(byte[] src) {
-        bytes = src;
+        bytes = new byte[src.length];
+        for (int i = 0; i < src.length; ++i) {
+            bytes[i] = src[i];
+        }
+        //bytes = src;
     }
     public void setWrapper(byte[] src) {
-        bytes = src;
+        //bytes = src;
+        for (int i = 0; i < src.length; ++i) {
+            bytes[i] = src[i];
+        }
     }
 
     @Override

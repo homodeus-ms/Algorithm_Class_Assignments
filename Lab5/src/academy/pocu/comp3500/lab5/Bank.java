@@ -16,7 +16,7 @@ import javax.crypto.NoSuchPaddingException;
 public class Bank {
     //private final HashMap<String, Long> map = new HashMap<>();
     private final HashMap<ByteArrayWrapper, Long> map = new HashMap<>();
-    private ByteArrayWrapper wrapper = new ByteArrayWrapper(null);
+    //private ByteArrayWrapper wrapper = new ByteArrayWrapper(null);
 
     public Bank(byte[][] pubKeys, final long[] amounts) {
 
@@ -35,7 +35,7 @@ public class Bank {
             return 0;
         }
         //String key = encodeToHexString(pubKey);
-        wrapper.setWrapper(pubKey);
+        ByteArrayWrapper wrapper = new ByteArrayWrapper(pubKey);
         return map.get(wrapper) == null ? 0 : map.get(wrapper);
     }
     public boolean transfer(final byte[] from, byte[] to, final long amount, final byte[] signature) {
