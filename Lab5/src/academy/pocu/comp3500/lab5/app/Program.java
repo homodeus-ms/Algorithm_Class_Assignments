@@ -1,6 +1,7 @@
 package academy.pocu.comp3500.lab5.app;
 
 import academy.pocu.comp3500.lab5.Bank;
+import academy.pocu.comp3500.lab5.ByteArrayWrapper;
 import academy.pocu.comp3500.lab5.KeyGenerator;
 
 import javax.crypto.Cipher;
@@ -10,6 +11,7 @@ import java.math.BigInteger;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
+
 
 public class Program {
 
@@ -34,18 +36,29 @@ public class Program {
 
         byte[] senderPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_1);
         byte[] receiverPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_2);
+        byte[] anotherKey = decodeFromHexString(TEST_PUBLIC_KEY_3);
 
 
         //assert (KeyGenerator.isPrime(BigInteger.valueOf(40961)));
-        basicTest();
+        //basicTest();
         //smallPrimeNumberTest();
+        long[] amounts = {10};
+        long amount1 = 10;
+        long amount2 = 20;
+        Bank bank = new Bank(new byte[][]{senderPublicKey}, amounts);
 
-        /*byte[] a = {1, 2, 3, 4};
-        byte[] b = {0, 0, 5, 0};
-        long[] amounts = {10, 20};
-        Bank bank = new Bank(new byte[][]{a, b}, amounts);
-        System.out.println(bank.getBalance(new byte[]{1, 2, 3, 3}));
-        System.out.println(bank.getBalance(new byte[]{0, 0, 5, 0, 0}));*/
+        byte[] hash = getSha256(senderPublicKey, receiverPublicKey, 10);
+
+        byte[] signature = getSignature(hash, TEST_PRIVATE_KEY_1);
+
+
+        System.out.println(bank.getBalance(senderPublicKey));
+        System.out.println(bank.getBalance(receiverPublicKey));
+
+        System.out.println(bank.transfer(senderPublicKey, receiverPublicKey, 10, signature));
+        System.out.println(bank.getBalance(senderPublicKey));
+        System.out.println(bank.getBalance(receiverPublicKey));
+
 
 
         System.out.println("No Assert!");
@@ -66,30 +79,18 @@ public class Program {
         }
         return result.toString();
     }
-    private static byte[] getSha256String(String s1, String s2, long amount) {
-        byte[] s1Bytes = decodeFromHexString(s1);
-        byte[] s2Bytes = decodeFromHexString(s2);
-        byte[] amounts = BigInteger.valueOf(amount).toByteArray();
-        //assert (amounts.length == 8);
-        byte[] sum = new byte[s1Bytes.length + s2Bytes.length + amounts.length];
+    public static byte[] getSha256(final byte[] from, final byte[] to, long amount) {
+        byte[] amountBytes = longToByteArr(amount);
+
         byte[] hash;
 
-        int sumIdx = 0;
-        for (int i = 0; i < s1Bytes.length; ++i) {
-            sum[sumIdx++] = s1Bytes[i];
-        }
-        for (int i = 0; i < s2Bytes.length; ++i) {
-            sum[sumIdx++] = s2Bytes[i];
-        }
-        for (int i = 0; i < amounts.length; ++i) {
-            sum[sumIdx++] = amounts[i];
-        }
 
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            hash = md.digest(sum);
-
-        } catch (Exception e) {
+            md.update(from);
+            md.update(to);
+            hash = md.digest(amountBytes);
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -97,7 +98,7 @@ public class Program {
         return hash;
     }
 
-    private static String getSignature(byte[] hash, String pvstring) {
+    private static byte[] getSignature(byte[] hash, String pvstring) {
 
         byte[] pvBytes = decodeFromHexString(pvstring);
         PrivateKey pvKey;
@@ -121,7 +122,7 @@ public class Program {
             throw new RuntimeException(e);
         }
 
-        return encodeToHexString(cipherText);
+        return cipherText;
     }
     private static boolean isSameByteArr(byte[] arrA, byte[] arrB) {
         if (arrA.length != arrB.length) {
