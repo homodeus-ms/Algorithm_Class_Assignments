@@ -15,7 +15,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class Bank {
 
-    private final HashMap<byte[], Long> map = new HashMap<>();
+    private final HashMap<String, Long> map = new HashMap<>();
 
     public Bank(byte[][] pubKeys, final long[] amounts) {
 
@@ -24,20 +24,24 @@ public class Bank {
         }
 
         for (int i = 0; i < pubKeys.length; ++i) {
-            map.put(pubKeys[i], amounts[i] < 0 ? 0 : amounts[i]);
+            String key = encodeToHexString(pubKeys[i]);
+            map.put(key, amounts[i] < 0 ? 0 : amounts[i]);
         }
     }
     public long getBalance(final byte[] pubKey) {
         if (pubKey == null) {
             return 0;
         }
-        return map.get(pubKey) == null ? 0 : map.get(pubKey);
+        String key = encodeToHexString(pubKey);
+        return map.get(key) == null ? 0 : map.get(key);
     }
     public boolean transfer(final byte[] from, byte[] to, final long amount, final byte[] signature) {
         if (from == null || to == null || signature == null) {
             return false;
         }
-        if (map.get(from) == null || map.get(to) == null) {
+        String fromStr = encodeToHexString(from);
+        String toStr = encodeToHexString(to);
+        if (map.get(fromStr) == null || map.get(toStr) == null) {
             return false;
         }
         boolean bResult = false;
@@ -47,9 +51,6 @@ public class Bank {
             bResult = tryDecryptWithPubKey(signature, from, hash);
 
             if (bResult) {
-                if (map.get(from) == null || map.get(to) == null) {
-                    return false;
-                }
 
                 long fromAmount = getBalance(from);
                 long toAmount = getBalance(to);
@@ -58,8 +59,8 @@ public class Bank {
                     return false;
                 }
 
-                map.put(from, fromAmount - amount);
-                map.put(to, toAmount + amount);
+                map.put(fromStr, fromAmount - amount);
+                map.put(toStr, toAmount + amount);
             }
 
         } catch (Exception e) {
@@ -179,4 +180,6 @@ public class Bank {
         }
         return true;
     }
+
+
 }

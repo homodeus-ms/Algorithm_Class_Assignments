@@ -12,6 +12,7 @@ public class KeyGenerator {
         }
 
         BigInteger end = number.sqrt();
+        end = end.add(BigInteger.ONE);
 
         for (BigInteger i = BigInteger.valueOf(3); i.compareTo(end) <= 0; i = i.add(BigInteger.ONE)) {
             if (number.mod(i).equals(BigInteger.ZERO)) {
