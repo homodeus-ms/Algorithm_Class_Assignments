@@ -51,7 +51,7 @@ public class Bank {
         }
         long fromBalance = map.get(fromWrapper);
         long toBalance = map.get(toWrapper);
-        if (amount < 0 || fromBalance < amount) {
+        if (amount < 0 || fromBalance < amount || toBalance + amount < 0) {
             return false;
         }
 

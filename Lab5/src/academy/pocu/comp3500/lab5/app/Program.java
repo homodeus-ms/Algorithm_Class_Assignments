@@ -42,12 +42,12 @@ public class Program {
         //assert (KeyGenerator.isPrime(BigInteger.valueOf(40961)));
         //basicTest();
         //smallPrimeNumberTest();
-        long[] amounts = {10};
+        long[] amounts = {Long.MAX_VALUE - 1, 0};
         long amount1 = 10;
         long amount2 = 20;
-        Bank bank = new Bank(new byte[][]{senderPublicKey}, amounts);
+        Bank bank = new Bank(new byte[][]{senderPublicKey, receiverPublicKey}, amounts);
 
-        byte[] hash = getSha256(senderPublicKey, receiverPublicKey, 10);
+        byte[] hash = getSha256(senderPublicKey, receiverPublicKey, Long.MAX_VALUE );
 
         byte[] signature = getSignature(hash, TEST_PRIVATE_KEY_1);
 
@@ -55,7 +55,7 @@ public class Program {
         System.out.println(bank.getBalance(senderPublicKey));
         System.out.println(bank.getBalance(receiverPublicKey));
 
-        System.out.println(bank.transfer(senderPublicKey, receiverPublicKey, 10, signature));
+        System.out.println(bank.transfer(senderPublicKey, receiverPublicKey, Long.MAX_VALUE, signature));
         System.out.println(bank.getBalance(senderPublicKey));
         System.out.println(bank.getBalance(receiverPublicKey));
 
