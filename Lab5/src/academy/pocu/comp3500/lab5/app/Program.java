@@ -37,8 +37,8 @@ public class Program {
 
 
         //assert (KeyGenerator.isPrime(BigInteger.valueOf(40961)));
-        //basicTest();
-        smallPrimeNumberTest();
+        basicTest();
+        //smallPrimeNumberTest();
 
         System.out.println("No Assert!");
     }

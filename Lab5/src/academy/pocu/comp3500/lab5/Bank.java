@@ -41,7 +41,7 @@ public class Bank {
         }
         String fromStr = encodeToHexString(from);
         String toStr = encodeToHexString(to);
-        if (map.get(fromStr) == null || map.get(toStr) == null) {
+        if (!map.containsKey(fromStr) || !map.containsKey(toStr)) {
             return false;
         }
         boolean bResult = false;
@@ -52,7 +52,7 @@ public class Bank {
 
             if (bResult) {
 
-                if (map.get(fromStr) == null || map.get(toStr) == null) {
+                if (!map.containsKey(fromStr) || !map.containsKey(toStr)) {
                     return false;
                 }
 
