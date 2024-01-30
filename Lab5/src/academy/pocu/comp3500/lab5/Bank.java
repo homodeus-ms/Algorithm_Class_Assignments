@@ -49,6 +49,9 @@ public class Bank {
         if (!map.containsKey(fromWrapper) || !map.containsKey(toWrapper)) {
             return false;
         }
+        if (amount <= 0 || map.get(fromWrapper) < amount || map.get(toWrapper) + amount > map.get(toWrapper)) {
+            return false;
+        }
         boolean bResult = false;
         byte[] hash = getSha256Hash(from, to, amount);
 
