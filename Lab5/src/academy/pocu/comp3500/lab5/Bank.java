@@ -46,12 +46,7 @@ public class Bank {
         String toStr = encodeToHexString(to);*/
         ByteArrayWrapper fromWrapper = new ByteArrayWrapper(from);
         ByteArrayWrapper toWrapper = new ByteArrayWrapper(to);
-        if (!map.containsKey(fromWrapper) || !map.containsKey(toWrapper)) {
-            return false;
-        }
-        if (amount <= 0 || map.get(fromWrapper) < amount || map.get(toWrapper) + amount > map.get(toWrapper)) {
-            return false;
-        }
+
         boolean bResult = false;
         byte[] hash = getSha256Hash(from, to, amount);
 
@@ -59,13 +54,19 @@ public class Bank {
             bResult = tryDecryptWithPubKey(signature, from, hash);
 
             if (bResult) {
+                if (!map.containsKey(fromWrapper) || !map.containsKey(toWrapper)) {
+                    return false;
+                }
+                if (amount <= 0 || map.get(fromWrapper) < amount || map.get(toWrapper) + amount > map.get(toWrapper)) {
+                    return false;
+                }
 
                 long fromAmount = getBalance(from);
                 long toAmount = getBalance(to);
 
-                if (fromAmount - amount < 0) {
+                /*if (fromAmount - amount < 0) {
                     return false;
-                }
+                }*/
 
                 map.put(fromWrapper, fromAmount - amount);
                 map.put(toWrapper, toAmount + amount);
