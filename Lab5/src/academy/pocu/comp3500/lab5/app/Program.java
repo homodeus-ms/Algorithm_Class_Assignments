@@ -36,8 +36,8 @@ public class Program {
         byte[] receiverPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_2);
 
 
-
-        basicTest();
+        //assert (KeyGenerator.isPrime(BigInteger.valueOf(40961)));
+        //basicTest();
         smallPrimeNumberTest();
 
         System.out.println("No Assert!");
