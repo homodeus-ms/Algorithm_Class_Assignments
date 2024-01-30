@@ -14,8 +14,9 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
 public class Bank {
-
-    private final HashMap<String, Long> map = new HashMap<>();
+    //private final HashMap<String, Long> map = new HashMap<>();
+    private final HashMap<ByteArrayWrapper, Long> map = new HashMap<>();
+    private ByteArrayWrapper wrapper = new ByteArrayWrapper(null);
 
     public Bank(byte[][] pubKeys, final long[] amounts) {
 
@@ -24,24 +25,28 @@ public class Bank {
         }
 
         for (int i = 0; i < pubKeys.length; ++i) {
-            String key = encodeToHexString(pubKeys[i]);
-            map.put(key, amounts[i] < 0 ? 0 : amounts[i]);
+            //String key = encodeToHexString(pubKeys[i]);
+            ByteArrayWrapper b = new ByteArrayWrapper(pubKeys[i]);
+            map.put(b, amounts[i] < 0 ? 0 : amounts[i]);
         }
     }
     public long getBalance(final byte[] pubKey) {
         if (pubKey == null) {
             return 0;
         }
-        String key = encodeToHexString(pubKey);
-        return map.get(key) == null ? 0 : map.get(key);
+        //String key = encodeToHexString(pubKey);
+        wrapper.setWrapper(pubKey);
+        return map.get(wrapper) == null ? 0 : map.get(wrapper);
     }
     public boolean transfer(final byte[] from, byte[] to, final long amount, final byte[] signature) {
         if (from == null || to == null || signature == null) {
             return false;
         }
-        String fromStr = encodeToHexString(from);
-        String toStr = encodeToHexString(to);
-        if (!map.containsKey(fromStr) || !map.containsKey(toStr)) {
+        /*String fromStr = encodeToHexString(from);
+        String toStr = encodeToHexString(to);*/
+        ByteArrayWrapper fromWrapper = new ByteArrayWrapper(from);
+        ByteArrayWrapper toWrapper = new ByteArrayWrapper(to);
+        if (!map.containsKey(fromWrapper) || !map.containsKey(toWrapper)) {
             return false;
         }
         boolean bResult = false;
@@ -52,10 +57,6 @@ public class Bank {
 
             if (bResult) {
 
-                if (!map.containsKey(fromStr) || !map.containsKey(toStr)) {
-                    return false;
-                }
-
                 long fromAmount = getBalance(from);
                 long toAmount = getBalance(to);
 
@@ -63,8 +64,8 @@ public class Bank {
                     return false;
                 }
 
-                map.put(fromStr, fromAmount - amount);
-                map.put(toStr, toAmount + amount);
+                map.put(fromWrapper, fromAmount - amount);
+                map.put(toWrapper, toAmount + amount);
             }
 
         } catch (Exception e) {

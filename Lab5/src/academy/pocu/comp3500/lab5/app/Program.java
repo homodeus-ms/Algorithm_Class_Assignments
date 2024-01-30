@@ -40,6 +40,14 @@ public class Program {
         basicTest();
         //smallPrimeNumberTest();
 
+        /*byte[] a = {1, 2, 3, 4};
+        byte[] b = {0, 0, 5, 0};
+        long[] amounts = {10, 20};
+        Bank bank = new Bank(new byte[][]{a, b}, amounts);
+        System.out.println(bank.getBalance(new byte[]{1, 2, 3, 3}));
+        System.out.println(bank.getBalance(new byte[]{0, 0, 5, 0, 0}));*/
+
+
         System.out.println("No Assert!");
     }
     private static byte[] decodeFromHexString(String hexString) {

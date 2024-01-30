@@ -6,6 +6,9 @@ public class ByteArrayWrapper {
     public ByteArrayWrapper(byte[] src) {
         bytes = src;
     }
+    public void setWrapper(byte[] src) {
+        bytes = src;
+    }
 
     @Override
     public boolean equals(Object obj) {
