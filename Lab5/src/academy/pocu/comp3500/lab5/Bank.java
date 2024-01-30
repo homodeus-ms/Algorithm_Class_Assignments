@@ -52,6 +52,10 @@ public class Bank {
 
             if (bResult) {
 
+                if (map.get(fromStr) == null || map.get(toStr) == null) {
+                    return false;
+                }
+
                 long fromAmount = getBalance(from);
                 long toAmount = getBalance(to);
 

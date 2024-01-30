@@ -9,6 +9,7 @@ import java.security.*;
 import java.math.BigInteger;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
+import java.util.HashMap;
 
 public class Program {
 
@@ -33,6 +34,8 @@ public class Program {
 
         byte[] senderPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_1);
         byte[] receiverPublicKey = decodeFromHexString(TEST_PUBLIC_KEY_2);
+
+
 
         basicTest();
         smallPrimeNumberTest();
