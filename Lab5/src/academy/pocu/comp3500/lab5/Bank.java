@@ -1,8 +1,6 @@
 package academy.pocu.comp3500.lab5;
 
-import java.math.BigInteger;
 import java.security.KeyFactory;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,12 +9,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 
 public class Bank {
-    //private final HashMap<String, Long> map = new HashMap<>();
     private final HashMap<ByteArrayWrapper, Long> map = new HashMap<>();
-    //private ByteArrayWrapper wrapper = new ByteArrayWrapper(null);
+
 
     public Bank(byte[][] pubKeys, final long[] amounts) {
 
@@ -25,7 +21,6 @@ public class Bank {
         }
 
         for (int i = 0; i < pubKeys.length; ++i) {
-            //String key = encodeToHexString(pubKeys[i]);
             ByteArrayWrapper b = new ByteArrayWrapper(pubKeys[i]);
             map.put(b, amounts[i] < 0 ? 0 : amounts[i]);
         }
@@ -34,7 +29,6 @@ public class Bank {
         if (pubKey == null) {
             return 0;
         }
-        //String key = encodeToHexString(pubKey);
         ByteArrayWrapper wrapper = new ByteArrayWrapper(pubKey);
         return map.get(wrapper) == null ? 0 : map.get(wrapper);
     }
@@ -42,14 +36,14 @@ public class Bank {
         if (from == null || to == null || signature == null) {
             return false;
         }
-        /*String fromStr = encodeToHexString(from);
-        String toStr = encodeToHexString(to);*/
         ByteArrayWrapper fromWrapper = new ByteArrayWrapper(from);
         ByteArrayWrapper toWrapper = new ByteArrayWrapper(to);
         if (map.get(fromWrapper) == null) {
             return false;
         }
+
         long fromBalance = map.get(fromWrapper);
+
         if (amount <= 0 || fromBalance < amount) {
             return false;
         }
