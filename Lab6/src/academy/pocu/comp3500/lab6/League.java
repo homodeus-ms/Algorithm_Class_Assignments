@@ -32,21 +32,26 @@ public class League {
         return ret == null ? null : ret.getPlayer();
     }
     public Player[] getTop(final int count) {
-        if (count > bst.getSize() || count <= 0) {
+        if (count <= 0 || bst.getSize() == 0) {
             return new Player[0];
         }
+        int currBstSize = bst.getSize();;
+        int arrSize = Math.min(currBstSize, count);
+        Player[] players = new Player[arrSize];
 
-        Player[] players = new Player[count];
-        bst.getTopPlayers(players, count);
+        bst.getTopPlayers(players, arrSize);
         return players;
     }
     public Player[] getBottom(final int count) {
-        if (count > bst.getSize() || count <= 0) {
+        if (count <= 0 || bst.getSize() == 0) {
             return new Player[0];
         }
 
-        Player[] players = new Player[count];
-        bst.getBottomPlayers(players, count);
+        int currBstSize = bst.getSize();;
+        int arrSize = Math.min(currBstSize, count);
+        Player[] players = new Player[arrSize];
+
+        bst.getBottomPlayers(players, arrSize);
         return players;
     }
     public boolean join(final Player player) {

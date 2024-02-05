@@ -8,11 +8,12 @@ import java.util.*;
 public class Program {
 
     public static void main(String[] args) {
-        G02_test();
-        Test_C();
-        Test_G();
+        //G02_test();
+        //Test_C();
+        //Test_G();
         //complexScenarioTest_2();
         test_G_multiple_2();
+        testGetTop();
 
         //League league = new League();
         Player player1 = new Player(1, "a", 1);
@@ -484,6 +485,14 @@ public class Program {
 
     }
 
+    public static void testGetTop() {
+        Player player1 = new Player(1, "a", 1);
+        Player player2 = new Player(2, "b", 2);
+        Player[] players = new Player[] {player1, player2};
+        League league = new League(players);
 
+        Player[] get = league.getTop(3);
 
+        System.out.println();
+    }
 }
