@@ -12,19 +12,12 @@ public class Program {
         //Test_C();
         //Test_G();
         //complexScenarioTest_2();
-        test_G_multiple_2();
-        testGetTop();
+        //test_G_multiple_2();
+        //testGetTop();
 
         //League league = new League();
-        Player player1 = new Player(1, "a", 1);
-        Player player2 = new Player(2, "b", 2);
-        Player[] players = new Player[] {player1, player2};
-        League league = new League(players);
-        league.join(player1);
-        league.join(player2);
 
-        assert (league.leave(player1));
-        assert (!league.leave(player1));
+        testFindMatch();
 
 
         System.out.println("No Assert");
@@ -494,5 +487,116 @@ public class Program {
         Player[] get = league.getTop(3);
 
         System.out.println();
+    }
+
+    public static void testFindMatch() {
+
+        for (int repeat = 0; repeat < 10; ++repeat) {
+            Random random = new Random();
+            boolean[] checkDuplicateNumber = new boolean[20];
+            int[] pickedNumber = new int[10];
+            for (int i = 0; i < 10; ++i) {
+                int randNum = random.nextInt(20);
+                while (checkDuplicateNumber[randNum]) {
+                    randNum = random.nextInt(20);
+                }
+                pickedNumber[i] = randNum;
+                checkDuplicateNumber[randNum] = true;
+            }
+
+            Player p1 = new Player(1, "a", pickedNumber[0]);
+            Player p2 = new Player(2, "b", pickedNumber[1]);
+            Player p3 = new Player(3, "b", pickedNumber[2]);
+            Player p4 = new Player(4, "b", pickedNumber[3]);
+            Player p5 = new Player(5, "b", pickedNumber[4]);
+            Player p6 = new Player(6, "b", pickedNumber[5]);
+            Player p7 = new Player(7, "b", pickedNumber[6]);
+            Player p8 = new Player(8, "b", pickedNumber[7]);
+            Player p9 = new Player(9, "b", pickedNumber[8]);
+            Player p10 = new Player(10, "b", pickedNumber[9]);
+
+        /*Player p1 = new Player(1, "a", 16);
+        Player p2 = new Player(2, "b", 1);
+        Player p3 = new Player(3, "b", 9);
+        Player p4 = new Player(4, "b", 13);
+        Player p5 = new Player(5, "b", 8);
+        Player p6 = new Player(6, "b", 4);
+        Player p7 = new Player(7, "b", 14);
+        Player p8 = new Player(8, "b", 11);
+        Player p9 = new Player(9, "b", 10);
+        Player p10 = new Player(10, "b", 18);*/
+
+            Player[] players = new Player[10];
+            players[0] = p1;
+            players[1] = p2;
+            players[2] = p3;
+            players[3] = p4;
+            players[4] = p5;
+            players[5] = p6;
+            players[6] = p7;
+            players[7] = p8;
+            players[8] = p9;
+            players[9] = p10;
+
+            Player[] copyPlayers = new Player[10];
+            for (int i = 0; i < 10; ++i) {
+                copyPlayers[i] = players[i];
+            }
+            sortRatingDesc(copyPlayers, new Player[10], 0, 10);
+
+            League league = new League(players);
+
+
+            //int ret = league.findMatchOrNull(p9).getRating();
+
+
+            for (int i = 0; i < 10; ++i) {
+                Player correctPlayer = findMatch(copyPlayers, players[i]);
+                Player myPlayer = league.findMatchOrNull(players[i]);
+                if (correctPlayer != myPlayer) {
+                    printReason(players, players[i], correctPlayer, myPlayer);
+                }
+            }
+
+        }
+    }
+    public static Player findMatch(Player[] players, Player player) {
+
+        int playerIdx = 0;
+        for (int i = 0; i < 10; ++i) {
+            if (players[i] == player) {
+                playerIdx = i;
+                break;
+            }
+        }
+
+        if (playerIdx == 0) {
+            return players[1];
+        } else if (playerIdx == 9) {
+            return players[8];
+        }
+
+        int diff1 = Math.abs(players[playerIdx - 1].getRating() - players[playerIdx].getRating());
+        int diff2 = Math.abs(players[playerIdx].getRating() - players[playerIdx + 1].getRating());
+
+        if (diff2 < diff1) {
+            return players[playerIdx + 1];
+        } else {
+            return players[playerIdx - 1];
+        }
+    }
+
+    public static void printReason(Player[] players, Player input, Player correctPlayer, Player myPlayer) {
+        System.out.println("======================================");
+        for (Player p : players) {
+            System.out.printf("%d ", p.getRating());
+        }
+        System.out.println();
+        System.out.println("======================================");
+
+        System.out.printf("Input : %d\n", input.getRating());
+        System.out.printf("Correct : %d\n", correctPlayer.getRating());
+        System.out.printf("MyAnswer : %d\n", myPlayer.getRating());
+
     }
 }

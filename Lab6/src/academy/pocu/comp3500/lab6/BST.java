@@ -175,7 +175,7 @@ public class BST {
             }
 
             int childDiff = Math.abs(root.getLeft().getPlayer().getRating() - node.getPlayer().getRating());
-            if (childDiff != 0 && childDiff < minDiffParentValue) {
+            if (childDiff != 0 && isNewMinDiffNode(root.getLeft(), minDiffParent, childDiff, minDiffParentValue)) {
                 minDiffParentValue = childDiff;
                 minDiffParent = root.getLeft();
             }
@@ -186,7 +186,7 @@ public class BST {
             }
 
             int childDiff = Math.abs(root.getRight().getPlayer().getRating() - node.getPlayer().getRating());
-            if (childDiff != 0 && childDiff < minDiffParentValue) {
+            if (childDiff != 0 && isNewMinDiffNode(root.getRight(), minDiffParent, childDiff, minDiffParentValue)) {
                 minDiffParentValue = childDiff;
                 minDiffParent = root.getRight();
             }
@@ -323,10 +323,7 @@ public class BST {
 
         return start;
     }
-    /*private void copyNode(Node src, Node dst) {
-        dst.setPlayer(src.getPlayer());
 
-    }*/
     private void disconnectNode(Node parent, Node child) {
         if (parent.getRight() == child) {
             parent.setRight(null);
@@ -365,6 +362,19 @@ public class BST {
             return start;
         }
         return getSuccessor(start.getRight());
+    }
+    private boolean isNewMinDiffNode(Node newNode, Node origin, int newRating, int originRating) {
+        if (newRating < originRating) {
+            return true;
+        } else if (newRating == originRating) {
+            if (newNode.getPlayer().getRating() > origin.getPlayer().getRating()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     private Node getPredecessor(Node root) {

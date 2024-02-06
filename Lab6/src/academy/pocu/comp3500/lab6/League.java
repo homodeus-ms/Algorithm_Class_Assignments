@@ -25,6 +25,12 @@ public class League {
             bst.insert(node);
             hasSelected[randIdx] = true;
         }
+
+        /*for (Player p : players) {
+            Node node = new Node(p);
+            bst.insert(node);
+        }*/
+
     }
     public Player findMatchOrNull(final Player player) {
         Node node = new Node(player);
@@ -35,7 +41,7 @@ public class League {
         if (count <= 0 || bst.getSize() == 0) {
             return new Player[0];
         }
-        int currBstSize = bst.getSize();;
+        int currBstSize = bst.getSize();
         int arrSize = Math.min(currBstSize, count);
         Player[] players = new Player[arrSize];
 
@@ -47,7 +53,7 @@ public class League {
             return new Player[0];
         }
 
-        int currBstSize = bst.getSize();;
+        int currBstSize = bst.getSize();
         int arrSize = Math.min(currBstSize, count);
         Player[] players = new Player[arrSize];
 
