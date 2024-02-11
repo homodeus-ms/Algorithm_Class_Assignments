@@ -7,6 +7,7 @@ public class Node {
     private Node parent;
     private Node left;
     private Node right;
+    private boolean isRed = true;
 
     public Node(Player player) {
         this.player = player;
@@ -43,4 +44,13 @@ public class Node {
         return right;
     }
 
+    public boolean isRed() {
+        return isRed;
+    }
+    public void setRed(boolean isRed) {
+        this.isRed = isRed;
+    }
+    public boolean isNil() {
+        return player == null;
+    }
 }

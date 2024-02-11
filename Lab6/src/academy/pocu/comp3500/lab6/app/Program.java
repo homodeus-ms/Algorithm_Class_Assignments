@@ -1,6 +1,7 @@
 package academy.pocu.comp3500.lab6.app;
 
 import academy.pocu.comp3500.lab6.League;
+import academy.pocu.comp3500.lab6.RedBlackTree;
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
 import java.util.*;
@@ -8,17 +9,42 @@ import java.util.*;
 public class Program {
 
     public static void main(String[] args) {
-        //G02_test();
-        //Test_C();
-        //Test_G();
-        //complexScenarioTest_2();
-        //test_G_multiple_2();
-        //testGetTop();
 
-        //League league = new League();
+
+        /*Player p1 = new Player(1, "a", 3);
+        Player p2 = new Player(2, "b", 5);
+        Player p3 = new Player(3, "b", 10);
+        Player p4 = new Player(4, "b", 7);
+        Player p5 = new Player(5, "b", 19);
+        Player p6 = new Player(6, "b", 8);
+        Player p7 = new Player(7, "b", 9);
+        Player p8 = new Player(8, "b", 11);
+        Player p9 = new Player(9, "b", 12);
+        Player p10 = new Player(10, "b", 18);
+
+        Player[] players = new Player[10];
+        players[0] = p1;
+        players[1] = p2;
+        players[2] = p3;
+        players[3] = p4;
+        players[4] = p5;
+        players[5] = p6;
+        players[6] = p7;
+        players[7] = p8;
+        players[8] = p9;
+        players[9] = p10;
+
+        League league = new League(players);
+        league.print();
+        System.out.println();
+
+        boolean b = league.leave(p8);
+        System.out.println(b);
+
+        Player[] topPlayers = league.getTop(5);
+        printPlayers(topPlayers);*/
 
         testFindMatch();
-
 
         System.out.println("No Assert");
     }
@@ -169,11 +195,11 @@ public class Program {
         Player[] players = new Player[] {player1, player2, player3, player4, player5, player6, player7, player8, player9, player10};
         League league = new League(players);
 
-        /*assert(!league.leave(new Player(10, "a", 6)));
+        assert(!league.leave(new Player(10, "a", 6)));
         assert(!league.leave(new Player(0, "a", 100)));
         assert(!league.leave(new Player(9, "a", 0)));
         assert(!league.leave(new Player(20, "a", 4)));
-        assert(!league.leave(new Player(30, "a", 1)));*/
+        assert(!league.leave(new Player(30, "a", 1)));
 
         //sortRatingDesc(players, new Player[players.length], 0, players.length);
         printPlayers(players);
