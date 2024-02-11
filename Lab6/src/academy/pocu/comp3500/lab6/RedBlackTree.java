@@ -337,9 +337,12 @@ public class RedBlackTree {
     }
 
     private void rotateLeft(Node node) {
-        boolean wasLeftChild = isLeftChild(node);
+        boolean wasLeftChild = false;
 
         Node originP = node.getParent();
+        if (originP != null) {
+            wasLeftChild = isLeftChild(node);
+        }
         Node newP = node.getRight();
         Node newRc = newP.getLeft();
         newP.setParent(originP);
@@ -357,9 +360,13 @@ public class RedBlackTree {
         }
     }
     private void rotateRight(Node node) {
-        boolean wasLeftChild = isLeftChild(node);
+
+        boolean wasLeftChild = false;
 
         Node originP = node.getParent();
+        if (originP != null) {
+            wasLeftChild = isLeftChild(node);
+        }
         Node newP = node.getLeft();
         Node newLc = newP.getRight();
         newP.setParent(originP);

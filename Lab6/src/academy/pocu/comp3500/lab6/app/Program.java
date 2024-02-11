@@ -10,12 +10,13 @@ public class Program {
 
     public static void main(String[] args) {
 
-        League league = new League();
+        /*League league = new League();
         System.out.println(league.join(new Player(10, "A", 10)));
         System.out.println(league.join(new Player(11, "B", 12)));
 
         System.out.println(league.leave(new Player(11, "B" , 12)));
-        league.print();
+        league.print();*/
+
         /*Player p1 = new Player(1, "a", 3);
         Player p2 = new Player(2, "b", 5);
         Player p3 = new Player(3, "b", 10);
@@ -49,7 +50,7 @@ public class Program {
         Player[] topPlayers = league.getTop(5);
         printPlayers(topPlayers);*/
 
-        testFindMatch();
+        testDelete();
 
         System.out.println("No Assert");
     }
@@ -175,43 +176,76 @@ public class Program {
         assert(league.join(player3));
         assert(league.join(player4));
     }
-    private static void testdelete() {
+    private static void testDelete() {
 
         Random random = new Random();
+        boolean[] picked = new boolean[20];
 
-        /*Player player1 = new Player(1, "player1", 29);
-        Player player2 = new Player(2, "player2", 23);
-        Player player3 = new Player(3, "player3", 43);
-        Player player4 = new Player(4, "player4", 37);
-        Player player5 = new Player(5, "player5", 24);*/
+        /*Player player1 = new Player(1, "player1", 19);
+        Player player2 = new Player(2, "player2", 17);
+        Player player3 = new Player(3, "player3", 10);
+        Player player4 = new Player(4, "player4", 12);
+        Player player5 = new Player(5, "player5", 2);
+        Player player6 = new Player(6, "player5", 0);
+        Player player7 = new Player(7, "player5", 3);*/
 
-        Player player1 = new Player(1, "player1", random.nextInt(50));
-        Player player2 = new Player(2, "player2", random.nextInt(50));
-        Player player3 = new Player(3, "player3", random.nextInt(50));
-        Player player4 = new Player(4, "player4", random.nextInt(50));
-        Player player5 = new Player(5, "player5", random.nextInt(50));
-        Player player6 = new Player(6, "player6", random.nextInt(50));
-        Player player7 = new Player(7, "player6", random.nextInt(50));
-        Player player8 = new Player(8, "player6", random.nextInt(50));
-        Player player9 = new Player(9, "Player9", random.nextInt(50));
-        Player player10 = new Player(10, "Player10", random.nextInt(50));
+        int randNum = random.nextInt(20);
+        picked[randNum] = true;
+        Player player1 = new Player(1, "player1", randNum);
+
+        randNum = getRandNum(picked);
+        Player player2 = new Player(2, "player2", randNum);
+        randNum = getRandNum(picked);
+        Player player3 = new Player(3, "player3", randNum);
+        randNum = getRandNum(picked);
+        Player player4 = new Player(4, "player4", randNum);
+        randNum = getRandNum(picked);
+        Player player5 = new Player(5, "player5", randNum);
+        randNum = getRandNum(picked);
+        Player player6 = new Player(6, "player6", randNum);
+        randNum = getRandNum(picked);
+        Player player7 = new Player(7, "player6", randNum);
+
+        /*Player player8 = new Player(8, "player6", random.nextInt(20));
+        Player player9 = new Player(9, "Player9", random.nextInt(20));
+        Player player10 = new Player(10, "Player10", random.nextInt(20));*/
+
+        System.out.printf("player1 : %d\n", player1.getRating());
+        System.out.printf("player2 : %d\n", player2.getRating());
+        System.out.printf("player3 : %d\n", player3.getRating());
+        System.out.printf("player4 : %d\n", player4.getRating());
+        System.out.printf("player5 : %d\n", player5.getRating());
+        System.out.printf("player6 : %d\n", player6.getRating());
+        System.out.printf("player7 : %d\n", player7.getRating());
 
         //League league = new League(new Player[]{player1, player2, player3, player4, player5, player6});
-        Player[] players = new Player[] {player1, player2, player3, player4, player5, player6, player7, player8, player9, player10};
+        Player[] players = new Player[] {player1, player2, player3, player4, player5, player6, player7};//, player8, player9, player10};
         League league = new League(players);
 
-        assert(!league.leave(new Player(10, "a", 6)));
-        assert(!league.leave(new Player(0, "a", 100)));
-        assert(!league.leave(new Player(9, "a", 0)));
-        assert(!league.leave(new Player(20, "a", 4)));
-        assert(!league.leave(new Player(30, "a", 1)));
+        league.print();
+        System.out.println();
+
+        league.leave(player1);
+        System.out.printf("deleted Node : %d\n", player1.getRating());
+        league.leave(player2);
+        System.out.printf("deleted Node : %d\n", player2.getRating());
+        league.leave(player3);
+        System.out.printf("deleted Node : %d\n", player3.getRating());
+        league.leave(player4);
+        System.out.printf("deleted Node : %d\n", player4.getRating());
+        league.leave(player5);
+        System.out.printf("deleted Node : %d\n", player5.getRating());
+        league.leave(player6);
+        System.out.printf("deleted Node : %d\n", player6.getRating());
+        league.leave(player7);
+        System.out.printf("deleted Node : %d\n", player7.getRating());
 
         //sortRatingDesc(players, new Player[players.length], 0, players.length);
-        printPlayers(players);
+        league.print();
 
-        for (int i = 9; i >= 0; --i) {
+        /*for (int i = 9; i >= 0; --i) {
             league.leave(players[i]);
-        }
+        }*/
         //System.out.println(league.bstSize());
 
 
@@ -629,5 +663,14 @@ public class Program {
         System.out.printf("Correct : %d\n", correctPlayer.getRating());
         System.out.printf("MyAnswer : %d\n", myPlayer.getRating());
 
+    }
+    public static int getRandNum(boolean[] pickedNum) {
+        Random random = new Random();
+        int num =  random.nextInt(20);
+        while (pickedNum[num]) {
+            num = random.nextInt(20);
+        }
+        pickedNum[num] = true;
+        return num;
     }
 }
