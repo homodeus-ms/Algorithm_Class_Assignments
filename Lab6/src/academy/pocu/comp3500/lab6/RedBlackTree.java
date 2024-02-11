@@ -37,6 +37,7 @@ public class RedBlackTree {
         if (node.getPlayer().getId() == root.getPlayer().getId() &&
                 root.getLeft().isNil() && root.getRight().isNil()) {
             root = null;
+            --size;
             return true;
         }
 

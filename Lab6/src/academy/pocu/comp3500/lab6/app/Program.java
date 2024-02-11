@@ -10,12 +10,9 @@ public class Program {
 
     public static void main(String[] args) {
 
-        /*League league = new League();
-        System.out.println(league.join(new Player(10, "A", 10)));
-        System.out.println(league.join(new Player(11, "B", 12)));
-
-        System.out.println(league.leave(new Player(11, "B" , 12)));
-        league.print();*/
+        //G02_test();
+        //complexScenarioTest_2();
+        test_G_multiple_2();
 
         /*Player p1 = new Player(1, "a", 3);
         Player p2 = new Player(2, "b", 5);
@@ -50,7 +47,7 @@ public class Program {
         Player[] topPlayers = league.getTop(5);
         printPlayers(topPlayers);*/
 
-        testDelete();
+        //testDelete();
 
         System.out.println("No Assert");
     }
