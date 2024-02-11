@@ -40,7 +40,7 @@ public class RedBlackTree {
             return true;
         }
 
-        deleteRecursive(root, node.getPlayer().getId(), node.getPlayer().getRating());
+        root = deleteRecursive(root, node.getPlayer().getId(), node.getPlayer().getRating());
 
         if (hasDeleted) {
             if (deletedNodeWasRed) {

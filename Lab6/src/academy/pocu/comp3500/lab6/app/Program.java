@@ -12,8 +12,9 @@ public class Program {
 
         League league = new League();
         System.out.println(league.join(new Player(10, "A", 10)));
-        System.out.println(league.leave(new Player(5, "B" , 5)));
-        System.out.println(league.leave(new Player(10, "B" , 10)));
+        System.out.println(league.join(new Player(11, "B", 12)));
+
+        System.out.println(league.leave(new Player(11, "B" , 12)));
         league.print();
         /*Player p1 = new Player(1, "a", 3);
         Player p2 = new Player(2, "b", 5);
