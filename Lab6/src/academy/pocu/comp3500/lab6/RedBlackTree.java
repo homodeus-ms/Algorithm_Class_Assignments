@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class RedBlackTree {
     private Node root;
     private Node n;
-    private boolean mWasRed = false;
+    private boolean deletedNodeWasRed = false;
     private int size = 0;
     private boolean hasDeleted = true;
     private boolean hasInserted = true;
@@ -33,7 +33,9 @@ public class RedBlackTree {
         if (root == null) {
             return false;
         }
-        if (node == root && node.getLeft().isNil() && node.getRight().isNil()) {
+
+        if (node.getPlayer().getId() == root.getPlayer().getId() &&
+                root.getLeft().isNil() && root.getRight().isNil()) {
             root = null;
             return true;
         }
@@ -41,7 +43,7 @@ public class RedBlackTree {
         deleteRecursive(root, node.getPlayer().getId(), node.getPlayer().getRating());
 
         if (hasDeleted) {
-            if (mWasRed) {
+            if (deletedNodeWasRed) {
 
             } else if (n.isRed()) {
                 n.setRed(false);
@@ -229,7 +231,7 @@ public class RedBlackTree {
             }
         } else {
             if (start.getLeft().isNil()) {
-                mWasRed = start.isRed();
+                deletedNodeWasRed = start.isRed();
                 n = start.getRight();
 
                 Node temp = start.getRight();
@@ -239,7 +241,7 @@ public class RedBlackTree {
                 //start.setPlayer(temp.getPlayer());
                 start = temp;
             } else if (start.getRight().isNil()) {
-                mWasRed = start.isRed();
+                deletedNodeWasRed = start.isRed();
                 n = start.getLeft();
 
                 Node temp = start.getLeft();
@@ -382,7 +384,7 @@ public class RedBlackTree {
             System.out.println("Null");
             return;
         }
-        nodeToListRecursive(list, root);
+        addNodeToListRecursive(list, root);
         System.out.printf("Root is : %d\n", root.getPlayer().getRating());
         for (Node n : list) {
             if (!n.isNil()) {
@@ -392,12 +394,12 @@ public class RedBlackTree {
         }
         System.out.println();
     }
-    public void nodeToListRecursive(ArrayList<Node> list, Node start) {
+    public void addNodeToListRecursive(ArrayList<Node> list, Node start) {
         if (start.isNil()) {
             return;
         }
-        nodeToListRecursive(list, start.getLeft());
+        addNodeToListRecursive(list, start.getLeft());
         list.add(start);
-        nodeToListRecursive(list, start.getRight());
+        addNodeToListRecursive(list, start.getRight());
     }
 }

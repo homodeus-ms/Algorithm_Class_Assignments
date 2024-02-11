@@ -35,7 +35,8 @@ public class League {
     }
     public Player findMatchOrNull(final Player player) {
         Node root = tree.getRootOrNull();
-        if (root == null || (root.getPlayer() == player && root.getRight().isNil() && root.getLeft().isNil())) {
+        int treeSize = tree.getSize();
+        if (treeSize == 0 || treeSize == 1) {
             return null;
         }
 
@@ -156,6 +157,10 @@ public class League {
         return tree.insert(new Node(player));
     }
     public boolean leave(final Player player) {
+        int treeSize = tree.getSize();
+        if (treeSize == 0 || (treeSize == 1 && tree.getRootOrNull().getPlayer().getId() != player.getId())) {
+            return false;
+        }
         return tree.delete(new Node(player));
     }
 
