@@ -139,16 +139,16 @@ public class RedBlackTree {
         //  p기준 회전들은 회전 이후에 p기준으로 재귀해야함
         if (isLeftChild(p)) {
             if (isLeftChild(n)) {
-                swapColor(p, g);
                 rotateRight(g);
+                swapColor(p, g);
             } else {
                 rotateLeft(p);
                 makeUpTreeInsert(p);
             }
         } else {
             if (!isLeftChild(n)) {
-                swapColor(p, g);
                 rotateLeft(g);
+                swapColor(p, g);
             } else {
                 rotateRight(p);
                 makeUpTreeInsert(p);
@@ -375,6 +375,7 @@ public class RedBlackTree {
         newP.setLeft(node);
         node.setParent(newP);
         node.setRight(newRc);
+        newRc.setParent(node);
         if (originP != null) {
             if (wasLeftChild) {
                 originP.setLeft(newP);
@@ -399,6 +400,7 @@ public class RedBlackTree {
         newP.setRight(node);
         node.setParent(newP);
         node.setLeft(newLc);
+        newLc.setParent(node);
         if (originP != null) {
             if (wasLeftChild) {
                 originP.setLeft(newP);

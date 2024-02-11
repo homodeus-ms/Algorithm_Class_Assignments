@@ -10,9 +10,9 @@ public class Program {
 
     public static void main(String[] args) {
 
-        G02_test();
-        complexScenarioTest_2();
-        test_G_multiple_2();
+        //G02_test();
+        //complexScenarioTest_2();
+        //test_G_multiple_2();
 
         /*Player p1 = new Player(1, "a", 3);
         Player p2 = new Player(2, "b", 5);
@@ -47,8 +47,9 @@ public class Program {
         Player[] topPlayers = league.getTop(5);
         printPlayers(topPlayers);*/
 
-        //testDelete();
-
+        testDelete();
+        //testInsert();
+        //testInsertOne();
         System.out.println("No Assert");
     }
 
@@ -176,17 +177,24 @@ public class Program {
     private static void testDelete() {
 
         Random random = new Random();
-        boolean[] picked = new boolean[20];
+        boolean[] picked = new boolean[100];
 
-        /*Player player1 = new Player(1, "player1", 19);
-        Player player2 = new Player(2, "player2", 17);
-        Player player3 = new Player(3, "player3", 10);
-        Player player4 = new Player(4, "player4", 12);
-        Player player5 = new Player(5, "player5", 2);
-        Player player6 = new Player(6, "player5", 0);
-        Player player7 = new Player(7, "player5", 3);*/
+        Player player1 = new Player(1, "player1", 74);
+        Player player2 = new Player(2, "player2", 88);
+        Player player3 = new Player(3, "player3", 3);
+        Player player4 = new Player(4, "player4", 62);
+        Player player5 = new Player(5, "player5", 15);
+        Player player6 = new Player(6, "player5", 24);
+        Player player7 = new Player(7, "player5", 90);
+        Player player8 = new Player(8, "player1", 17);
+        Player player9 = new Player(9, "player2", 25);
+        Player player10 = new Player(10, "player3", 30);
+        Player player11 = new Player(11, "player4", 83);
+        Player player12 = new Player(12, "player5", 7);
+        Player player13 = new Player(13, "player5", 93);
+        Player player14 = new Player(14, "player5", 47);
 
-        int randNum = random.nextInt(20);
+        /*int randNum = random.nextInt(100);
         picked[randNum] = true;
         Player player1 = new Player(1, "player1", randNum);
 
@@ -202,6 +210,20 @@ public class Program {
         Player player6 = new Player(6, "player6", randNum);
         randNum = getRandNum(picked);
         Player player7 = new Player(7, "player6", randNum);
+        randNum = getRandNum(picked);
+        Player player8 = new Player(8, "player8", randNum);
+        randNum = getRandNum(picked);
+        Player player9 = new Player(9, "player2", randNum);
+        randNum = getRandNum(picked);
+        Player player10 = new Player(10, "player3", randNum);
+        randNum = getRandNum(picked);
+        Player player11 = new Player(11, "player4", randNum);
+        randNum = getRandNum(picked);
+        Player player12 = new Player(12, "player5", randNum);
+        randNum = getRandNum(picked);
+        Player player13 = new Player(13, "player6", randNum);
+        randNum = getRandNum(picked);
+        Player player14 = new Player(14, "player6", randNum);*/
 
         /*Player player8 = new Player(8, "player6", random.nextInt(20));
         Player player9 = new Player(9, "Player9", random.nextInt(20));
@@ -214,17 +236,45 @@ public class Program {
         System.out.printf("player5 : %d\n", player5.getRating());
         System.out.printf("player6 : %d\n", player6.getRating());
         System.out.printf("player7 : %d\n", player7.getRating());
+        System.out.printf("player8 : %d\n", player8.getRating());
+        System.out.printf("player9 : %d\n", player9.getRating());
+        System.out.printf("player10 : %d\n", player10.getRating());
+        System.out.printf("player11 : %d\n", player11.getRating());
+        System.out.printf("player12 : %d\n", player12.getRating());
+        System.out.printf("player13 : %d\n", player13.getRating());
+        System.out.printf("player14 : %d\n", player14.getRating());
 
-        //League league = new League(new Player[]{player1, player2, player3, player4, player5, player6});
-        Player[] players = new Player[] {player1, player2, player3, player4, player5, player6, player7};//, player8, player9, player10};
-        League league = new League(players);
+        /*Player[] players = new Player[] {player1, player2, player3, player4, player5, player6, player7,
+        player8, player9, player10, player11, player12, player13, player14};//, player8, player9, player10};
+        League league = new League(players);*/
+
+        League league = new League();
+        league.join(player1);
+        league.join(player2);
+        league.join(player3);
+        league.join(player4);
+        league.join(player5);
+        league.join(player6);
+        league.join(player7);
+        league.join(player8);
+        league.join(player9);
+        league.join(player10);
+        //league.join(player11);
+        //league.join(player12);
+        //league.join(player13);
+        //league.join(player14);
+
+
+
 
         league.print();
         System.out.println();
+        int preSize = league.getSize();
 
-        /*league.leave(player1);
+
+        league.leave(player1);
         System.out.printf("deleted Node : %d\n", player1.getRating());
-        league.leave(player2);
+        /*league.leave(player2);
         System.out.printf("deleted Node : %d\n", player2.getRating());
         league.leave(player3);
         System.out.printf("deleted Node : %d\n", player3.getRating());
@@ -233,9 +283,13 @@ public class Program {
         league.leave(player5);
         System.out.printf("deleted Node : %d\n", player5.getRating());
         league.leave(player6);
-        System.out.printf("deleted Node : %d\n", player6.getRating());
-        league.leave(player7);
-        System.out.printf("deleted Node : %d\n", player7.getRating());*/
+        System.out.printf("deleted Node : %d\n", player6.getRating());*/
+        league.leave(player13);
+        System.out.printf("deleted Node : %d\n", player13.getRating());
+        System.out.println();
+        System.out.println();
+        System.out.printf("Tree before Size : %d\n", preSize);
+        System.out.printf("Tree after Size : %d\n", league.getSize());
 
         //sortRatingDesc(players, new Player[players.length], 0, players.length);
         league.print();
@@ -663,9 +717,9 @@ public class Program {
     }
     public static int getRandNum(boolean[] pickedNum) {
         Random random = new Random();
-        int num =  random.nextInt(20);
+        int num =  random.nextInt(100);
         while (pickedNum[num]) {
-            num = random.nextInt(20);
+            num = random.nextInt(100);
         }
         pickedNum[num] = true;
         return num;

@@ -241,4 +241,8 @@ public class League {
         tree.print();
     }
 
+    public int getSize() {
+        return tree.getSize();
+    }
+
 }
