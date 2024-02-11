@@ -123,11 +123,36 @@ public class RedBlackTree {
         // 이제 트리 회전을 해야하는 상황
 
         // 1. g->p 방향과 p->n 방향이 어긋나 있어서 트리 바깥쪽 회전을 하고 p로 재귀해야 하는 경우
-        if (p == g.getLeft() && n == p.getRight() || p == g.getRight() && n == p.getLeft()) {
+        /*if (p == g.getLeft() && n == p.getRight() || p == g.getRight() && n == p.getLeft()) {
             rotateTreeToOutside(g, p, n);
             makeUpTreeInsert(p);
         } else {    // 2. g->p 방향과 p->n 방향이 같아서 트리 안쪽 회전을 하면 되는 상황
             rotateTreeToInside(g.getParent(), g, p);
+        }*/
+
+        // 다음의 네가지 경우가 생김
+        //   1.    g          2.    g           3.   g            4.   g
+        //       p                p                    p                 p
+        //     n                    n                    n             n
+        //  g기준 오른쪽회전     p기준 왼쪽회전        g기준 왼쪽회전     p기준 오른쪽회전
+        //  g기준 회전들은 p와 g의 색상을 swap해줘야함
+        //  p기준 회전들은 회전 이후에 p기준으로 재귀해야함
+        if (isLeftChild(p)) {
+            if (isLeftChild(n)) {
+                swapColor(p, g);
+                rotateRight(g);
+            } else {
+                rotateLeft(p);
+                makeUpTreeInsert(p);
+            }
+        } else {
+            if (!isLeftChild(n)) {
+                swapColor(p, g);
+                rotateLeft(g);
+            } else {
+                rotateRight(p);
+                makeUpTreeInsert(p);
+            }
         }
     }
 

@@ -10,8 +10,8 @@ public class Program {
 
     public static void main(String[] args) {
 
-        //G02_test();
-        //complexScenarioTest_2();
+        G02_test();
+        complexScenarioTest_2();
         test_G_multiple_2();
 
         /*Player p1 = new Player(1, "a", 3);
@@ -222,7 +222,7 @@ public class Program {
         league.print();
         System.out.println();
 
-        league.leave(player1);
+        /*league.leave(player1);
         System.out.printf("deleted Node : %d\n", player1.getRating());
         league.leave(player2);
         System.out.printf("deleted Node : %d\n", player2.getRating());
@@ -235,7 +235,7 @@ public class Program {
         league.leave(player6);
         System.out.printf("deleted Node : %d\n", player6.getRating());
         league.leave(player7);
-        System.out.printf("deleted Node : %d\n", player7.getRating());
+        System.out.printf("deleted Node : %d\n", player7.getRating());*/
 
         //sortRatingDesc(players, new Player[players.length], 0, players.length);
         league.print();
