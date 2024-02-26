@@ -2,8 +2,6 @@ package academy.pocu.comp3500.lab6;
 
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
-import java.util.ArrayList;
-
 public class RedBlackTree {
     private Node root;
     private Node n;
@@ -121,15 +119,6 @@ public class RedBlackTree {
         }
 
         // 이제 트리 회전을 해야하는 상황
-
-        // 1. g->p 방향과 p->n 방향이 어긋나 있어서 트리 바깥쪽 회전을 하고 p로 재귀해야 하는 경우
-        /*if (p == g.getLeft() && n == p.getRight() || p == g.getRight() && n == p.getLeft()) {
-            rotateTreeToOutside(g, p, n);
-            makeUpTreeInsert(p);
-        } else {    // 2. g->p 방향과 p->n 방향이 같아서 트리 안쪽 회전을 하면 되는 상황
-            rotateTreeToInside(g.getParent(), g, p);
-        }*/
-
         // 다음의 네가지 경우가 생김
         //   1.    g          2.    g           3.   g            4.   g
         //       p                p                    p                 p
@@ -169,77 +158,6 @@ public class RedBlackTree {
         nilL.setParent(newNode);
         nilR.setParent(newNode);
     }
-    private void rotateTreeToInside(Node g, Node p, Node n) {
-
-        swapColor(n, p);
-
-        if (n == p.getLeft()) {
-            Node nRightChild = n.getRight();
-            n.setParent(g);
-
-            // g가 null이라는 것은 p가 루트 였다는 것, 그래서 이제 n이 루트가 된다
-            if (g != null) {
-                if (isLeftChild(p)) {
-                    g.setLeft(n);
-                } else {
-                    g.setRight(n);
-                }
-            } else {
-                root = n;
-            }
-
-            p.setParent(n);
-            n.setRight(p);
-            p.setLeft(nRightChild);
-            nRightChild.setParent(p);
-
-        } else {
-            Node nLeftChild = n.getLeft();
-            n.setParent(g);
-
-            if (g != null) {
-                if (isLeftChild(p)) {
-                    g.setLeft(n);
-                } else {
-                    g.setRight(n);
-                }
-            } else {
-                root = n;
-            }
-
-            p.setParent(n);
-            n.setLeft(p);
-            p.setRight(nLeftChild);
-            nLeftChild.setParent(p);
-        }
-    }
-    private void rotateTreeToOutside(Node g, Node p, Node n) {
-        if (isLeftChild(n)) {
-            Node nRightChild = n.getRight();
-            n.setParent(g);
-            if (g != null) {
-                g.setRight(n);
-            } else {
-                root = n;
-            }
-            p.setParent(n);
-            n.setRight(p);
-            p.setLeft(nRightChild);
-            nRightChild.setParent(p);
-        } else {
-            Node nLeftChild = n.getLeft();
-            n.setParent(g);
-            if (g != null) {
-                g.setLeft(n);
-            } else {
-                root = n;
-            }
-            p.setParent(n);
-            n.setLeft(p);
-            p.setRight(nLeftChild);
-            nLeftChild.setParent(p);
-        }
-    }
 
     private Node deleteRecursive(Node start, int nodeId, int nodeRating) {
         if (start.isNil()) {
@@ -264,7 +182,6 @@ public class RedBlackTree {
                 start.setRight(null);
                 temp.setParent(start.getParent());
                 start.setParent(null);
-                //start.setPlayer(temp.getPlayer());
                 start = temp;
             } else if (start.getRight().isNil()) {
                 deletedNodeWasRed = start.isRed();
@@ -274,7 +191,6 @@ public class RedBlackTree {
                 start.setLeft(null);
                 temp.setParent(start.getParent());
                 start.setParent(null);
-                //start.setPlayer(temp.getPlayer());
                 start = temp;
 
             } else {
@@ -410,31 +326,5 @@ public class RedBlackTree {
         } else {
             root = newP;
         }
-    }
-
-    public void print() {
-        ArrayList<Node> list = new ArrayList<>();
-        System.out.println("===== in-order value ascending =====");
-        if (root == null) {
-            System.out.println("Null");
-            return;
-        }
-        addNodeToListRecursive(list, root);
-        System.out.printf("Root is : %d\n", root.getPlayer().getRating());
-        for (Node n : list) {
-            if (!n.isNil()) {
-                char c = n.isRed() ? 'r' : 'B';
-                System.out.printf("%d(%c) ", n.getPlayer().getRating(), c);
-            }
-        }
-        System.out.println();
-    }
-    public void addNodeToListRecursive(ArrayList<Node> list, Node start) {
-        if (start.isNil()) {
-            return;
-        }
-        addNodeToListRecursive(list, start.getLeft());
-        list.add(start);
-        addNodeToListRecursive(list, start.getRight());
     }
 }

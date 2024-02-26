@@ -2,8 +2,6 @@ package academy.pocu.comp3500.assignment2;
 
 import academy.pocu.comp3500.assignment2.datastructure.ArrayList;
 
-import java.util.Iterator;
-
 public final class Indent {
 
     private ArrayList<String> strs;
@@ -68,23 +66,5 @@ public final class Indent {
 
         Logger.getCurrentIndent().setParent(parent);
 
-        /*this.strs = null;
-
-        if (this.parent == null && this.child == null) {
-
-        } else if (this.parent != null && this.child != null) {
-            this.parent.child = this.child;
-            this.child.parent = this.parent;
-            this.parent = null;
-            this.child = null;
-        } else if (this.parent != null) {
-            this.parent.child = null;
-            this.parent = null;
-        } else {
-
-        }
-
-
-        Logger.deleteIndent(this);*/
     }
 }

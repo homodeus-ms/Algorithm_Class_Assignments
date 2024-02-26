@@ -2,8 +2,6 @@ package academy.pocu.comp3500.assignment2;
 
 import academy.pocu.comp3500.assignment2.datastructure.ArrayList;
 import academy.pocu.comp3500.assignment2.datastructure.LinkedList;
-import academy.pocu.comp3500.assignment2.datastructure.Queue;
-
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -49,42 +47,12 @@ public final class Logger {
             }
         }
 
-        /*int idx = 0;
-        int indentCount = 0;
-        currIndent = logs.get(idx);
-
-        Exit:
-        while (idx < logs.getSize()) {
-            ArrayList<String> list = currIndent.getStrsOrNull();
-            int listSize = list.getSize();
-
-            for (int j = 0; j < listSize; ++j) {
-                for (int k = 0; k < indentCount; ++k) {
-                    writer.write(INDENT);
-                }
-                writer.write(String.format("%s%s", list.get(j), System.lineSeparator()));
-            }
-
-            if (currIndent.getChildOrNull() != null) {
-                currIndent = currIndent.getChildOrNull();
-                ++indentCount;
-            } else {
-                ++idx;
-                indentCount = Math.max(0, indentCount - 1);
-                if (idx >= logs.getSize()) {
-                    break Exit;
-                }
-                currIndent = logs.get(idx);
-            }
-        }*/
-
         writer.flush();
 
     }
     public static void printTo(final BufferedWriter writer, final String filter) throws IOException {
 
         int logsSize = logs.getSize();
-
 
         for (int i = 0; i < logsSize; ++i) {
             Indent temp = logs.get(i);
@@ -124,56 +92,9 @@ public final class Logger {
                 }
             }
         }
-        /*int idx = 0;
-        int indentCount = 0;
-        currIndent = logs.get(idx++);
-        //getFilteredStringRecursive(writer, filter, currIndent, idx, indentCount);
-
-        while (idx <= logs.getSize() - 1) {
-            ArrayList<String> currList = currIndent.getStrsOrNull();
-            int listSize = currList.getSize();
-            boolean hasFilter = false;
-
-            for (int i = 0; i < listSize; ++i) {
-                if (currList.get(i).contains(filter)) {
-                    hasFilter = true;
-                    break;
-                }
-            }
-
-            if (!hasFilter) {
-
-                currIndent = logs.get(idx++);
-                continue;
-            } else {
-                writeList(writer, filter, currList, listSize, indentCount);
-            }
-
-            if (currIndent.getChildOrNull() != null) {
-                ++indentCount;
-                currIndent = currIndent.getChildOrNull();
-                continue;
-            } else {
-                --indentCount;
-                currIndent = logs.get(idx++);
-            }
-        }*/
-
         writer.flush();
     }
     public static void clear() {
-        /*for (int i = 0; i < logs.getSize(); ++i) {
-            Indent temp = logs.get(i);
-            Indent next;
-
-            while (temp.getChildOrNull() != null) {
-                next = temp.getChildOrNull();
-                temp.setParent(null);
-                temp.setChild(null);
-                temp = next;
-            }
-            temp.setParent(null);
-        }*/
         logs.clear();
         currIndent = new Indent();
         logs.addLast(currIndent);
@@ -194,7 +115,7 @@ public final class Logger {
     }
     public static void unindent() {
         Indent newIndent = new Indent();
-        //newIndent.setParent(currIndent);
+
         if (currIndent.getIndentCount() > 1) {
             newIndent.setIndentCount(currIndent.getIndentCount() - 1);
             currIndent.setChild(newIndent);
@@ -214,7 +135,9 @@ public final class Logger {
         }
         return false;
     }
-    public static void deleteIndent(Indent indent) {
+
+
+    /*public static void deleteIndent(Indent indent) {
         logs.remove(indent);
     }
 
@@ -252,8 +175,8 @@ public final class Logger {
 
         currIndent = logs.get(idx + 1);
         getFilteredStringRecursive(writer, filter, currIndent, idx + 1, indentCount + 1);
-    }
-    private static void writeList(BufferedWriter writer, String filter, ArrayList<String> list,
+    }*/
+    /*private static void writeList(BufferedWriter writer, String filter, ArrayList<String> list,
                                   int listSize, int indentCount) throws IOException {
         for (int i = 0; i < listSize; ++i) {
             if (!list.get(i).contains(filter)) {
@@ -264,5 +187,5 @@ public final class Logger {
             }
             writer.write(String.format("%s%s", list.get(i), System.lineSeparator()));
         }
-    }
+    }*/
 }

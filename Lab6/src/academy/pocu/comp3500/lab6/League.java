@@ -2,36 +2,18 @@ package academy.pocu.comp3500.lab6;
 
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
-import java.util.Random;
-
 public class League {
 
-    //private final BST bst = new BST();
     private final RedBlackTree tree = new RedBlackTree();
     private static int idx = 0;
 
     public League() {
     }
     public League(Player[] players) {
-        /*Random random = new Random();
-        boolean[] hasSelected = new boolean[players.length];
-
-        for (int i = 0; i < players.length; ++i) {
-            int randIdx = random.nextInt(players.length);
-
-            while (hasSelected[randIdx]) {
-                randIdx = random.nextInt(players.length);
-            }
-
-            Node node = new Node(players[randIdx]);
-            bst.insert(node);
-            hasSelected[randIdx] = true;
-        }*/
         for (Player p : players) {
             Node node = new Node(p);
             tree.insert(node);
         }
-
     }
     public Player findMatchOrNull(final Player player) {
         Node root = tree.getRootOrNull();
@@ -120,16 +102,6 @@ public class League {
         idx = 0;
         getTopPlayersRecursive(tree.getRootOrNull(), players, arrSize);
         return players;
-
-        /*if (count <= 0 || bst.getSize() == 0) {
-            return new Player[0];
-        }
-        int currBstSize = bst.getSize();
-        int arrSize = Math.min(currBstSize, count);
-        Player[] players = new Player[arrSize];
-
-        bst.getTopPlayers(players, arrSize);
-        return players;*/
     }
     public Player[] getBottom(final int count) {
         if (count <= 0 || tree.getRootOrNull() == null) {
@@ -236,13 +208,4 @@ public class League {
             getBottomPlayersRecursive(start.getRight(), players, count);
         }
     }
-
-    public void print() {
-        tree.print();
-    }
-
-    public int getSize() {
-        return tree.getSize();
-    }
-
 }

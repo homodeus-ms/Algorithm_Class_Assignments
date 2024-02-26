@@ -262,6 +262,41 @@ final class Game {
     }
 
     private static String printBoard(final char[][] board) {
+        /*final StringBuilder sb = new StringBuilder(128);
+
+        sb.append("  ");
+        for (int x = 0; x < BOARD_SIZE; ++x) {
+            sb.append("  ");
+            sb.append((char) (x + 'a'));
+        }
+
+        sb.append(System.lineSeparator());
+
+        addHorizontalBorder(sb);
+
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            sb.append(y);
+            sb.append("|");
+
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                char symbol = board[y][x];
+
+                if (symbol == 0) {
+                    sb.append("   ");
+                } else {
+                    sb.append("  ");
+                    sb.append(String.format("%c", board[y][x]));
+                }
+            }
+
+            sb.append('|');
+            sb.append(System.lineSeparator());
+        }
+
+        addHorizontalBorder(sb);
+
+        return sb.toString();*/
+
         final StringBuilder sb = new StringBuilder(128);
 
         sb.append("  ");
@@ -297,6 +332,13 @@ final class Game {
     }
 
     private static void addHorizontalBorder(StringBuilder sb) {
+        /*sb.append(' ');
+        sb.append('+');
+        for (int i = 0; i < BOARD_SIZE * 2; ++i) {
+            sb.append('-');
+        }
+        sb.append('+');
+        sb.append(System.lineSeparator());*/
         sb.append(' ');
         sb.append('+');
         for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -357,6 +399,7 @@ final class Game {
         board[y][5] = 'B';
         board[y][6] = 'N';
         board[y][7] = 'R';
+
 
         return board;
     }

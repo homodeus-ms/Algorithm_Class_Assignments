@@ -47,7 +47,7 @@ public class Program {
         Player[] topPlayers = league.getTop(5);
         printPlayers(topPlayers);*/
 
-        testDelete();
+        //testDelete();
         //testInsert();
         //testInsertOne();
         System.out.println("No Assert");
@@ -267,9 +267,9 @@ public class Program {
 
 
 
-        league.print();
+        /*league.print();
         System.out.println();
-        int preSize = league.getSize();
+        int preSize = league.getSize();*/
 
 
         league.leave(player1);
@@ -288,11 +288,11 @@ public class Program {
         System.out.printf("deleted Node : %d\n", player13.getRating());
         System.out.println();
         System.out.println();
-        System.out.printf("Tree before Size : %d\n", preSize);
+        /*System.out.printf("Tree before Size : %d\n", preSize);
         System.out.printf("Tree after Size : %d\n", league.getSize());
 
         //sortRatingDesc(players, new Player[players.length], 0, players.length);
-        league.print();
+        league.print();*/
 
         /*for (int i = 9; i >= 0; --i) {
             league.leave(players[i]);
