@@ -11,14 +11,14 @@ public class Dir {
     public static final char SW = 7;*/
     public static final int[] offset = {-8, 8, -1, 1, -9, 9, -7, 7};
 
-    public static final int N = -8;
-    public static final int S = 8;
-    public static final int W = -1;
-    public static final int E = 1;
-    public static final int NW = -9;
-    public static final int SE = 9;
-    public static final int NE = -7;
-    public static final int SW = 7;
+    public static final byte N = -8;
+    public static final byte S = 8;
+    public static final byte W = -1;
+    public static final byte E = 1;
+    public static final byte NW = -9;
+    public static final byte SE = 9;
+    public static final byte NE = -7;
+    public static final byte SW = 7;
 
     /*public static final char N_IDX = 0;
     public static final char S_IDX = 1;
