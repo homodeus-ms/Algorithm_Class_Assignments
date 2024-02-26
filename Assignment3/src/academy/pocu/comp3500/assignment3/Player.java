@@ -34,7 +34,6 @@ public class Player extends PlayerBase {
     private static final int MAX_MOVE_IN_A_TURN = 138;
     private static final int BOARD_SIZE = 8;
     private static final int BOARD_LAST_IDX = 63;
-    private static final long minReserveTime = 100;
 
     public int preWhiteScore = 1400;
     public int preBlackScore = 1400;
@@ -47,44 +46,23 @@ public class Player extends PlayerBase {
     private char[] copyBoard = new char[BOARD_SIZE * BOARD_SIZE];
     ArrayList<Byte> moves = new ArrayList<>();
 
-    /*private Stack<Byte> myPiecesIdx = new Stack<>();
-    private Stack<Byte> opponentPiecesIdx = new Stack<>();*/
 
-    /*private byte[] myPiecesIdx = new byte[16];
-    private byte myPiecesCount = 0;
-    private byte[] opponentPiecesIdx = new byte[16];
-    private byte opponentPiecesCount = 0;
-
-
-    // moves = {fromIdx, toIdx}
-
-    public byte[] myMoves = new byte[MAX_MOVE_IN_A_TURN * 2];
-    public int myMovesCount = 0;
-    public int[] myScores = new int[MAX_MOVE_IN_A_TURN];
-    public int myScoresCount = 0;
-
-    public int bestScore;
-    public int[] bestScoreInfo = new int[3];
-    public int worstScore;
-    public int[] worstScoreInfo = new int[3];
-    public int sum;
-
-
-    // opponent 관련
-    public Player opponent;
-    public byte[] oppoMoves = new byte[MAX_MOVE_IN_A_TURN * 2];
-    public int oppoMovesCount = 0;
-    public int[] oppoScores = new int[MAX_MOVE_IN_A_TURN];
-    public int oppoScoresCount = 0;
-
-    public int whitePieceCheckRemainCount = 16;
-    public int blackPieceCheckRemainCount = 16;*/
 
     // move 관련
     private char capturedPiece = 0;
+    private Move maxResult = new Move(0, 0, 0, 0);
+    private Move result = new Move(0, 0, 0, 0);
 
-    // result 관련
+    // result, score 관련
     private byte[] bestMove = new byte[2];
+
+
+    // [0] = b (30 point)  |  [9] = k (1000 point)  |  [12] = n (30 point)
+    // [14] = p (10 point)  |  [15] = q (100 point)  |  [16] = r (50 point)
+    private static final int[] SCORE_TABLE = {
+            30, -1, -1, -1, -1, -1, -1, -1, -1, 1000,
+            -1, -1, 30, -1, 10, 100, 50,
+    };
 
 
     // etc
@@ -107,6 +85,7 @@ public class Player extends PlayerBase {
 
 
     public Move getNextMove(char[][] board) {
+
         boolean isStartBoard = true;
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -132,14 +111,15 @@ public class Player extends PlayerBase {
         copyBoard(this.board, board);
         int maxPoint = 0;
         int point = 0;
-        Move maxResult = new Move(0, 0, 0, 0);
-        Move result = new Move(0, 0, 0, 0);
-        //int[] result = new int[5];
+        //Move maxResult = new Move(0, 0, 0, 0);
+        //Move result = new Move(0, 0, 0, 0);
 
         long start;
         long end;
         long deltaTime = 0;
-        int depth = 2;
+        int limitTime = getMaxMoveTimeMilliseconds();
+
+        int depth = limitTime >= 1000 ? 5 : 4;
 
         preWhiteScore = whiteScore;
         preBlackScore = blackScore;
@@ -162,9 +142,9 @@ public class Player extends PlayerBase {
 
             end = System.nanoTime();
             deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
-            //System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
-            //System.out.printf("depth : %d\n", depth);
-            //System.out.printf("deltaTime : %d\n", deltaTime);
+            System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
+            System.out.printf("depth : %d\n", depth);
+            System.out.printf("deltaTime : %d\n", deltaTime);
 
 
             if (point > maxPoint) {
@@ -203,6 +183,7 @@ public class Player extends PlayerBase {
             int maxValue = Integer.MIN_VALUE;
             int currValue;
             int movesSize = moves.size();
+            int tempEarnScore = 0;
 
             for (int i = 0; i < movesSize; i += 2) {
                 byte from = moves.get(i);
@@ -210,9 +191,9 @@ public class Player extends PlayerBase {
                 char existingPiece = board[to];
 
 
-                move(board, playerIsWhite, from, to);
+                tempEarnScore = move(board, playerIsWhite, from, to);
                 currValue = mimimax(board, depth - 1, startDepth, alpha, beta, false, !playerIsWhite, result);
-                cancelMove(board, playerIsWhite, to, from, existingPiece);
+                cancelMove(board, playerIsWhite, to, from, existingPiece, tempEarnScore);
 
 
                 if (currValue > maxValue) {
@@ -242,15 +223,16 @@ public class Player extends PlayerBase {
             int minValue = Integer.MAX_VALUE;
             int currValue;
             int movesSize = moves.size();
+            int tempEarnScore = 0;
 
             for (int i = 0; i < movesSize; i += 2) {
                 byte from = moves.get(i);
                 byte to = moves.get(i + 1);
                 char existingPiece = board[to];
 
-                move(board, playerIsWhite, from, to);
+                tempEarnScore = move(board, playerIsWhite, from, to);
                 currValue = mimimax(board, depth - 1, startDepth, alpha, beta, true, !playerIsWhite, result);
-                cancelMove(board, playerIsWhite, to, from, existingPiece);
+                cancelMove(board, playerIsWhite, to, from, existingPiece, tempEarnScore);
 
                 if (currValue < minValue) {
                     minValue = currValue;
@@ -306,7 +288,7 @@ public class Player extends PlayerBase {
         byte to;
         byte dirValue;
 
-        switch (piece){
+        switch (piece) {
             case 'p':
                 if (playerIsWhite) {
                     to = (byte) (idx + Dir.NW);
@@ -320,7 +302,7 @@ public class Player extends PlayerBase {
                         moves.add(to);
                     }
                     to = (byte) (idx + 2 * Dir.N);
-                    if ((idx >=48 && idx <= 55) && (board[idx + Dir.N] == 0) && (board[to] == 0)) {
+                    if ((idx >= 48 && idx <= 55) && (board[idx + Dir.N] == 0) && (board[to] == 0)) {
                         moves.add(idx);
                         moves.add(to);
                     }
@@ -356,7 +338,6 @@ public class Player extends PlayerBase {
                 break;
 
             case 'n':
-                assert (NIGHT_MOVE_HELPER.length == 32);
 
                 byte helperIdx = 0;
                 for (int i = 0; i < 8; ++i) {
@@ -464,7 +445,7 @@ public class Player extends PlayerBase {
         byte to;
         byte dirValue;
 
-        switch (piece){
+        switch (piece) {
             case 'p':
                 if (playerIsWhite) {
                     to = (byte) (idx + Dir.NW);
@@ -602,37 +583,13 @@ public class Player extends PlayerBase {
         }
     }
 
-    private void calculatePoint(char capturedPiece, boolean playerIsWhite) {
+    private int calculatePoint(char capturedPiece, boolean playerIsWhite) {
         capturedPiece |= 0x20;
         int colorValue = playerIsWhite ? 1 : -1;
-
-        switch (capturedPiece) {
-            case 'p':
-                whiteScore += 10 * colorValue;
-                blackScore -= 10 * colorValue;
-                return;
-            case 'n':
-                // intentional fall through
-            case 'b':
-                whiteScore += 30 * colorValue;
-                blackScore -= 30 * colorValue;
-                return;
-            case 'r':
-                whiteScore += 50 * colorValue;
-                blackScore -= 50 * colorValue;
-                return;
-            case 'q':
-                whiteScore += 100 * colorValue;
-                blackScore -= 100 * colorValue;
-                return;
-            case 'k':
-                whiteScore += 1000 * colorValue;
-                blackScore -= 1000 * colorValue;
-                return;
-            default:
-                assert (false);
-                return;
-        }
+        int score = SCORE_TABLE[capturedPiece - 'b'];
+        whiteScore += score * colorValue;
+        blackScore -= score * colorValue;
+        return score;
     }
 
     private void calculateStrategyPoint(char[] board, boolean playerIsWhite, byte from, byte to) {
@@ -676,37 +633,29 @@ public class Player extends PlayerBase {
             }
         }
     }
-    private void copyBoard(char[] dst, char[] src) {
-        for (int i = 0; i < src.length; ++i) {
-            dst[i] = src[i];
-        }
-    }
-    private void insertMove(Move move) {
-        this.board[move.toY * BOARD_SIZE + move.toX] = this.board[move.fromY * BOARD_SIZE + move.fromX];
-        this.board[move.fromY * BOARD_SIZE + move.fromX] ^= this.board[move.fromY * BOARD_SIZE + move.fromX];
-    }
-    private void move(char[] board, boolean playerIsWhite, byte from, byte to) {
-        char capturedPiece = board[to];
 
-        //preWhiteScore = whiteScore;
-        //preBlackScore = blackScore;
+    private int move(char[] board, boolean playerIsWhite, byte from, byte to) {
+        char capturedPiece = board[to];
+        int earnScore = 0;
 
         if (capturedPiece != 0) {
-            calculatePoint(capturedPiece, playerIsWhite);
-        } /*else if (board[from] == 'p') {
-            calculateStrategyPoint(board, playerIsWhite, from, to);
-        }*/
+            earnScore = calculatePoint(capturedPiece, playerIsWhite);
+        }
 
         board[to] = board[from];
         board[from] = 0;
+        return earnScore;
     }
-    private void cancelMove(char[] board, boolean playerIsWhite, int from, int to, char existingPiece) {
-        if (existingPiece != 0) {
-            calculatePoint(existingPiece, !playerIsWhite);
+    private void cancelMove(char[] board, boolean playerIsWhite, int from, int to, char existingPiece, int earnScoreInPreTurn) {
+        if (earnScoreInPreTurn != 0) {
+            if (playerIsWhite) {
+                whiteScore -= earnScoreInPreTurn;
+                blackScore += earnScoreInPreTurn;
+            } else {
+                whiteScore += earnScoreInPreTurn;
+                blackScore -= earnScoreInPreTurn;
+            }
         }
-
-        //whiteScore = preWhiteScore;
-        //blackScore = preBlackScore;
 
         board[to] = board[from];
         board[from] = existingPiece;

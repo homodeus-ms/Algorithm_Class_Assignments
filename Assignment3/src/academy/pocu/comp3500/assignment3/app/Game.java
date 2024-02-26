@@ -262,11 +262,11 @@ final class Game {
     }
 
     private static String printBoard(final char[][] board) {
-        /*final StringBuilder sb = new StringBuilder(128);
+        final StringBuilder sb = new StringBuilder(128);
 
         sb.append("  ");
         for (int x = 0; x < BOARD_SIZE; ++x) {
-            sb.append("  ");
+            sb.append(" ");
             sb.append((char) (x + 'a'));
         }
 
@@ -282,9 +282,9 @@ final class Game {
                 char symbol = board[y][x];
 
                 if (symbol == 0) {
-                    sb.append("   ");
-                } else {
                     sb.append("  ");
+                } else {
+                    sb.append(" ");
                     sb.append(String.format("%c", board[y][x]));
                 }
             }
@@ -295,9 +295,9 @@ final class Game {
 
         addHorizontalBorder(sb);
 
-        return sb.toString();*/
+        return sb.toString();
 
-        final StringBuilder sb = new StringBuilder(128);
+        /*final StringBuilder sb = new StringBuilder(128);
 
         sb.append("  ");
         for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -328,24 +328,24 @@ final class Game {
 
         addHorizontalBorder(sb);
 
-        return sb.toString();
+        return sb.toString();*/
     }
 
     private static void addHorizontalBorder(StringBuilder sb) {
-        /*sb.append(' ');
+        sb.append(' ');
         sb.append('+');
         for (int i = 0; i < BOARD_SIZE * 2; ++i) {
             sb.append('-');
         }
         sb.append('+');
-        sb.append(System.lineSeparator());*/
-        sb.append(' ');
+        sb.append(System.lineSeparator());
+        /*sb.append(' ');
         sb.append('+');
         for (int i = 0; i < BOARD_SIZE; ++i) {
             sb.append('-');
         }
         sb.append('+');
-        sb.append(System.lineSeparator());
+        sb.append(System.lineSeparator());*/
     }
 
     private static char[][] createCopy(final char[][] board) {
@@ -364,7 +364,7 @@ final class Game {
     }
 
     private static char[][] createNewBoard() {
-        final char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
+        /*final char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
 
         // White pieces
         int y = BOARD_SIZE - 1;
@@ -398,7 +398,20 @@ final class Game {
         board[y][4] = 'Q';
         board[y][5] = 'B';
         board[y][6] = 'N';
-        board[y][7] = 'R';
+        board[y][7] = 'R';*/
+
+
+        char[][] board = {
+                // A   B   C   D   E   F   G   H
+                { 0 ,'R', 0 ,'K', 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 ,'P', 0 , 0 , 0 , 0 },
+                {'Q', 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 ,'b','n', 0 ,'k', 0 },
+        };
 
 
         return board;

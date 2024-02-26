@@ -9,7 +9,7 @@ public class Dir {
     public static final char SE = 9;
     public static final char NE = 7;
     public static final char SW = 7;*/
-    public static final int[] offset = { -8, 8, -1, 1, -9, 9, -7, 7};
+    public static final int[] offset = {-8, 8, -1, 1, -9, 9, -7, 7};
 
     public static final int N = -8;
     public static final int S = 8;
