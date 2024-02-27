@@ -1,18 +1,23 @@
 package academy.pocu.comp3500.lab7;
 
 
+import java.util.ArrayList;
+
 public class Decryptor {
     private final String[] codewords;
+    private int[] strLengths;
 
     public Decryptor(final String[] codewords) {
         int length = codewords.length;
+        strLengths = new int[length];
+
         this.codewords = new String[length];
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
             str = str.toLowerCase();
             this.codewords[i] = str;
+            this.strLengths[i] = str.length();
         }
-        //this.codewords = codewords;
     }
     public String[] findCandidates(final String word) {
 
@@ -20,8 +25,9 @@ public class Decryptor {
             return new String[]{};
         }
 
-        int[] counts = new int[27];
-        byte[] indexes = new byte[codewords.length];
+        int[] counts = new int[26];
+        int[] keep = new int[26];
+        ArrayList<String> result = new ArrayList<>(codewords.length);
 
         int wordLength = word.length();
         int specialCharCount = 0;
@@ -29,32 +35,30 @@ public class Decryptor {
         for (int i = 0; i < wordLength; ++i) {
             char c = word.charAt(i);
             if (c == '?') {
-                ++counts[26];
                 ++specialCharCount;
             } else {
                 c |= 0x20;
                 c -= 'a';
                 ++counts[c];
+                ++keep[c];
             }
         }
 
-        int[] keep = new int[27];
+
         int keepSpecialCharCount = specialCharCount;
-        copyArr(keep, counts);
-        boolean found = true;
-        int foundCount = 0;
 
-
+        boolean found;
+        
         for (int i = 0; i < codewords.length; ++i) {
-            if (codewords[i].length() != wordLength) {
+
+            String str = codewords[i];
+            int strLength = strLengths[i];
+
+            if (strLength != wordLength) {
                 continue;
             }
 
             found = true;
-
-            String str = codewords[i];
-
-            int strLength = str.length();
 
             for (int j = 0; j < strLength; ++j) {
                 char c = str.charAt(j);
@@ -62,8 +66,8 @@ public class Decryptor {
                 c -= 'a';
                 if (counts[c] != 0) {
                     --counts[c];
-                } else if (specialCharCount != 0 && counts[26] != 0) {
-                    --counts[26];
+                } else if (specialCharCount != 0) {
+                    --specialCharCount;
                 } else {
                     found = false;
                     break;
@@ -71,21 +75,14 @@ public class Decryptor {
             }
 
             if (found) {
-                indexes[foundCount++] = (byte) i;
+                result.add(str);
             }
-            specialCharCount = keepSpecialCharCount;
 
+            specialCharCount = keepSpecialCharCount;
             copyArr(counts, keep);
         }
 
-        String[] result = new String[foundCount];
-
-        for (int i = 0; i < foundCount; ++i) {
-            result[i] = codewords[indexes[i]];
-        }
-
-
-        return result;
+        return result.toArray(new String[0]);
     }
     private void copyArr(int[] dst, int[] src) {
         assert (dst.length == src.length);
