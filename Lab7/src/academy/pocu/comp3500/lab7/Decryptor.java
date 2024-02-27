@@ -2,6 +2,7 @@ package academy.pocu.comp3500.lab7;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Decryptor {
     private final String[] codewords;
@@ -27,8 +28,7 @@ public class Decryptor {
 
         int wordLength = word.length();
 
-        int[] wordToLowerCase = new int[wordLength];
-        int[] wordCharCount = new int[wordLength];
+        HashMap<Integer, Integer> minusCount = new HashMap<>();
         //int wordToLowerCaseLength = 0;
 
         int[] counts = new int[26];
@@ -36,22 +36,8 @@ public class Decryptor {
         ArrayList<String> result = new ArrayList<>(codewords.length);
         int specialCharCount = 0;
 
-        for (int i = 0; i < wordLength; ++i) {
-            int c = (word.charAt(i) | 0x20) - 'a';
-            // ('?' | 0x20) - 'a' = -34
-            if (c == -34) {
-                ++specialCharCount;
-                wordToLowerCase[i] = -1;
-                wordCharCount[i] = -1;
-                continue;
-            }
-            wordToLowerCase[i] = c;
-            ++wordCharCount[i];
-            ++counts[c];
-            //++wordToLowerCaseLength;
-        }
 
-        /*for (int i = 0; i < wordLength; ++i) {
+        for (int i = 0; i < wordLength; ++i) {
             char c = word.charAt(i);
             if (c == '?') {
                 ++specialCharCount;
@@ -59,9 +45,9 @@ public class Decryptor {
                 c |= 0x20;
                 c -= 'a';
                 ++counts[c];
-                ++keep[c];
+                //++keep[c];
             }
-        }*/
+        }
 
 
         int keepSpecialCharCount = specialCharCount;
@@ -69,6 +55,8 @@ public class Decryptor {
         boolean found;
         
         for (int i = 0; i < codewords.length; ++i) {
+
+            minusCount.clear();
 
             String str = codewords[i];
             int strLength = strLengths[i];
@@ -83,6 +71,13 @@ public class Decryptor {
                 int c = str.charAt(j) - 'a';
                 if (counts[c] != 0) {
                     --counts[c];
+                    if (minusCount.containsKey(c)) {
+                        int get = minusCount.get(c) + 1;
+                        minusCount.put(c, get);
+                    } else {
+                        minusCount.put(c, 1);
+                    }
+
                 } else if (specialCharCount != 0) {
                     --specialCharCount;
                 } else {
@@ -95,11 +90,8 @@ public class Decryptor {
                 result.add(str);
             }
 
-            for (int j = 0; j < wordToLowerCase.length; ++j) {
-                int idx = wordToLowerCase[j];
-                if (idx != -1) {
-                    counts[idx] += wordCharCount[j];
-                }
+            for (int n : minusCount.keySet()) {
+                counts[n] += minusCount.get(n);
             }
 
             specialCharCount = keepSpecialCharCount;
