@@ -29,10 +29,8 @@ public class Decryptor {
         int wordLength = word.length();
 
         HashMap<Integer, Integer> minusCount = new HashMap<>();
-        //int wordToLowerCaseLength = 0;
 
         int[] counts = new int[26];
-        //int[] keep = new int[26];
         ArrayList<String> result = new ArrayList<>(codewords.length);
         int specialCharCount = 0;
 
@@ -45,7 +43,6 @@ public class Decryptor {
                 c |= 0x20;
                 c -= 'a';
                 ++counts[c];
-                //++keep[c];
             }
         }
 
@@ -71,18 +68,19 @@ public class Decryptor {
                 int c = str.charAt(j) - 'a';
                 if (counts[c] != 0) {
                     --counts[c];
-                    if (minusCount.containsKey(c)) {
+                    minusCount.compute(c, (k, v) -> (v == null) ? 1 : v + 1);
+                    /*if (minusCount.containsKey(c)) {
                         int get = minusCount.get(c) + 1;
                         minusCount.put(c, get);
                     } else {
                         minusCount.put(c, 1);
-                    }
+                    }*/
 
                 } else if (specialCharCount != 0) {
                     --specialCharCount;
                 } else {
                     found = false;
-                    //break;
+                    break;
                 }
             }
 
@@ -95,15 +93,9 @@ public class Decryptor {
             }
 
             specialCharCount = keepSpecialCharCount;
-            //copyArr(counts, keep);
         }
 
         return result.toArray(new String[0]);
     }
-    /*private void copyArr(int[] dst, int[] src) {
-        assert (dst.length == src.length);
-        for (int i = 0; i < dst.length; ++i) {
-            dst[i] = src[i];
-        }
-    }*/
+
 }
