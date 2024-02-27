@@ -74,6 +74,8 @@ public class Player extends PlayerBase {
     //Random random = new Random();
 
     private final double sqrtLimitTime;
+    private boolean timeEnd = false;
+    private long deltaTime;
 
     public Player(boolean isWhite, int maxMoveTimeMilliseconds) {
         super(isWhite, maxMoveTimeMilliseconds);
@@ -118,17 +120,19 @@ public class Player extends PlayerBase {
         //Move maxResult = new Move(0, 0, 0, 0);
         //Move result = new Move(0, 0, 0, 0);
 
-        long start;
+        long start = System.nanoTime();
         long end;
-        long deltaTime = 0;
+        //long deltaTime = 0;
         int limitTime = getMaxMoveTimeMilliseconds();
+
 
         int depth = limitTime >= 1000 ? 5 : 4;
 
         preWhiteScore = whiteScore;
         preBlackScore = blackScore;
 
-        maxPoint = mimimax(this.board, depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, true, this.isWhite(), result);
+        maxPoint = mimimax(this.board, depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                true, this.isWhite(), result, start);
 
         maxResult.fromX = result.fromX;
         maxResult.fromY = result.fromY;
@@ -141,10 +145,11 @@ public class Player extends PlayerBase {
             start = System.nanoTime();
             whiteScore = preWhiteScore;
             blackScore = preBlackScore;
-            point = mimimax(this.board, depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE, true, this.isWhite(), result);
+            point = mimimax(this.board, depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                    true, this.isWhite(), result, start);
 
-            end = System.nanoTime();
-            deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
+            //end = System.nanoTime();
+            //deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
             /*System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
             System.out.printf("depth : %d\n", depth);
             System.out.printf("deltaTime : %d\n", deltaTime);*/
@@ -156,24 +161,24 @@ public class Player extends PlayerBase {
                 maxResult.fromY = result.fromY;
                 maxResult.toX = result.toX;
                 maxResult.toY = result.toY;
-
-
             }
-
-            if (deltaTime >= sqrtLimitTime) {
+            if (timeEnd) {
                 break;
             }
 
+            /*if (deltaTime >= sqrtLimitTime) {
+                break;
+            }*/
+
             ++depth;
-
-
         }
 
-
+        timeEnd = false;
 
         return maxResult;
     }
-    private int mimimax(char[] board, int depth, int startDepth, int alpha, int beta, boolean isMyTurn, boolean playerIsWhite, Move result) {
+    private int mimimax(char[] board, int depth, int startDepth, int alpha, int beta,
+                        boolean isMyTurn, boolean playerIsWhite, Move result, long startTime) {
         /*if (depth == 0) {
             return evaluate(board, this.isWhite());
         }*/
@@ -202,7 +207,8 @@ public class Player extends PlayerBase {
 
                 tempEarnScore = move(board, playerIsWhite, from, to);
                 if (depth > 1) {
-                    currValue = mimimax(board, depth - 1, startDepth, alpha, beta, false, !playerIsWhite, result);
+                    currValue = mimimax(board, depth - 1, startDepth, alpha, beta,
+                            false, !playerIsWhite, result, startTime);
                 } else {
                     currValue = evaluate(board, this.isWhite());
                 }
@@ -224,7 +230,16 @@ public class Player extends PlayerBase {
                     }
 
                     alpha = Math.max(alpha, maxValue);
+
+                    long endTime = System.nanoTime();
+                    deltaTime = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
+
+                    if (deltaTime >= sqrtLimitTime) {
+                        timeEnd = true;
+                        break;
+                    }
                 }
+
 
                 if (alpha >= beta) {
                     break;
@@ -246,7 +261,8 @@ public class Player extends PlayerBase {
 
                 tempEarnScore = move(board, playerIsWhite, from, to);
                 if (depth > 1) {
-                    currValue = mimimax(board, depth - 1, startDepth, alpha, beta, true, !playerIsWhite, result);
+                    currValue = mimimax(board, depth - 1, startDepth, alpha, beta,
+                            true, !playerIsWhite, result, startTime);
                 } else {
                     currValue = evaluate(board, this.isWhite());
                 }
