@@ -75,14 +75,15 @@ public class Decryptor {
                 int idx = list.get(j++);
                 int count = list.get(j);
                 int actualCount = wordCharCount[idx];
+
                 if (actualCount == count) {
                     continue;
-                } else if (wordCharCount[26] != 0) {
-                    wordCharCount[26] -= (count - actualCount);
-                    if (wordCharCount[26] < 0) {
-                        isCodeWord = false;
-                        break;
-                    }
+                }
+
+                int diff = count - actualCount;
+
+                if (wordCharCount[26] > 0 && wordCharCount[26] >= diff) {
+                    wordCharCount[26] -= diff;
                 } else {
                     isCodeWord = false;
                     break;
