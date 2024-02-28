@@ -7,6 +7,7 @@ import java.util.Random;
 
 public class Decryptor {
     private final String[] codewords;
+    private final ArrayList<char[]> codewordsToLexicographical;
     private final int[] strLengths;
     private Random random = new Random();
 
@@ -16,6 +17,7 @@ public class Decryptor {
         int length = codewords.length;
         strLengths = new int[length];
         this.codewords = new String[length];
+        this.codewordsToLexicographical = new ArrayList<>(length);
 
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
@@ -23,8 +25,11 @@ public class Decryptor {
 
             this.codewords[i] = str;
             this.strLengths[i] = str.length();
+            char[] newArr = str.toCharArray();
+            sortLexicographical(newArr);
+            codewordsToLexicographical.add(newArr);
         }
-        sortbyStrLength(this.codewords, strLengths);
+        //sortbyStrLength(this.codewords, strLengths);
     }
     public String[] findCandidates(final String word) {
 
@@ -33,8 +38,76 @@ public class Decryptor {
         }
 
         int wordLength = word.length();
+        ArrayList<String> result = new ArrayList<>(codewords.length);
 
-        int[] charCountsInWord = new int[27];
+        ArrayList<Character> charList = new ArrayList<>(wordLength);
+        int specialCharCount = 0;
+        for (int i = 0; i < wordLength; ++i) {
+            char c = word.charAt(i);
+            if (c == '?') {
+                ++specialCharCount;
+                continue;
+            } else {
+                c |= 0x20;
+                charList.add(c);
+            }
+        }
+        int keepSpecialCharCount = specialCharCount;
+
+        int listSize = charList.size();
+        char[] wordToCharArr = new char[listSize];
+        for (int i = 0; i < listSize; ++i) {
+            wordToCharArr[i] = charList.get(i);
+        }
+
+
+        sortLexicographical(wordToCharArr);
+
+        boolean isRightCode;
+
+        for (int i = 0; i < codewords.length; ++i) {
+
+            if (strLengths[i] != wordLength) {
+                continue;
+            }
+
+            specialCharCount = keepSpecialCharCount;
+
+            isRightCode = true;
+
+            int wordIdx = 0;
+            char[] code = codewordsToLexicographical.get(i);
+
+            for (int j = 0; j < strLengths[i]; ++j) {
+                char strC = code[j];
+                char wordC;
+                if (wordIdx == wordToCharArr.length) {
+                    continue;
+                } else {
+                    wordC = wordToCharArr[wordIdx];
+                }
+
+                if (strC != wordC) {
+                    if (specialCharCount != 0) {
+                        --specialCharCount;
+                    } else {
+                        isRightCode = false;
+                        break;
+                    }
+                } else {
+                    ++wordIdx;
+                }
+            }
+
+            if (isRightCode) {
+                result.add(codewords[i]);
+            }
+        }
+
+        return result.toArray(new String[0]);
+
+
+        /*int[] charCountsInWord = new int[27];
         ArrayList<String> result = new ArrayList<>(codewords.length);
         int specialCharCount = 0;
 
@@ -93,41 +166,45 @@ public class Decryptor {
 
         }
 
-        return result.toArray(new String[0]);
+        return result.toArray(new String[0]);*/
     }
 
-    private void sortbyStrLength(String[] strs, int[] lengths) {
-        quickSortRecursive(strs, lengths, 0, lengths.length - 1);
+    private void sortLexicographical(char[] chars) {
+        quickSortRecursive(chars, 0, chars.length - 1);
     }
-    private void quickSortRecursive(String[] strs, int[] lengths, int left, int right) {
+    private void quickSortRecursive(char[] chars, int left, int right) {
         if (left > right) {
             return;
         }
 
-        //int pivot = random.nextInt(right - left) + left;
-        //swap(strs, lengths, pivot, right);
         int originLeft = left;
 
         for (int i = left; i < right; ++i) {
-            if (lengths[i] < lengths[right]) {
-                swap(strs, lengths, i, left);
+            if (chars[i] < chars[right]) {
+                swap(chars, i, left);
                 ++left;
             }
         }
-        swap(strs, lengths, left, right);
+        swap(chars, left, right);
 
-        quickSortRecursive(strs, lengths, originLeft, left - 1);
-        quickSortRecursive(strs, lengths, left + 1, right);
+        quickSortRecursive(chars, originLeft, left - 1);
+        quickSortRecursive(chars, left + 1, right);
 
     }
-    private void swap(String[] strs, int[] lengths, int i, int j) {
+    private void swap(char[] chars, int i, int j) {
+        char temp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = temp;
+    }
+
+    /*private void swap(String[] strs, int[] lengths, int i, int j) {
         String tempStr = strs[i];
         int tempInt = lengths[i];
         strs[i] = strs[j];
         lengths[i] = lengths[j];
         strs[j] = tempStr;
         lengths[j] = tempInt;
-    }
+    }*/
 
 
 }
