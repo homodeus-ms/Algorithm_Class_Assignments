@@ -2,14 +2,17 @@ package academy.pocu.comp3500.lab7;
 
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.HashMap;
+//import java.util.Random;
 
 
 public class Decryptor {
     private final String[] codewords;
-    private final ArrayList<char[]> codewordsToLexicographical;
+    //private final ArrayList<char[]> codewordsToLexicographical;
+    private final ArrayList<ArrayList<Integer>> eachCharCounts;
     private final int[] strLengths;
-    private Random random = new Random();
+
+    //private Random random = new Random();
 
 
     public Decryptor(final String[] codewords) {
@@ -17,7 +20,9 @@ public class Decryptor {
         int length = codewords.length;
         strLengths = new int[length];
         this.codewords = new String[length];
-        this.codewordsToLexicographical = new ArrayList<>(length);
+        //this.codewordsToLexicographical = new ArrayList<>(length);
+        eachCharCounts = new ArrayList<>(length);
+
 
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
@@ -27,7 +32,9 @@ public class Decryptor {
             this.strLengths[i] = str.length();
             char[] newArr = str.toCharArray();
             sortLexicographical(newArr);
-            codewordsToLexicographical.add(newArr);
+            ArrayList<Integer> list = getEachCharCountList(newArr);
+            eachCharCounts.add(list);
+            //codewordsToLexicographical.add(newArr);
         }
         //sortbyStrLength(this.codewords, strLengths);
     }
@@ -37,71 +44,50 @@ public class Decryptor {
             return new String[]{};
         }
 
+        int[] wordCharCount = new int[27];
         int wordLength = word.length();
-        ArrayList<String> result = new ArrayList<>(codewords.length);
-
-        ArrayList<Character> charList = new ArrayList<>(wordLength);
         int specialCharCount = 0;
+
         for (int i = 0; i < wordLength; ++i) {
-            char c = word.charAt(i);
+            int c = word.charAt(i);
             if (c == '?') {
                 ++specialCharCount;
-                continue;
+                ++wordCharCount[26];
             } else {
-                c |= 0x20;
-                charList.add(c);
+                c = (c | 0x20) - 'a';
+                ++wordCharCount[c];
             }
         }
-        int keepSpecialCharCount = specialCharCount;
 
-        int listSize = charList.size();
-        char[] wordToCharArr = new char[listSize];
-        for (int i = 0; i < listSize; ++i) {
-            wordToCharArr[i] = charList.get(i);
-        }
-
-
-        sortLexicographical(wordToCharArr);
-
-        boolean isRightCode;
+        ArrayList<String> result = new ArrayList<>();
+        boolean isCodeWord ;
 
         for (int i = 0; i < codewords.length; ++i) {
-
             if (strLengths[i] != wordLength) {
                 continue;
             }
+            isCodeWord = true;
+            String str = codewords[i];
+            ArrayList<Integer> list = eachCharCounts.get(i);
+            int listSize = list.size();
 
-            specialCharCount = keepSpecialCharCount;
-
-            isRightCode = true;
-
-            int wordIdx = 0;
-            char[] code = codewordsToLexicographical.get(i);
-
-            for (int j = 0; j < strLengths[i]; ++j) {
-                char strC = code[j];
-                char wordC;
-                if (wordIdx == wordToCharArr.length) {
+            for (int j = 0; j < listSize; ++j) {
+                int idx = list.get(j++);
+                int count = list.get(j);
+                if (wordCharCount[idx] == count) {
                     continue;
+                } else if (wordCharCount[26] >= count) {
+                    wordCharCount[26] -= count;
                 } else {
-                    wordC = wordToCharArr[wordIdx];
-                }
-
-                if (strC != wordC) {
-                    if (specialCharCount != 0) {
-                        --specialCharCount;
-                    } else {
-                        isRightCode = false;
-                        break;
-                    }
-                } else {
-                    ++wordIdx;
+                    isCodeWord = false;
+                    break;
                 }
             }
 
-            if (isRightCode) {
-                result.add(codewords[i]);
+            if (isCodeWord) {
+                result.add(str);
             }
+            wordCharCount[26] = specialCharCount;
         }
 
         return result.toArray(new String[0]);
@@ -170,9 +156,9 @@ public class Decryptor {
     }
 
     private void sortLexicographical(char[] chars) {
-        quickSortRecursive(chars, 0, chars.length - 1);
+        sortRecursive(chars, 0, chars.length - 1);
     }
-    private void quickSortRecursive(char[] chars, int left, int right) {
+    private void sortRecursive(char[] chars, int left, int right) {
         if (left > right) {
             return;
         }
@@ -187,14 +173,38 @@ public class Decryptor {
         }
         swap(chars, left, right);
 
-        quickSortRecursive(chars, originLeft, left - 1);
-        quickSortRecursive(chars, left + 1, right);
+        sortRecursive(chars, originLeft, left - 1);
+        sortRecursive(chars, left + 1, right);
 
     }
     private void swap(char[] chars, int i, int j) {
         char temp = chars[i];
         chars[i] = chars[j];
         chars[j] = temp;
+    }
+    public ArrayList<Integer> getEachCharCountList(char[] chars) {
+        ArrayList<Integer> result = new ArrayList<>(chars.length * 2);
+        for (int  i = 0; i < chars.length; ++i) {
+            int idx = i;
+
+            if (idx == chars.length - 1) {
+                result.add(chars[chars.length - 1] - 'a');
+                result.add(1);
+                break;
+            }
+
+            while (chars[idx] == chars[idx + 1]) {
+                ++idx;
+                if (idx == chars.length - 1) {
+                    break;
+                }
+            }
+            result.add((int) chars[i] - 'a');
+            result.add(idx - i + 1);
+            i = idx;
+        }
+
+        return result;
     }
 
     /*private void swap(String[] strs, int[] lengths, int i, int j) {

@@ -2,11 +2,12 @@ package academy.pocu.comp3500.lab7.app;
 
 import academy.pocu.comp3500.lab7.Decryptor;
 
+import java.util.ArrayList;
+
 
 public class Program {
 
     public static void main(String[] args) {
-
 
 
         String[] codewords = new String[]{"cat", "cats", "acts", "scan", "acre", "ants"};
