@@ -6,6 +6,9 @@ import academy.pocu.comp3500.lab7.Decryptor;
 public class Program {
 
     public static void main(String[] args) {
+
+
+
         String[] codewords = new String[]{"cat", "cats", "acts", "scan", "acre", "ants"};
 
         Decryptor decryptor = new Decryptor(codewords);
