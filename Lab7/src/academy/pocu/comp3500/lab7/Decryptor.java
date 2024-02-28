@@ -80,7 +80,7 @@ public class Decryptor {
                     continue;
                 }
 
-                int diff = count - actualCount;
+                int diff = Math.abs(count - actualCount);
 
                 if (wordCharCount[26] > 0 && wordCharCount[26] >= diff) {
                     wordCharCount[26] -= diff;
@@ -188,7 +188,7 @@ public class Decryptor {
         chars[i] = chars[j];
         chars[j] = temp;
     }
-    public ArrayList<Integer> getEachCharCountList(char[] chars) {
+    private ArrayList<Integer> getEachCharCountList(char[] chars) {
         ArrayList<Integer> result = new ArrayList<>(chars.length * 2);
         for (int i = 0; i < chars.length; ++i) {
             int idx = i;
