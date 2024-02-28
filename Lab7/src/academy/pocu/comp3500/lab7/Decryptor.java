@@ -2,13 +2,14 @@ package academy.pocu.comp3500.lab7;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Random;
+
 
 public class Decryptor {
     private final String[] codewords;
     private final int[] strLengths;
+    private Random random = new Random();
 
-    //private HashMap<Integer, Integer> minusCount = new HashMap<>();
 
     public Decryptor(final String[] codewords) {
 
@@ -22,15 +23,14 @@ public class Decryptor {
 
             this.codewords[i] = str;
             this.strLengths[i] = str.length();
-
         }
+        sortbyStrLength(this.codewords, strLengths);
     }
     public String[] findCandidates(final String word) {
 
         if (codewords.length == 0) {
             return new String[]{};
         }
-        //minusCount.clear();
 
         int wordLength = word.length();
 
@@ -48,12 +48,8 @@ public class Decryptor {
                 c |= 0x20;
                 c -= 'a';
                 ++charCountsInWord[c];
-                //minusCount.compute(c, (k, v) -> (v == null) ? 1 : v + 1);
             }
         }
-
-
-        //int keepSpecialCharCount = specialCharCount;
 
         boolean found;
         
@@ -62,12 +58,16 @@ public class Decryptor {
             String str = codewords[i];
             int strLength = strLengths[i];
 
+            if (strLength > wordLength) {
+                break;
+            }
+
             if (strLength != wordLength) {
                 continue;
             }
 
             found = true;
-            int j = 0;
+            int j;
             for (j = 0; j < strLength; ++j) {
                 int c = str.charAt(j) - 'a';
                 if (charCountsInWord[c] > 0) {
@@ -91,14 +91,42 @@ public class Decryptor {
             }
             charCountsInWord[26] = specialCharCount;
 
-            /*for (int n : minusCount.keySet()) {
-                charCountsInWord[n] = minusCount.get(n);
-            }*/
-
-            //specialCharCount = keepSpecialCharCount;
         }
 
         return result.toArray(new String[0]);
+    }
+
+    private void sortbyStrLength(String[] strs, int[] lengths) {
+        quickSortRecursive(strs, lengths, 0, lengths.length - 1);
+    }
+    private void quickSortRecursive(String[] strs, int[] lengths, int left, int right) {
+        if (left > right) {
+            return;
+        }
+
+        //int pivot = random.nextInt(right - left) + left;
+        //swap(strs, lengths, pivot, right);
+        int originLeft = left;
+
+        for (int i = left; i < right; ++i) {
+            if (lengths[i] < lengths[right]) {
+                swap(strs, lengths, i, left);
+                ++left;
+            }
+        }
+        swap(strs, lengths, left, right);
+
+        quickSortRecursive(strs, lengths, originLeft, left - 1);
+        quickSortRecursive(strs, lengths, left + 1, right);
+
+    }
+    private void swap(String[] strs, int[] lengths, int i, int j) {
+        String tempStr = strs[i];
+        int tempInt = lengths[i];
+        strs[i] = strs[j];
+        lengths[i] = lengths[j];
+        strs[j] = tempStr;
+        lengths[j] = tempInt;
     }
 
 

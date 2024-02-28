@@ -10,6 +10,7 @@ public class Program {
 
 
         String[] codewords = new String[]{"cat", "cats", "acts", "scan", "acre", "ants"};
+        //String[] codewords = new String[]{"aa", "a", "abc", "abcd", "a", "a", "abcdef", "bb", "a"};
 
         Decryptor decryptor = new Decryptor(codewords);
 
