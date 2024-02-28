@@ -74,10 +74,11 @@ public class Decryptor {
             for (int j = 0; j < listSize; ++j) {
                 int idx = list.get(j++);
                 int count = list.get(j);
-                if (wordCharCount[idx] == count) {
+                int actualCount = wordCharCount[idx];
+                if (actualCount == count) {
                     continue;
-                } else if (wordCharCount[26] >= count) {
-                    wordCharCount[26] -= count;
+                } else if (wordCharCount[26] != 0 && wordCharCount[26] + actualCount >= count) {
+                    wordCharCount[26] -= (count - actualCount);
                 } else {
                     isCodeWord = false;
                     break;
