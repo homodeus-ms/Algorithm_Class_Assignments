@@ -60,7 +60,7 @@ public class Decryptor {
         }
 
         ArrayList<String> result = new ArrayList<>();
-        boolean isCodeWord ;
+        boolean isCodeWord;
 
         for (int i = 0; i < codewords.length; ++i) {
             if (strLengths[i] != wordLength) {
@@ -77,8 +77,12 @@ public class Decryptor {
                 int actualCount = wordCharCount[idx];
                 if (actualCount == count) {
                     continue;
-                } else if (wordCharCount[26] != 0 && wordCharCount[26] + actualCount >= count) {
+                } else if (wordCharCount[26] != 0) {
                     wordCharCount[26] -= (count - actualCount);
+                    if (wordCharCount[26] < 0) {
+                        isCodeWord = false;
+                        break;
+                    }
                 } else {
                     isCodeWord = false;
                     break;
@@ -185,7 +189,7 @@ public class Decryptor {
     }
     public ArrayList<Integer> getEachCharCountList(char[] chars) {
         ArrayList<Integer> result = new ArrayList<>(chars.length * 2);
-        for (int  i = 0; i < chars.length; ++i) {
+        for (int i = 0; i < chars.length; ++i) {
             int idx = i;
 
             if (idx == chars.length - 1) {
