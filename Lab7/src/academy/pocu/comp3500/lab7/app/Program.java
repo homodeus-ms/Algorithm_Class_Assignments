@@ -56,6 +56,7 @@ public class Program {
 
         test1();
         test2();
+        test3();
         System.out.println("No Assert!");
     }
     public static void test1() {
@@ -110,5 +111,15 @@ public class Program {
         assert(candidates.length == 8);
 
         System.out.println("Test2 No Assert!");
+    }
+    public static void test3() {
+        String[] codewords = new String[] {
+                "lamb",
+                "moon"
+        };
+        Decryptor decryptor = new Decryptor(codewords);
+        String[] candidates = decryptor.findCandidates("??mb");
+        assert (candidates.length == 1);
+        System.out.println("Test3 No Assert");
     }
 }

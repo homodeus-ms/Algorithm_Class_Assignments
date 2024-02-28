@@ -70,7 +70,7 @@ public class Decryptor {
             int j = 0;
             for (j = 0; j < strLength; ++j) {
                 int c = str.charAt(j) - 'a';
-                if (charCountsInWord[c] != 0) {
+                if (charCountsInWord[c] > 0) {
                     --charCountsInWord[c];
 
                 } else if (charCountsInWord[26] != 0) {
