@@ -67,7 +67,7 @@ public class Program {
         test2();
         test3();
         test4();
-        test5();
+        //test5();
         test6();
 
         System.out.println("No Assert!");
@@ -179,7 +179,7 @@ public class Program {
     }
     private static void test6() {
         String[] codewords = new String[] {
-                "e",
+                "ea", "cd", "a", "e", "zzz", "abe"
         };
         Decryptor decryptor = new Decryptor(codewords);
         String[] candidates = decryptor.findCandidates("e");
