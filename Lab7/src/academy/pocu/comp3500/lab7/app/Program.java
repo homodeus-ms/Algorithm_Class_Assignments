@@ -67,6 +67,8 @@ public class Program {
         test2();
         test3();
         test4();
+        test5();
+        test6();
 
         System.out.println("No Assert!");
     }
@@ -171,9 +173,18 @@ public class Program {
         }*/
         printArr(strs);
         System.out.println("=================================");
-        String[] result = decryptor.findCandidates("?aaa");
+        String[] result = decryptor.findCandidates("??aa");
         printArr(result);
 
+    }
+    private static void test6() {
+        String[] codewords = new String[] {
+                "e",
+        };
+        Decryptor decryptor = new Decryptor(codewords);
+        String[] candidates = decryptor.findCandidates("e");
+        assert (candidates.length == 1);
+        System.out.println("Test6 No Assert");
     }
 
     private static void printArr(String[] strs) {
