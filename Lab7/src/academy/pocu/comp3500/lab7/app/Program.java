@@ -179,10 +179,11 @@ public class Program {
     }
     private static void test6() {
         String[] codewords = new String[] {
-                "ea", "cd", "a", "e", "zzz", "abe"
+                "est", "Hello", "ab", "ez", "e", "es", "a", "b"
         };
         Decryptor decryptor = new Decryptor(codewords);
         String[] candidates = decryptor.findCandidates("e");
+        printArr(candidates);
         assert (candidates.length == 1);
         System.out.println("Test6 No Assert");
     }

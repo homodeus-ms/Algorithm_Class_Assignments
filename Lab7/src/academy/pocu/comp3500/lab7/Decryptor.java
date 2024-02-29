@@ -123,7 +123,7 @@ public class Decryptor {
     private void findRecursive(ArrayList<Node> list, char[] chars, int idx, Node n, int depth,
                                int specialCharCount, ArrayList<String> result) {
         if (depth == chars.length) {
-            if (list.isEmpty()) {
+            if (!n.getWords().isEmpty()) {
                 result.addAll(n.getWords());
             }
             return;
