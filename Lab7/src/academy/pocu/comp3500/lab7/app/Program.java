@@ -12,9 +12,15 @@ public class Program {
 
 
         String[] codewords = new String[]{"cat", "cats", "acts", "scan", "acre", "ants"};
+        //String[] codewords = new String[]{"scan"};
         //String[] codewords = new String[]{"aa", "a", "abc", "abcd", "a", "a", "abcdef", "bb", "a"};
 
         Decryptor decryptor = new Decryptor(codewords);
+
+        /*String[] candidates = decryptor.findCandidates("??er");
+        for (String str : candidates) {
+            System.out.println(str);
+        }*/
 
         String[] candidates = decryptor.findCandidates("cat");
 

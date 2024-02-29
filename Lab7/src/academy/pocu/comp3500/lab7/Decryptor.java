@@ -2,22 +2,48 @@ package academy.pocu.comp3500.lab7;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
-//import java.util.Random;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 
 public class Decryptor {
     private final String[] codewords;
-    //private final ArrayList<char[]> codewordsToLexicographical;
-    private final ArrayList<ArrayList<Integer>> eachCharCounts;
     private final int[] strLengths;
+    private final ArrayList<char[]> sortedCodewords;
 
-    //private Random random = new Random();
+    private final Node root = new Node();
 
 
     public Decryptor(final String[] codewords) {
-
         int length = codewords.length;
+        strLengths = new int[length];
+        this.codewords = new String[length];
+        sortedCodewords = new ArrayList<>(length);
+
+        for (int i = 0; i < length; ++i) {
+            String str = codewords[i];
+            str = str.toLowerCase();
+
+            this.codewords[i] = str;
+            this.strLengths[i] = str.length();
+            char[] newArr = str.toCharArray();
+            sortLexicographical(newArr);
+            sortedCodewords.add(newArr);
+        }
+
+        for (int i = 0; i < this.codewords.length; ++i) {
+            String str = codewords[i];
+            char[] chars = sortedCodewords.get(i);
+            Node start = root;
+            for (int j = 0; j < chars.length; ++j) {
+                Node newNode = new Node(chars[j]);
+                start = root.insert(start, newNode);
+            }
+            start.insertStr(str.toLowerCase());
+        }
+
+        /*int length = codewords.length;
         strLengths = new int[length];
         this.codewords = new String[length];
         //this.codewordsToLexicographical = new ArrayList<>(length);
@@ -35,130 +61,85 @@ public class Decryptor {
             ArrayList<Integer> list = getEachCharCountList(newArr);
             eachCharCounts.add(list);
             //codewordsToLexicographical.add(newArr);
-        }
-        //sortbyStrLength(this.codewords, strLengths);
+        }*/
     }
     public String[] findCandidates(final String word) {
-
-        if (codewords.length == 0) {
+        if (this.codewords.length == 0) {
             return new String[]{};
         }
-
-        int[] wordCharCount = new int[27];
         int wordLength = word.length();
         int specialCharCount = 0;
+        int keepSpecialCharCount = 0;
+        char[] chars = new char[wordLength];
 
         for (int i = 0; i < wordLength; ++i) {
-            int c = word.charAt(i);
+            char c = word.charAt(i);
             if (c == '?') {
                 ++specialCharCount;
-                ++wordCharCount[26];
+                c = '{';
+                chars[i] = c;
             } else {
-                c = (c | 0x20) - 'a';
-                ++wordCharCount[c];
+                chars[i] = (char) (c | 0x20);
             }
         }
+        sortLexicographical(chars);
 
         ArrayList<String> result = new ArrayList<>();
-        boolean isCodeWord;
+        Node start = root;
+        ArrayList<Node> nodes = root.getNodes();
+        int listSize = nodes.size();
 
-        for (int i = 0; i < codewords.length; ++i) {
-            if (strLengths[i] != wordLength) {
-                continue;
-            }
-            isCodeWord = true;
-            String str = codewords[i];
-            ArrayList<Integer> list = eachCharCounts.get(i);
+        findRecursive(nodes, chars, 0, nodes.get(0), 0, specialCharCount, result);
+
+
+
+        //findRecursive(chars, 0, start, specialCharCount, result);
+
+        /*for (int i = 0; i < chars.length; ++i) {
+            ArrayList<Node> list = start.getNodes();
             int listSize = list.size();
+            char wordChar = chars[i];
 
             for (int j = 0; j < listSize; ++j) {
-                int idx = list.get(j++);
-                int count = list.get(j);
-                int actualCount = wordCharCount[idx];
-
-                if (actualCount == count) {
-                    continue;
-                }
-
-                int diff = Math.abs(count - actualCount);
-
-                if (wordCharCount[26] > 0 && wordCharCount[26] >= diff) {
-                    wordCharCount[26] -= diff;
-                } else {
-                    isCodeWord = false;
+                Node node = list.get(j);
+                if (node.getValue() == wordChar) {
+                    start = node;
                     break;
                 }
             }
+            if (specialCharCount == 0) {
+                return new String[]{};
+            } else {
 
-            if (isCodeWord) {
-                result.add(str);
             }
-            wordCharCount[26] = specialCharCount;
+
         }
+        result = start.getWords();
+*/
 
         return result.toArray(new String[0]);
 
-
-        /*int[] charCountsInWord = new int[27];
-        ArrayList<String> result = new ArrayList<>(codewords.length);
-        int specialCharCount = 0;
-
-
-        for (int i = 0; i < wordLength; ++i) {
-            int c = word.charAt(i);
-            if (c == '?') {
-                ++charCountsInWord[26];
-                ++specialCharCount;
-            } else {
-                c |= 0x20;
-                c -= 'a';
-                ++charCountsInWord[c];
+    }
+    private void findRecursive(ArrayList<Node> list, char[] chars, int idx, Node n, int depth,
+                               int specialCharCount, ArrayList<String> result) {
+        if (depth == chars.length) {
+            if (list.isEmpty()) {
+                result.addAll(n.getWords());
             }
+            return;
         }
 
-        boolean found;
-        
-        for (int i = 0; i < codewords.length; ++i) {
-
-            String str = codewords[i];
-            int strLength = strLengths[i];
-
-            if (strLength > wordLength) {
-                break;
+        int listSize = list.size();
+        for (int i = 0; i < listSize; ++i) {
+            Node node = list.get(i);
+            char c = chars[idx];
+            if (node.getValue() == c) {
+                findRecursive(node.getNodes(), chars, idx + 1, node, depth + 1, specialCharCount, result);
+            } else if (specialCharCount > 0) {
+                findRecursive(node.getNodes(), chars, idx, node, depth + 1,
+                        specialCharCount - 1, result);
             }
-
-            if (strLength != wordLength) {
-                continue;
-            }
-
-            found = true;
-            int j;
-            for (j = 0; j < strLength; ++j) {
-                int c = str.charAt(j) - 'a';
-                if (charCountsInWord[c] > 0) {
-                    --charCountsInWord[c];
-
-                } else if (charCountsInWord[26] != 0) {
-                    --charCountsInWord[c];
-                    --charCountsInWord[26];
-                } else {
-                    found = false;
-                    break;
-                }
-            }
-
-            if (found) {
-                result.add(str);
-            }
-            for (int k = 0; k < j; ++k) {
-                int c = str.charAt(k) - 'a';
-                ++charCountsInWord[c];
-            }
-            charCountsInWord[26] = specialCharCount;
-
         }
-
-        return result.toArray(new String[0]);*/
     }
 
     private void sortLexicographical(char[] chars) {
@@ -212,15 +193,5 @@ public class Decryptor {
 
         return result;
     }
-
-    /*private void swap(String[] strs, int[] lengths, int i, int j) {
-        String tempStr = strs[i];
-        int tempInt = lengths[i];
-        strs[i] = strs[j];
-        lengths[i] = lengths[j];
-        strs[j] = tempStr;
-        lengths[j] = tempInt;
-    }*/
-
 
 }
