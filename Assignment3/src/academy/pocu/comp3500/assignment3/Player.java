@@ -126,7 +126,7 @@ public class Player extends PlayerBase {
         int limitTime = getMaxMoveTimeMilliseconds();
 
 
-        int depth = limitTime >= 1000 ? 5 : 4;
+        int depth = limitTime >= 1000 ? 4 : 3;
 
         preWhiteScore = whiteScore;
         preBlackScore = blackScore;
@@ -142,6 +142,7 @@ public class Player extends PlayerBase {
         ++depth;
 
         while (true) {
+            System.out.println(depth);
             start = System.nanoTime();
             whiteScore = preWhiteScore;
             blackScore = preBlackScore;

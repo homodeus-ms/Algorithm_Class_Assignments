@@ -364,7 +364,7 @@ final class Game {
     }
 
     private static char[][] createNewBoard() {
-        final char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
+        /*final char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
 
         // White pieces
         int y = BOARD_SIZE - 1;
@@ -398,20 +398,20 @@ final class Game {
         board[y][4] = 'Q';
         board[y][5] = 'B';
         board[y][6] = 'N';
-        board[y][7] = 'R';
+        board[y][7] = 'R';*/
 
 
-        /*char[][] board = {
+        char[][] board = {
                 // A   B   C   D   E   F   G   H
                 { 0 ,'R', 0 ,'K', 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 ,'P', 0 , 0 , 0 , 0 },
                 {'Q', 0 , 0 , 0 , 0 , 0 , 0 , 0 },
-                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0, 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 ,'b','n', 0 ,'k', 0 },
-        };*/
+        };
 
 
         return board;
