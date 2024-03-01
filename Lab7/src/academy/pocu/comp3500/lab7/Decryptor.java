@@ -1,6 +1,5 @@
 package academy.pocu.comp3500.lab7;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,8 +7,6 @@ public class Decryptor {
     private final String[] codewords;
     private final int[] strLengths;
     private final ArrayList<char[]> sortedCodewords;
-
-    private final Node root = new Node();
     private final ArrayList<Node> roots = new ArrayList<>();
 
 
@@ -25,14 +22,13 @@ public class Decryptor {
 
             this.codewords[i] = str;
             this.strLengths[i] = str.length();
-            char[] newArr = str.toCharArray();
-            sortLexicographical(newArr);
-            sortedCodewords.add(newArr);
+            //char[] newArr = str.toCharArray();
+            //sortLexicographical(newArr);
+            //sortedCodewords.add(newArr);
         }
 
         for (int i = 0; i < this.codewords.length; ++i) {
-            String str = codewords[i];
-            char[] chars = sortedCodewords.get(i);
+            String str = this.codewords[i];
 
             int idx = 0;
             Node start = null;
@@ -49,32 +45,12 @@ public class Decryptor {
                 roots.add(start);
             }
 
-            for (int j = 0; j < chars.length; ++j) {
-                Node newNode = new Node(chars[j]);
-                start = root.insert(start, newNode);
+            for (int j = 0; j < strLengths[i]; ++j) {
+                Node newNode = new Node(str.charAt(j));
+                start = start.insert(start, newNode);
             }
-            start.insertStr(str.toLowerCase());
+            start.insertStr(str);
         }
-
-        /*int length = codewords.length;
-        strLengths = new int[length];
-        this.codewords = new String[length];
-        //this.codewordsToLexicographical = new ArrayList<>(length);
-        eachCharCounts = new ArrayList<>(length);
-
-
-        for (int i = 0; i < length; ++i) {
-            String str = codewords[i];
-            str = str.toLowerCase();
-
-            this.codewords[i] = str;
-            this.strLengths[i] = str.length();
-            char[] newArr = str.toCharArray();
-            sortLexicographical(newArr);
-            ArrayList<Integer> list = getEachCharCountList(newArr);
-            eachCharCounts.add(list);
-            //codewordsToLexicographical.add(newArr);
-        }*/
     }
     public String[] findCandidates(final String word) {
         if (this.codewords.length == 0) {
@@ -85,8 +61,6 @@ public class Decryptor {
 
         HashMap<Character, Integer> map = new HashMap<>(wordLength);
 
-
-        //int[] charCounts = new int[26];
         for (int i = 0; i < wordLength; ++i) {
             char c = word.charAt(i);
             if (c == '?') {
@@ -103,6 +77,7 @@ public class Decryptor {
 
         ArrayList<String> result = new ArrayList<>(wordLength);
         ArrayList<Node> list = new ArrayList<>(wordLength);
+
         for (Node n : roots) {
             if (n.getLength() == wordLength) {
                 list.addAll(n.getNodes());
@@ -115,93 +90,65 @@ public class Decryptor {
         }
 
         findRecursive2(list, map, list.get(0), specialCharCount, 0, result);
+
+        int resultSize = result.size();
+        String[] res = new String[resultSize];
+        for (int i = 0; i < resultSize; ++i) {
+            res[i] = result.get(i);
+        }
+
+        return res;
+
         //findRecursive(list, chars, 0, list.get(0), 0, specialCharCount, result);
 
         //findStr(list, chars, 0,0, specialCharCount, result);
 
         /*Stack<Node> stack = new Stack<>();
         Stack<Integer> specialCounts = new Stack<>();
-        Stack<Integer> depths = new Stack<>();
-        Stack<Integer> indexes = new Stack<>();
-        int listSize = list.size();
+        Stack<Map.Entry<Character, Integer>> entries = new Stack<>();
 
-        for (int i = 0; i < listSize; ++i) {
-            Node n = list.get(i);
-            if (n.getValue() == chars[idx]) {
-                stack.push(list.get(i));
-                specialCounts.push(specialCharCount);
-                depths.push(startDepth);
-                indexes.push(idx);
-            } else if (specialCharCount > 0) {
-                ArrayList<Node> temp = n.getNodes();
+        stack.push(list.get(0));
+        specialCounts.push(specialCharCount);
 
-                if (1 == chars.length) {
-                    if (!n.getWords().isEmpty()) {
-                        result.addAll(n.getWords());
-                    }
-                    continue;
+
+        while (!stack.isEmpty()) {
+            Node node = stack.pop();
+            int specialCount = specialCounts.pop();
+            char key = node.getValue();
+
+            if (map.containsKey(key) && map.get(key) > 0) {
+                map.put(key, map.get(key) - 1);
+
+                ArrayList<Node> children = node.getNodes();
+                int size = children.size();
+
+                for (int i = 0; i < size; ++i) {
+                    stack.push(children.get(i));
+                    specialCounts.push(specialCount);
                 }
 
-                for (Node tempNode : temp) {
-                    stack.push(tempNode);
-                    specialCounts.push(specialCharCount - 1);
-                    depths.push(startDepth + 1);
-                    indexes.push(idx);
+                if (node.getNodes().isEmpty()) {
+                    result.addAll(node.getWords());
+                }
+
+            } else if (specialCount > 0) {
+                --specialCount;
+
+                ArrayList<Node> children = node.getNodes();
+                int size = children.size();
+
+                for (int i = 0; i < size; ++i) {
+                    stack.push(children.get(i));
+                    specialCounts.push(specialCount);
+                }
+
+                if (node.getNodes().isEmpty()) {
+                    result.addAll(node.getWords());
                 }
             }
         }
 
-        int index = 0;
-
-        while (!stack.isEmpty() && index < chars.length) {
-            Node node = stack.pop();
-            int specialCount = specialCounts.pop();
-            int depth = depths.pop();
-            index = indexes.pop();
-            char c = chars[index];
-
-
-            if (node.getValue() == c) {
-                ArrayList<Node> children = node.getNodes();
-                int size = children.size();
-
-                if (depth == chars.length - 1) {
-                    if (!node.getWords().isEmpty()) {
-                        result.addAll(node.getWords());
-                    }
-                    continue;
-                }
-
-                for (int i = 0; i < size; ++i) {
-                    stack.push(children.get(i));
-                    depths.push(depth + 1);
-                    specialCounts.push(specialCount);
-                    indexes.push(index + 1);
-                }
-            } else if (specialCount > 0) {
-                --specialCount;
-                ArrayList<Node> children = node.getNodes();
-                int size = children.size();
-
-                if (depth == chars.length - 1) {
-                    if (!node.getWords().isEmpty()) {
-                        result.addAll(node.getWords());
-                    }
-                    continue;
-                }
-
-                for (int i = 0; i < size; ++i) {
-                    if (chars[index] == children.get(i).getValue() || specialCount > 0) {
-                        stack.push(children.get(i));
-                        depths.push(depth + 1);
-                        specialCounts.push(specialCount);
-                        indexes.push(index);
-                    }
-                }
-            }
-        }*/
-
-        return result.toArray(new String[0]);
+        return result.toArray(new String[0]);*/
 
         //findRecursive(list, chars, 0, nodes.get(0), 0, specialCharCount, result);
 
@@ -232,69 +179,6 @@ public class Decryptor {
         */
 
     }
-    /*private void findStr(ArrayList<Node> list, char[] chars, int idx, int startDepth,
-                         int specialCharCount, ArrayList<String> result) {
-        Stack<Node> stack = new Stack<>();
-        Stack<Integer> specialCounts = new Stack<>();
-        Stack<Integer> depths = new Stack<>();
-        Stack<Integer> indexes = new Stack<>();
-        int listSize = list.size();
-
-        for (int i = 0; i < listSize; ++i) {
-            stack.push(list.get(i));
-            specialCounts.push(specialCharCount);
-            depths.push(startDepth);
-            indexes.push(idx);
-        }
-
-        int index = 0;
-
-        while (!stack.isEmpty() && index < chars.length) {
-            Node node = stack.pop();
-            int specialCount = specialCounts.pop();
-            int depth = depths.pop();
-            index = indexes.pop();
-            char c = chars[index];
-
-
-            if (node.getValue() == c) {
-                ArrayList<Node> children = node.getNodes();
-                int size = children.size();
-
-                if (depth == chars.length - 1) {
-                    if (!node.getWords().isEmpty()) {
-                        result.addAll(node.getWords());
-                    }
-                    continue;
-                }
-
-                for (int i = 0; i < size; ++i) {
-                    stack.push(children.get(i));
-                    depths.push(depth + 1);
-                    specialCounts.push(specialCount);
-                    indexes.push(index + 1);
-                }
-            } else if (specialCount > 0) {
-                --specialCount;
-                ArrayList<Node> children = node.getNodes();
-                int size = children.size();
-
-                if (depth == chars.length - 1) {
-                    if (!node.getWords().isEmpty()) {
-                        result.addAll(node.getWords());
-                    }
-                    continue;
-                }
-
-                for (int i = 0; i < size; ++i) {
-                    stack.push(children.get(i));
-                    depths.push(depth + 1);
-                    specialCounts.push(specialCount);
-                    indexes.push(index);
-                }
-            }
-        }
-    }*/
 
     private void findRecursive2(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
                                 int specialCharCount, int depth, ArrayList<String> result) {
