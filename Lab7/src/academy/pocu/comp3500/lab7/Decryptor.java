@@ -126,19 +126,24 @@ public class Decryptor {
         Stack<Node> stack = new Stack<>();
         Stack<Integer> specialCounts = new Stack<>();
         Stack<Integer> depths = new Stack<>();
+        Stack<Integer> indexes = new Stack<>();
         int listSize = list.size();
 
         for (int i = 0; i < listSize; ++i) {
             stack.push(list.get(i));
             specialCounts.push(specialCharCount);
             depths.push(startDepth);
+            indexes.push(idx);
         }
 
-        while (!stack.isEmpty() && idx < chars.length) {
+        int index = 0;
+
+        while (!stack.isEmpty() && index < chars.length) {
             Node node = stack.pop();
             int specialCount = specialCounts.pop();
             int depth = depths.pop();
-            char c = chars[idx];
+            index = indexes.pop();
+            char c = chars[index];
 
 
             if (node.getValue() == c) {
@@ -148,17 +153,16 @@ public class Decryptor {
                 if (depth == chars.length - 1) {
                     if (!node.getWords().isEmpty()) {
                         result.addAll(node.getWords());
-                        continue;
                     }
+                    continue;
                 }
 
                 for (int i = 0; i < size; ++i) {
                     stack.push(children.get(i));
                     depths.push(depth + 1);
                     specialCounts.push(specialCount);
+                    indexes.push(index + 1);
                 }
-
-                ++idx;
             } else if (specialCount > 0) {
                 --specialCount;
                 ArrayList<Node> children = node.getNodes();
@@ -167,14 +171,15 @@ public class Decryptor {
                 if (depth == chars.length - 1) {
                     if (!node.getWords().isEmpty()) {
                         result.addAll(node.getWords());
-                        continue;
                     }
+                    continue;
                 }
 
                 for (int i = 0; i < size; ++i) {
                     stack.push(children.get(i));
                     depths.push(depth + 1);
                     specialCounts.push(specialCount);
+                    indexes.push(index);
                 }
             }
         }

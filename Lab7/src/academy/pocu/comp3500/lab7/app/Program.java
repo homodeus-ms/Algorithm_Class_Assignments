@@ -138,10 +138,11 @@ public class Program {
     }
     public static void test4() {
         String[] codewords = new String[] {
-                "divide",
+                "dd", "ivide", "divide",
         };
         Decryptor decryptor = new Decryptor(codewords);
         String[] candidates = decryptor.findCandidates("?ivide");
+        //printArr(candidates);
         assert (candidates.length == 1);
         System.out.println("Test4 No Assert");
     }
