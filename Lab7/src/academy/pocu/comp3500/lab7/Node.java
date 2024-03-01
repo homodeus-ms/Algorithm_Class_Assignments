@@ -5,10 +5,8 @@ import java.util.ArrayList;
 public class Node {
     private char value;
     private int length;
-    private int duplicateCount = 1;
     private ArrayList<Node> nodes = new ArrayList<>();
     private ArrayList<String> words = new ArrayList<>();
-
 
     public Node() {
     }
@@ -21,7 +19,7 @@ public class Node {
     public ArrayList<Node> getNodes() {
         return nodes;
     }
-    public ArrayList<String> getWords() {
+    public ArrayList<String> getWord() {
         return this.words;
     }
     public Node insert(Node root, Node n) {

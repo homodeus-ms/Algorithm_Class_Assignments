@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Decryptor {
     private final String[] codewords;
     private final int[] strLengths;
-    private final ArrayList<char[]> sortedCodewords;
+    //private final ArrayList<char[]> sortedCodewords;
     private final ArrayList<Node> roots = new ArrayList<>();
 
 
@@ -14,7 +14,7 @@ public class Decryptor {
         int length = codewords.length;
         strLengths = new int[length];
         this.codewords = new String[length];
-        sortedCodewords = new ArrayList<>(length);
+        //sortedCodewords = new ArrayList<>(length);
 
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
@@ -89,7 +89,7 @@ public class Decryptor {
             return new String[]{};
         }
 
-        findRecursive2(list, map, list.get(0), specialCharCount, 0, result);
+        findRecursive(list, map, list.get(0), specialCharCount, 0, result);
 
         int resultSize = result.size();
         String[] res = new String[resultSize];
@@ -98,94 +98,12 @@ public class Decryptor {
         }
 
         return res;
-
-        //findRecursive(list, chars, 0, list.get(0), 0, specialCharCount, result);
-
-        //findStr(list, chars, 0,0, specialCharCount, result);
-
-        /*Stack<Node> stack = new Stack<>();
-        Stack<Integer> specialCounts = new Stack<>();
-        Stack<Map.Entry<Character, Integer>> entries = new Stack<>();
-
-        stack.push(list.get(0));
-        specialCounts.push(specialCharCount);
-
-
-        while (!stack.isEmpty()) {
-            Node node = stack.pop();
-            int specialCount = specialCounts.pop();
-            char key = node.getValue();
-
-            if (map.containsKey(key) && map.get(key) > 0) {
-                map.put(key, map.get(key) - 1);
-
-                ArrayList<Node> children = node.getNodes();
-                int size = children.size();
-
-                for (int i = 0; i < size; ++i) {
-                    stack.push(children.get(i));
-                    specialCounts.push(specialCount);
-                }
-
-                if (node.getNodes().isEmpty()) {
-                    result.addAll(node.getWords());
-                }
-
-            } else if (specialCount > 0) {
-                --specialCount;
-
-                ArrayList<Node> children = node.getNodes();
-                int size = children.size();
-
-                for (int i = 0; i < size; ++i) {
-                    stack.push(children.get(i));
-                    specialCounts.push(specialCount);
-                }
-
-                if (node.getNodes().isEmpty()) {
-                    result.addAll(node.getWords());
-                }
-            }
-        }
-
-        return result.toArray(new String[0]);*/
-
-        //findRecursive(list, chars, 0, nodes.get(0), 0, specialCharCount, result);
-
-
-
-        //findRecursive(chars, 0, start, specialCharCount, result);
-
-        /*for (int i = 0; i < chars.length; ++i) {
-            ArrayList<Node> list = start.getNodes();
-            int listSize = list.size();
-            char wordChar = chars[i];
-
-            for (int j = 0; j < listSize; ++j) {
-                Node node = list.get(j);
-                if (node.getValue() == wordChar) {
-                    start = node;
-                    break;
-                }
-            }
-            if (specialCharCount == 0) {
-                return new String[]{};
-            } else {
-
-            }
-
-        }
-        result = start.getWords();
-        */
-
     }
 
-    private void findRecursive2(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
+    private void findRecursive(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
                                 int specialCharCount, int depth, ArrayList<String> result) {
         if (list.isEmpty()) {
-
-            result.addAll(n.getWords());
-
+            result.addAll(n.getWord());
             return;
         }
         int listSize = list.size();
@@ -195,34 +113,11 @@ public class Decryptor {
 
             if (map.containsKey(key) && map.get(key) > 0) {
                 map.put(key, map.get(key) - 1);
-                findRecursive2(node.getNodes(), map, node, specialCharCount, depth + 1, result);
+                findRecursive(node.getNodes(), map, node, specialCharCount, depth + 1, result);
                 map.put(key, map.get(key) + 1);
             } else if (specialCharCount > 0) {
-                findRecursive2(node.getNodes(), map, node, specialCharCount - 1, depth + 1,
+                findRecursive(node.getNodes(), map, node, specialCharCount - 1, depth + 1,
                         result);
-            }
-        }
-
-    }
-
-    private void findRecursive(ArrayList<Node> list, char[] chars, int idx, Node n, int depth,
-                               int specialCharCount, ArrayList<String> result) {
-        if (depth == chars.length) {
-            if (!n.getWords().isEmpty()) {
-                result.addAll(n.getWords());
-            }
-            return;
-        }
-
-        int listSize = list.size();
-        for (int i = 0; i < listSize; ++i) {
-            Node node = list.get(i);
-            char c = chars[idx];
-            if (node.getValue() == c) {
-                findRecursive(node.getNodes(), chars, idx + 1, node, depth + 1, specialCharCount, result);
-            } else if (specialCharCount > 0) {
-                findRecursive(node.getNodes(), chars, idx, node, depth + 1,
-                        specialCharCount - 1, result);
             }
         }
     }
