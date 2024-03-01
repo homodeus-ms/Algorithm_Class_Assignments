@@ -7,6 +7,7 @@ public class Node {
     private ArrayList<Node> nodes = new ArrayList<>();
     private ArrayList<String> words = new ArrayList<>();
 
+
     public Node() {
     }
     public Node(char c) {

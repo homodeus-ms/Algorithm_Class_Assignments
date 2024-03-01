@@ -69,7 +69,6 @@ public class Decryptor {
         }
         int wordLength = word.length();
         int specialCharCount = 0;
-        int keepSpecialCharCount = 0;
         char[] chars = new char[wordLength];
 
         for (int i = 0; i < wordLength; ++i) {
@@ -85,12 +84,76 @@ public class Decryptor {
         sortLexicographical(chars);
 
         ArrayList<String> result = new ArrayList<>();
-        Node start = root;
-        ArrayList<Node> nodes = root.getNodes();
-        int listSize = nodes.size();
+        ArrayList<Node> list = root.getNodes();
+        int startDepth = 0;
+        int idx = 0;
 
-        findStr(nodes, chars, 0, nodes.get(0), 0, specialCharCount, result);
-        //findRecursive(nodes, chars, 0, nodes.get(0), 0, specialCharCount, result);
+        //findStr(list, chars, 0,0, specialCharCount, result);
+
+        Stack<Node> stack = new Stack<>();
+        Stack<Integer> specialCounts = new Stack<>();
+        Stack<Integer> depths = new Stack<>();
+        Stack<Integer> indexes = new Stack<>();
+        int listSize = list.size();
+
+        for (int i = 0; i < listSize; ++i) {
+            stack.push(list.get(i));
+            specialCounts.push(specialCharCount);
+            depths.push(startDepth);
+            indexes.push(idx);
+        }
+
+        int index = 0;
+
+        while (!stack.isEmpty() && index < chars.length) {
+            Node node = stack.pop();
+            int specialCount = specialCounts.pop();
+            int depth = depths.pop();
+            index = indexes.pop();
+            char c = chars[index];
+
+
+            if (node.getValue() == c) {
+                ArrayList<Node> children = node.getNodes();
+                int size = children.size();
+
+                if (depth == chars.length - 1) {
+                    if (!node.getWords().isEmpty()) {
+                        result.addAll(node.getWords());
+                    }
+                    continue;
+                }
+
+                for (int i = 0; i < size; ++i) {
+                    stack.push(children.get(i));
+                    depths.push(depth + 1);
+                    specialCounts.push(specialCount);
+                    indexes.push(index + 1);
+                }
+            } else if (specialCount > 0) {
+                --specialCount;
+                ArrayList<Node> children = node.getNodes();
+                int size = children.size();
+
+                if (depth == chars.length - 1) {
+                    if (!node.getWords().isEmpty()) {
+                        result.addAll(node.getWords());
+                    }
+                    continue;
+                }
+
+                for (int i = 0; i < size; ++i) {
+                    stack.push(children.get(i));
+                    depths.push(depth + 1);
+                    specialCounts.push(specialCount);
+                    indexes.push(index);
+                }
+            }
+        }
+
+        return result.toArray(new String[0]);
+
+        //findRecursive(list, chars, 0, nodes.get(0), 0, specialCharCount, result);
 
 
 
@@ -116,12 +179,10 @@ public class Decryptor {
 
         }
         result = start.getWords();
-*/
-
-        return result.toArray(new String[0]);
+        */
 
     }
-    private void findStr(ArrayList<Node> list, char[] chars, int idx, Node n, int startDepth,
+    private void findStr(ArrayList<Node> list, char[] chars, int idx, int startDepth,
                          int specialCharCount, ArrayList<String> result) {
         Stack<Node> stack = new Stack<>();
         Stack<Integer> specialCounts = new Stack<>();
