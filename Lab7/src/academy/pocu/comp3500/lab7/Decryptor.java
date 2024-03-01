@@ -111,9 +111,15 @@ public class Decryptor {
         int startDepth = 0;
         int idx = 0;
 
+        if (list.isEmpty()) {
+            return new String[]{};
+        }
+
+        findRecursive(list, chars, 0, list.get(0), 0, specialCharCount, result);
+
         //findStr(list, chars, 0,0, specialCharCount, result);
 
-        Stack<Node> stack = new Stack<>();
+        /*Stack<Node> stack = new Stack<>();
         Stack<Integer> specialCounts = new Stack<>();
         Stack<Integer> depths = new Stack<>();
         Stack<Integer> indexes = new Stack<>();
@@ -193,7 +199,7 @@ public class Decryptor {
                     }
                 }
             }
-        }
+        }*/
 
         return result.toArray(new String[0]);
 
