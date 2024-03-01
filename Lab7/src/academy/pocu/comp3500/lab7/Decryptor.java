@@ -101,7 +101,7 @@ public class Decryptor {
     }
 
     private void findRecursive(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
-                                int specialCharCount, int depth, ArrayList<String> result) {
+                               int specialCharCount, int depth, ArrayList<String> result) {
         if (list.isEmpty()) {
             result.addAll(n.getWord());
             return;
