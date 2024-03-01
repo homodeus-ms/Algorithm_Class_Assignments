@@ -105,6 +105,14 @@ public class Decryptor {
                 indexes.push(idx);
             } else if (specialCharCount > 0) {
                 ArrayList<Node> temp = n.getNodes();
+
+                if (1 == chars.length) {
+                    if (!n.getWords().isEmpty()) {
+                        result.addAll(n.getWords());
+                    }
+                    continue;
+                }
+
                 for (Node tempNode : temp) {
                     stack.push(tempNode);
                     specialCounts.push(specialCharCount - 1);
@@ -154,10 +162,12 @@ public class Decryptor {
                 }
 
                 for (int i = 0; i < size; ++i) {
-                    stack.push(children.get(i));
-                    depths.push(depth + 1);
-                    specialCounts.push(specialCount);
-                    indexes.push(index);
+                    if (chars[index] == children.get(i).getValue() || specialCount > 0) {
+                        stack.push(children.get(i));
+                        depths.push(depth + 1);
+                        specialCounts.push(specialCount);
+                        indexes.push(index);
+                    }
                 }
             }
         }
