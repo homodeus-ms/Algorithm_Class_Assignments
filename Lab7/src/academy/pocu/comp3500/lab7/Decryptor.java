@@ -2,10 +2,6 @@ package academy.pocu.comp3500.lab7;
 
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
-
 
 public class Decryptor {
     private final String[] codewords;
@@ -87,7 +83,20 @@ public class Decryptor {
         int specialCharCount = 0;
         char[] chars = new char[wordLength];
 
+        int[] charCounts = new int[26];
         for (int i = 0; i < wordLength; ++i) {
+            char c = word.charAt(i);
+
+            if (c == '?') {
+                ++specialCharCount;
+            } else {
+                c |= 0x20;
+                c -= 'a';
+                ++charCounts[c];
+            }
+        }
+
+        /*for (int i = 0; i < wordLength; ++i) {
             char c = word.charAt(i);
             if (c == '?') {
                 ++specialCharCount;
@@ -97,7 +106,7 @@ public class Decryptor {
                 chars[i] = (char) (c | 0x20);
             }
         }
-        sortLexicographical(chars);
+        sortLexicographical(chars);*/
 
         ArrayList<String> result = new ArrayList<>();
         ArrayList<Node> list = new ArrayList<>();
@@ -115,7 +124,8 @@ public class Decryptor {
             return new String[]{};
         }
 
-        findRecursive(list, chars, 0, list.get(0), 0, specialCharCount, result);
+        findRecursive2(list, charCounts, list.get(0), specialCharCount, 0, result);
+        //findRecursive(list, chars, 0, list.get(0), 0, specialCharCount, result);
 
         //findStr(list, chars, 0,0, specialCharCount, result);
 
@@ -295,6 +305,33 @@ public class Decryptor {
             }
         }
     }*/
+
+    private void findRecursive2(ArrayList<Node> list, int[] charCounts, Node n, int specialCharCount, int depth,
+                                ArrayList<String> result) {
+        if (list.isEmpty()) {
+            if (!n.getWords().isEmpty()) {
+                result.addAll(n.getWords());
+            }
+            return;
+        }
+        int listSize = list.size();
+        for (int i = 0; i < listSize; ++i) {
+            Node node = list.get(i);
+            char value = node.getValue();
+            value -= 'a';
+
+            if (charCounts[value] > 0) {
+                --charCounts[value];
+                findRecursive2(node.getNodes(), charCounts, node, specialCharCount, depth + 1, result);
+                ++charCounts[value];
+            } else if (specialCharCount > 0) {
+                findRecursive2(node.getNodes(), charCounts, node, specialCharCount - 1, depth + 1,
+                        result);
+            }
+        }
+
+    }
+
     private void findRecursive(ArrayList<Node> list, char[] chars, int idx, Node n, int depth,
                                int specialCharCount, ArrayList<String> result) {
         if (depth == chars.length) {
