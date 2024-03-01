@@ -89,7 +89,8 @@ public class Decryptor {
         ArrayList<Node> nodes = root.getNodes();
         int listSize = nodes.size();
 
-        findRecursive(nodes, chars, 0, nodes.get(0), 0, specialCharCount, result);
+        findStr(nodes, chars, 0, nodes.get(0), 0, specialCharCount, result);
+        //findRecursive(nodes, chars, 0, nodes.get(0), 0, specialCharCount, result);
 
 
 
@@ -119,6 +120,64 @@ public class Decryptor {
 
         return result.toArray(new String[0]);
 
+    }
+    private void findStr(ArrayList<Node> list, char[] chars, int idx, Node n, int startDepth,
+                         int specialCharCount, ArrayList<String> result) {
+        Stack<Node> stack = new Stack<>();
+        Stack<Integer> specialCounts = new Stack<>();
+        Stack<Integer> depths = new Stack<>();
+        int listSize = list.size();
+
+        for (int i = 0; i < listSize; ++i) {
+            stack.push(list.get(i));
+            specialCounts.push(specialCharCount);
+            depths.push(startDepth);
+        }
+
+        while (!stack.isEmpty() && idx < chars.length) {
+            Node node = stack.pop();
+            int specialCount = specialCounts.pop();
+            int depth = depths.pop();
+            char c = chars[idx];
+
+
+            if (node.getValue() == c) {
+                ArrayList<Node> children = node.getNodes();
+                int size = children.size();
+
+                if (depth == chars.length - 1) {
+                    if (!node.getWords().isEmpty()) {
+                        result.addAll(node.getWords());
+                        continue;
+                    }
+                }
+
+                for (int i = 0; i < size; ++i) {
+                    stack.push(children.get(i));
+                    depths.push(depth + 1);
+                    specialCounts.push(specialCount);
+                }
+
+                ++idx;
+            } else if (specialCount > 0) {
+                --specialCount;
+                ArrayList<Node> children = node.getNodes();
+                int size = children.size();
+
+                if (depth == chars.length - 1) {
+                    if (!node.getWords().isEmpty()) {
+                        result.addAll(node.getWords());
+                        continue;
+                    }
+                }
+
+                for (int i = 0; i < size; ++i) {
+                    stack.push(children.get(i));
+                    depths.push(depth + 1);
+                    specialCounts.push(specialCount);
+                }
+            }
+        }
     }
     private void findRecursive(ArrayList<Node> list, char[] chars, int idx, Node n, int depth,
                                int specialCharCount, ArrayList<String> result) {

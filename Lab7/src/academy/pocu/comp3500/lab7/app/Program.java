@@ -14,10 +14,11 @@ public class Program {
         String[] codewords = new String[]{"cat", "cats", "acts", "scan", "acre", "ants"};
         //String[] codewords = new String[]{"scan"};
         //String[] codewords = new String[]{"aa", "a", "abc", "abcd", "a", "a", "abcdef", "bb", "a"};
+        //String[] codewords = new String[] { "a", "ac", "abc"};
 
         Decryptor decryptor = new Decryptor(codewords);
 
-        /*String[] candidates = decryptor.findCandidates("??er");
+        /*String[] candidates = decryptor.findCandidates("a?ct");
         for (String str : candidates) {
             System.out.println(str);
         }*/
