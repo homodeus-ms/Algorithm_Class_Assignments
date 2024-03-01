@@ -308,7 +308,7 @@ public class Decryptor {
             Node node = list.get(i);
             char key = node.getValue();
 
-            if (map.containsKey(key)) {
+            if (map.containsKey(key) && map.get(key) > 0) {
                 map.put(key, map.get(key) - 1);
                 findRecursive2(node.getNodes(), map, node, specialCharCount, depth + 1, result);
                 map.put(key, map.get(key) + 1);
