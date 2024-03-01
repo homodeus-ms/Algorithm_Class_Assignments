@@ -83,7 +83,8 @@ public class Decryptor {
         int wordLength = word.length();
         int specialCharCount = 0;
 
-        HashMap<Character, Integer> map = new HashMap<>();
+        HashMap<Character, Integer> map = new HashMap<>(wordLength);
+
 
         //int[] charCounts = new int[26];
         for (int i = 0; i < wordLength; ++i) {
@@ -100,8 +101,8 @@ public class Decryptor {
             }
         }
 
-        ArrayList<String> result = new ArrayList<>();
-        ArrayList<Node> list = new ArrayList<>();
+        ArrayList<String> result = new ArrayList<>(wordLength);
+        ArrayList<Node> list = new ArrayList<>(wordLength);
         for (Node n : roots) {
             if (n.getLength() == wordLength) {
                 list.addAll(n.getNodes());
@@ -298,9 +299,9 @@ public class Decryptor {
     private void findRecursive2(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
                                 int specialCharCount, int depth, ArrayList<String> result) {
         if (list.isEmpty()) {
-            if (!n.getWords().isEmpty()) {
-                result.addAll(n.getWords());
-            }
+
+            result.addAll(n.getWords());
+
             return;
         }
         int listSize = list.size();
