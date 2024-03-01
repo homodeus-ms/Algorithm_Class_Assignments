@@ -13,6 +13,7 @@ public class Decryptor {
     private final ArrayList<char[]> sortedCodewords;
 
     private final Node root = new Node();
+    private final ArrayList<Node> roots = new ArrayList<>();
 
 
     public Decryptor(final String[] codewords) {
@@ -35,7 +36,22 @@ public class Decryptor {
         for (int i = 0; i < this.codewords.length; ++i) {
             String str = codewords[i];
             char[] chars = sortedCodewords.get(i);
-            Node start = root;
+
+            int idx = 0;
+            Node start = null;
+
+            for (Node n : roots) {
+                if (n.getLength() == strLengths[i]) {
+                    start = n;
+                    break;
+                }
+            }
+            if (start == null) {
+                start = new Node();
+                start.setLength(strLengths[i]);
+                roots.add(start);
+            }
+
             for (int j = 0; j < chars.length; ++j) {
                 Node newNode = new Node(chars[j]);
                 start = root.insert(start, newNode);
@@ -84,7 +100,14 @@ public class Decryptor {
         sortLexicographical(chars);
 
         ArrayList<String> result = new ArrayList<>();
-        ArrayList<Node> list = root.getNodes();
+        ArrayList<Node> list = new ArrayList<>();
+        for (Node n : roots) {
+            if (n.getLength() == wordLength) {
+                list.addAll(n.getNodes());
+                break;
+            }
+        }
+
         int startDepth = 0;
         int idx = 0;
 

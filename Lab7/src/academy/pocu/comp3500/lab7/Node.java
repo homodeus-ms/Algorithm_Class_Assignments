@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Node {
     private char value;
+    private int length;
     private ArrayList<Node> nodes = new ArrayList<>();
     private ArrayList<String> words = new ArrayList<>();
 
@@ -34,5 +35,12 @@ public class Node {
     }
     public void insertStr(String str) {
         words.add(str);
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+    public int getLength() {
+        return this.length;
     }
 }
