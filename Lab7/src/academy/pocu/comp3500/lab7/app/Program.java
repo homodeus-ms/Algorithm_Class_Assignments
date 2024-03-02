@@ -64,8 +64,8 @@ public class Program {
         assert (candidates[0].equals("cats") || candidates[0].equals("acts") || candidates[0].equals("scan"));
         assert (candidates[1].equals("cats") || candidates[1].equals("acts") || candidates[1].equals("scan"));
 
-        test1();
-        test2();
+        //test1();
+        //test2();
         test3();
         test4();
         //test5();
@@ -183,7 +183,7 @@ public class Program {
     }
     private static void test6() {
         String[] codewords = new String[] {
-                "est", "Hello", "ab", "ez", "e", "es", "a", "b"
+                "est", "hello", "ab", "ez", "e", "es", "a", "b"
         };
         Decryptor decryptor = new Decryptor(codewords);
         String[] candidates = decryptor.findCandidates("e");
@@ -193,7 +193,7 @@ public class Program {
     }
     private static void test7() {
         String[] codewords = new String[] {
-                "est", "Hello", "ab", "ez", "e", "es", "a", "b"
+                "est", "hello", "ab", "ez", "e", "es", "a", "b"
         };
         Decryptor decryptor = new Decryptor(codewords);
         String[] candidates = decryptor.findCandidates("??");

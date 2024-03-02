@@ -18,7 +18,6 @@ public class Decryptor {
 
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
-            str = str.toLowerCase();
 
             this.codewords[i] = str;
             this.strLengths[i] = str.length();
@@ -122,7 +121,7 @@ public class Decryptor {
         }
     }
 
-    private void sortLexicographical(char[] chars) {
+    /*private void sortLexicographical(char[] chars) {
         sortRecursive(chars, 0, chars.length - 1);
     }
     private void sortRecursive(char[] chars, int left, int right) {
@@ -172,6 +171,6 @@ public class Decryptor {
         }
 
         return result;
-    }
+    }*/
 
 }
