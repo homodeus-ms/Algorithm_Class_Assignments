@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Decryptor {
     private final String[] codewords;
     private final int[] strLengths;
-    //private final ArrayList<char[]> sortedCodewords;
+    private final ArrayList<char[]> sortedCodewords;
     private final ArrayList<Node> roots = new ArrayList<>();
 
 
@@ -14,16 +14,16 @@ public class Decryptor {
         int length = codewords.length;
         strLengths = new int[length];
         this.codewords = new String[length];
-        //sortedCodewords = new ArrayList<>(length);
+        sortedCodewords = new ArrayList<>(length);
 
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
 
             this.codewords[i] = str;
             this.strLengths[i] = str.length();
-            //char[] newArr = str.toCharArray();
-            //sortLexicographical(newArr);
-            //sortedCodewords.add(newArr);
+            char[] newArr = str.toCharArray();
+            sortLexicographical(newArr);
+            sortedCodewords.add(newArr);
         }
 
         for (int i = 0; i < this.codewords.length; ++i) {
@@ -44,8 +44,10 @@ public class Decryptor {
                 roots.add(start);
             }
 
-            for (int j = 0; j < strLengths[i]; ++j) {
-                Node newNode = new Node(str.charAt(j));
+            char[] charArr = sortedCodewords.get(i);
+
+            for (int j = 0; j < charArr.length; ++j) {
+                Node newNode = new Node(charArr[j]);
                 start = start.insert(start, newNode);
             }
             start.insertStr(str);
@@ -82,6 +84,8 @@ public class Decryptor {
         ArrayList<String> result = new ArrayList<>(wordLength);
         ArrayList<Node> list = new ArrayList<>(wordLength);
 
+        //Node start = null;
+
         for (Node n : roots) {
             if (n.getLength() == wordLength) {
                 list.addAll(n.getNodes());
@@ -115,7 +119,7 @@ public class Decryptor {
             char c = node.getValue();
             if (map.containsKey(c) && map.get(c) > 0) {
                 result.addAll(node.getWord());
-            } else if ( specialCharCount > 0) {
+            } else if (specialCharCount > 0) {
                 result.addAll(node.getWord());
             }
             return;
@@ -166,7 +170,7 @@ public class Decryptor {
         }
     }
 
-    /*private void sortLexicographical(char[] chars) {
+    private void sortLexicographical(char[] chars) {
         sortRecursive(chars, 0, chars.length - 1);
     }
     private void sortRecursive(char[] chars, int left, int right) {
@@ -216,6 +220,6 @@ public class Decryptor {
         }
 
         return result;
-    }*/
+    }
 
 }
