@@ -42,8 +42,8 @@ public class Player extends PlayerBase {
 
     // board 관련
     private final byte[][] remainCountsToEdge;
-    private char[] board = new char[BOARD_SIZE * BOARD_SIZE];
-    private char[] copyBoard = new char[BOARD_SIZE * BOARD_SIZE];
+    private char[] board = null;
+    //private char[] copyBoard = new char[BOARD_SIZE * BOARD_SIZE];
     ArrayList<Byte> moves = new ArrayList<>();
 
 
@@ -92,19 +92,28 @@ public class Player extends PlayerBase {
     public Move getNextMove(char[][] board) {
 
         boolean isStartBoard = true;
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                if (board[y][x] != START_BOARD[y * BOARD_SIZE + x]) {
-                    isStartBoard = false;
-                    break;
+
+        if (this.board == null) {
+
+            this.board = new char[BOARD_SIZE * BOARD_SIZE];
+
+            for (int y = 0; y < BOARD_SIZE; ++y) {
+                for (int x = 0; x < BOARD_SIZE; ++x) {
+                    this.board[y * BOARD_SIZE + x] = board[y][x];
+
+                    if (board[y][x] != START_BOARD[y * BOARD_SIZE + x]) {
+                        isStartBoard = false;
+                    }
                 }
             }
         }
+
 
         Move move;
 
         if (this.isWhite() && isStartBoard) {
             move = new Move(3, 6, 3, 4);
+            insertMoveToBoard(move);
         } else {
             move = getNextMove(board, new Move(0, 0, 0, 0));
         }
@@ -114,7 +123,15 @@ public class Player extends PlayerBase {
 
     public Move getNextMove(char[][] board, Move opponentMove) {
 
-        copyBoard(this.board, board);
+        if (this.board == null) {
+            this.board = new char[BOARD_SIZE * BOARD_SIZE];
+            copyBoard(this.board, board);
+        } else {
+            insertMoveToBoard(opponentMove);
+        }
+        //printBoard();
+
+
         int maxPoint = 0;
         int point = 0;
         //Move maxResult = new Move(0, 0, 0, 0);
@@ -131,8 +148,8 @@ public class Player extends PlayerBase {
         preWhiteScore = whiteScore;
         preBlackScore = blackScore;
 
-        maxPoint = mimimax(this.board, depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                true, this.isWhite(), result, start);
+        maxPoint = minimax(depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                true, this.isWhite(), result);
 
         maxResult.fromX = result.fromX;
         maxResult.fromY = result.fromY;
@@ -146,14 +163,14 @@ public class Player extends PlayerBase {
             start = System.nanoTime();
             whiteScore = preWhiteScore;
             blackScore = preBlackScore;
-            point = mimimax(this.board, depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                    true, this.isWhite(), result, start);
+            point = minimax(depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                    true, this.isWhite(), result);
 
-            //end = System.nanoTime();
-            //deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
-            /*System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
+            end = System.nanoTime();
+            deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
+            System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
             System.out.printf("depth : %d\n", depth);
-            System.out.printf("deltaTime : %d\n", deltaTime);*/
+            System.out.printf("deltaTime : %d\n", deltaTime);
 
 
             if (point > maxPoint) {
@@ -163,35 +180,35 @@ public class Player extends PlayerBase {
                 maxResult.toX = result.toX;
                 maxResult.toY = result.toY;
             }
-            if (timeEnd) {
+
+
+            if (deltaTime >= sqrtLimitTime) {
                 break;
             }
-
-            /*if (deltaTime >= sqrtLimitTime) {
-                break;
-            }*/
 
             ++depth;
         }
 
-        timeEnd = false;
+
+        insertMoveToBoard(maxResult);
+
 
         return maxResult;
     }
-    private int mimimax(char[] board, int depth, int startDepth, int alpha, int beta,
-                        boolean isMyTurn, boolean playerIsWhite, Move result, long startTime) {
+    private int minimax(int depth, int startDepth, int alpha, int beta,
+                        boolean isMyTurn, boolean playerIsWhite, Move result) {
         /*if (depth == 0) {
             return evaluate(board, this.isWhite());
         }*/
         ArrayList<Byte> moves;
         if (playerIsWhite) {
-            moves = getWhiteMoves(board);
+            moves = getWhiteMoves();
         } else {
-            moves = getBlackMoves(board);
+            moves = getBlackMoves();
         }
 
         if (moves.isEmpty()) {
-            return evaluate(board, this.isWhite());
+            return evaluate(this.isWhite());
         }
 
         if (isMyTurn) {
@@ -208,10 +225,10 @@ public class Player extends PlayerBase {
 
                 tempEarnScore = move(board, playerIsWhite, from, to);
                 if (depth > 1) {
-                    currValue = mimimax(board, depth - 1, startDepth, alpha, beta,
-                            false, !playerIsWhite, result, startTime);
+                    currValue = minimax(depth - 1, startDepth, alpha, beta,
+                            false, !playerIsWhite, result);
                 } else {
-                    currValue = evaluate(board, this.isWhite());
+                    currValue = evaluate(this.isWhite());
                 }
 
                 cancelMove(board, playerIsWhite, to, from, existingPiece, tempEarnScore);
@@ -232,13 +249,6 @@ public class Player extends PlayerBase {
 
                     alpha = Math.max(alpha, maxValue);
 
-                    long endTime = System.nanoTime();
-                    deltaTime = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
-
-                    if (deltaTime >= sqrtLimitTime) {
-                        timeEnd = true;
-                        break;
-                    }
                 }
 
 
@@ -262,10 +272,10 @@ public class Player extends PlayerBase {
 
                 tempEarnScore = move(board, playerIsWhite, from, to);
                 if (depth > 1) {
-                    currValue = mimimax(board, depth - 1, startDepth, alpha, beta,
-                            true, !playerIsWhite, result, startTime);
+                    currValue = minimax(depth - 1, startDepth, alpha, beta,
+                            true, !playerIsWhite, result);
                 } else {
-                    currValue = evaluate(board, this.isWhite());
+                    currValue = evaluate(this.isWhite());
                 }
 
                 cancelMove(board, playerIsWhite, to, from, existingPiece, tempEarnScore);
@@ -285,7 +295,7 @@ public class Player extends PlayerBase {
             return minValue;
         }
     }
-    private ArrayList<Byte> getWhiteMoves(char[] board) {
+    private ArrayList<Byte> getWhiteMoves() {
         ArrayList<Byte> moves = new ArrayList<>();
         moves.ensureCapacity(MAX_MOVE_IN_A_TURN * 2);
 
@@ -302,7 +312,7 @@ public class Player extends PlayerBase {
     }
 
 
-    private ArrayList<Byte> getBlackMoves(char[] board) {
+    private ArrayList<Byte> getBlackMoves() {
         ArrayList<Byte> moves = new ArrayList<>();
         moves.ensureCapacity(MAX_MOVE_IN_A_TURN * 2);
 
@@ -318,7 +328,7 @@ public class Player extends PlayerBase {
         return moves;
     }
 
-    private int evaluate(char[] board, boolean playerIsWhite) {
+    private int evaluate(boolean playerIsWhite) {
         return playerIsWhite ? whiteScore - blackScore : blackScore - whiteScore;
     }
 
@@ -741,5 +751,20 @@ public class Player extends PlayerBase {
     }*/
 
 
+    private void insertMoveToBoard(Move move) {
+        char c = this.board[move.fromY * BOARD_SIZE + move.fromX];
+        this.board[move.fromY * BOARD_SIZE + move.fromX] = 0;
+        this.board[move.toY * BOARD_SIZE + move.toX] = c;
+    }
+    private void printBoard() {
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                char c = this.board[y * BOARD_SIZE + x] == 0 ? '.' : this.board[y * BOARD_SIZE + x];
+                System.out.printf("%c", c);
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 
 }
