@@ -6,7 +6,6 @@ import academy.pocu.comp3500.assignment3.chess.PlayerBase;
 import java.util.ArrayList;
 //import java.util.Random;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
@@ -45,10 +44,12 @@ public class Player extends PlayerBase {
     // board 관련
     private final byte[][] remainCountsToEdge;
     private char[] board = null;
-    /*private byte[] myPiecePositions = new byte[16];
-    private byte myPiecePositionsSize;*/
-    private HashSet<Byte> myPiecePositions = new HashSet<>(16);
-    private HashSet<Byte> opPiecePositions = new HashSet<>(16);
+    private byte[] myPiecePositions = new byte[16];
+    private byte myPiecePositionsSize;
+    private byte[] opPiecePositions = new byte[16];
+    private byte opPiecePositionsSize;
+    //private HashSet<Byte> myPiecePositions = new HashSet<>(16);
+    //private HashSet<Byte> opPiecePositions = new HashSet<>(16);
 
 
     // move 관련
@@ -104,7 +105,7 @@ public class Player extends PlayerBase {
 
         this.board = new char[BOARD_SIZE * BOARD_SIZE];
         getPiecePositions(board);
-        if (myPiecePositions.size() == 16 && opPiecePositions.size() == 16) {
+        if (myPiecePositionsSize == 16 && opPiecePositionsSize == 16) {
             isStartBoard = true;
         }
 
@@ -115,7 +116,8 @@ public class Player extends PlayerBase {
             insertMoveToBoard(move);
             updateMyPiecePositions(move.fromX, move.fromY, move.toX, move.toY);
         } else {
-            move = getNextMove(board, new Move(0, 0, 0, 0));
+
+            move = getNextMove(board, new Move(-1, -1, -1, -1));
         }
 
         return move;
@@ -126,15 +128,14 @@ public class Player extends PlayerBase {
         if (this.board == null) {
             this.board = new char[BOARD_SIZE * BOARD_SIZE];
             getPiecePositions(board);
-        } else {
-            insertMoveToBoard(opponentMove);
-            byte opponentMoveFromIdx = (byte) (opponentMove.fromY * BOARD_SIZE + opponentMove.fromX);
+        } else if (opponentMove.fromX != -1) {
+            updateOpPiecePositions(opponentMove.fromX, opponentMove.fromY, opponentMove.toX, opponentMove.toY);
             byte opponentMoveToIdx = (byte) (opponentMove.toY * BOARD_SIZE + opponentMove.toX);
-            opPiecePositions.remove(opponentMoveFromIdx);
-            opPiecePositions.add(opponentMoveToIdx);
-            myPiecePositions.remove(opponentMoveToIdx);
+            if (this.board[opponentMoveToIdx] != 0) {
+                removePiecePosition(opponentMoveToIdx, true);
+            }
+            insertMoveToBoard(opponentMove);
         }
-
 
         int maxPoint = Integer.MIN_VALUE;
         int point = 0;
@@ -142,6 +143,13 @@ public class Player extends PlayerBase {
         long end;
         long limitTime = getMaxMoveTimeMilliseconds();
         int depth = limitTime >= 1000 ? 4 : 3;
+
+        /*maxPoint = minimax(depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                true, this.isWhite(), result);
+        maxResult.fromX = result.fromX;
+        maxResult.fromY = result.fromY;
+        maxResult.toX = result.toX;
+        maxResult.toY = result.toY;*/
 
 
         while (true) {
@@ -178,9 +186,14 @@ public class Player extends PlayerBase {
         }
 
 
-        insertMoveToBoard(maxResult);
         updateMyPiecePositions(maxResult.fromX, maxResult.fromY, maxResult.toX, maxResult.toY);
-        opPiecePositions.remove((byte) (maxResult.toY * BOARD_SIZE + maxResult.toX));
+        byte toIdx = (byte) (maxResult.toY * BOARD_SIZE + maxResult.toX);
+        if (this.board[toIdx] != 0) {
+            removePiecePosition(toIdx, false);
+        }
+
+        insertMoveToBoard(maxResult);
+
 
         return maxResult;
     }
@@ -306,16 +319,16 @@ public class Player extends PlayerBase {
     }
 
     private ArrayList<Byte> getMyAvailableMoves() {
-        ArrayList<Byte> moves = new ArrayList<>(myPiecePositions.size() * 8);
-        for (byte idx : myPiecePositions) {
-            getAvailableMoves(moves, this.isWhite(), idx);
+        ArrayList<Byte> moves = new ArrayList<>(myPiecePositionsSize * 8);
+        for (byte i = 0; i < myPiecePositionsSize; ++i) {
+            getAvailableMoves(moves, true, myPiecePositions[i]);
         }
         return moves;
     }
     private ArrayList<Byte> getOpAvailableMoves() {
-        ArrayList<Byte> moves = new ArrayList<>(opPiecePositions.size() * 8);
-        for (byte idx : opPiecePositions) {
-            getAvailableMoves(moves, !this.isWhite(), idx);
+        ArrayList<Byte> moves = new ArrayList<>(opPiecePositionsSize * 8);
+        for (byte i = 0; i < opPiecePositionsSize; ++i) {
+            getAvailableMoves(moves, false, opPiecePositions[i]);
         }
         return moves;
     }
@@ -878,6 +891,7 @@ public class Player extends PlayerBase {
         return false;
     }
     private void getPiecePositions(char[][] board) {
+
         if (this.isWhite()) {
             for (int y = 0; y < BOARD_SIZE; ++y) {
                 for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -885,9 +899,9 @@ public class Player extends PlayerBase {
                     byte idx = (byte) (y * BOARD_SIZE + x);
                     this.board[idx] = c;
                     if (c >= 'b') {
-                        myPiecePositions.add(idx);
+                        myPiecePositions[myPiecePositionsSize++] = idx;
                     } else if (c != 0 && c <= 'R') {
-                        opPiecePositions.add(idx);
+                        opPiecePositions[opPiecePositionsSize++] = idx;
                     }
                 }
             }
@@ -898,9 +912,9 @@ public class Player extends PlayerBase {
                     byte idx = (byte) (y * BOARD_SIZE + x);
                     this.board[idx] = c;
                     if (c != 0 && c <= 'R') {
-                        myPiecePositions.add(idx);
+                        myPiecePositions[myPiecePositionsSize++] = idx;
                     } else if (c >= 'b') {
-                        opPiecePositions.add(idx);
+                        opPiecePositions[opPiecePositionsSize++] = idx;
                     }
                 }
             }
@@ -909,14 +923,55 @@ public class Player extends PlayerBase {
     private void updateMyPiecePositions(int fromX, int fromY, int toX, int toY) {
         byte from = (byte) (fromY * BOARD_SIZE + fromX);
         byte to = (byte) (toY * BOARD_SIZE + toX);
-        myPiecePositions.remove(from);
-        myPiecePositions.add(to);
+        int idx = -1;
+        for (int i = 0; i < myPiecePositionsSize; ++i) {
+            if (myPiecePositions[i] == from) {
+                idx = i;
+                break;
+            }
+        }
+        assert (idx != -1);
+        myPiecePositions[idx] = to;
     }
     private void updateOpPiecePositions(int fromX, int fromY, int toX, int toY) {
         byte from = (byte) (fromY * BOARD_SIZE + fromX);
         byte to = (byte) (toY * BOARD_SIZE + toX);
-        opPiecePositions.remove(from);
-        opPiecePositions.add(to);
+        int idx = -1;
+        for (int i = 0; i < opPiecePositionsSize; ++i) {
+            if (opPiecePositions[i] == from) {
+                idx = i;
+                break;
+            }
+        }
+        assert (idx != -1);
+        opPiecePositions[idx] = to;
+    }
+    private void removePiecePosition(byte pos, boolean isMine) {
+        int idx = -1;
+        if (isMine) {
+            for (int i = 0; i < myPiecePositionsSize; ++i) {
+                if (myPiecePositions[i] == pos) {
+                    idx = i;
+                    break;
+                }
+            }
+            myPiecePositions[idx] = myPiecePositions[myPiecePositionsSize - 1];
+            myPiecePositions[myPiecePositionsSize - 1] = 0;
+            --myPiecePositionsSize;
+        } else {
+            for (int i = 0; i < opPiecePositionsSize; ++i) {
+                if (opPiecePositions[i] == pos) {
+                    idx = i;
+                    break;
+                }
+            }
+            opPiecePositions[idx] = opPiecePositions[opPiecePositionsSize - 1];
+            opPiecePositions[opPiecePositionsSize - 1] = 0;
+            --opPiecePositionsSize;
+        }
+
+
+
     }
 
 
