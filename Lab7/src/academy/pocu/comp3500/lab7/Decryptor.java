@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Decryptor {
     private final String[] codewords;
     private final int[] strLengths;
-    private final ArrayList<char[]> sortedCodewords;
+    //private final ArrayList<char[]> sortedCodewords;
     private final ArrayList<Node> roots = new ArrayList<>();
 
 
@@ -14,16 +14,16 @@ public class Decryptor {
         int length = codewords.length;
         strLengths = new int[length];
         this.codewords = new String[length];
-        sortedCodewords = new ArrayList<>(length);
+        //sortedCodewords = new ArrayList<>(length);
 
         for (int i = 0; i < length; ++i) {
             String str = codewords[i];
 
             this.codewords[i] = str;
             this.strLengths[i] = str.length();
-            char[] newArr = str.toCharArray();
-            sortLexicographical(newArr);
-            sortedCodewords.add(newArr);
+            //char[] newArr = str.toCharArray();
+            //sortLexicographical(newArr);
+            //sortedCodewords.add(newArr);
         }
 
         for (int i = 0; i < this.codewords.length; ++i) {
@@ -44,10 +44,10 @@ public class Decryptor {
                 roots.add(start);
             }
 
-            char[] charArr = sortedCodewords.get(i);
+            //char[] charArr = sortedCodewords.get(i);
 
-            for (int j = 0; j < charArr.length; ++j) {
-                Node newNode = new Node(charArr[j]);
+            for (int j = 0; j < strLengths[i]; ++j) {
+                Node newNode = new Node(str.charAt(j));
                 start = start.insert(start, newNode);
             }
             start.insertStr(str);
@@ -148,7 +148,7 @@ public class Decryptor {
         map.put(key, map.get(key) + 1);
     }
 
-    private void findRecursive(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
+    /*private void findRecursive(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
                                int specialCharCount, int depth, ArrayList<String> result) {
         if (list.isEmpty()) {
             result.addAll(n.getWord());
@@ -220,6 +220,6 @@ public class Decryptor {
         }
 
         return result;
-    }
+    }*/
 
 }
