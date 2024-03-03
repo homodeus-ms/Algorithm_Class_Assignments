@@ -75,6 +75,9 @@ public class Decryptor {
                 ++charCounts[c];
             }
         }
+        /*for (int i = 0; i < charCounts.length; ++i) {
+            charCounts[i] += specialCharCount;
+        }*/
 
 
         ArrayList<String> result = new ArrayList<>(wordLength);
@@ -103,7 +106,7 @@ public class Decryptor {
         return res;
     }
     private void searchTrie2(ArrayList<Node> list, int specialCharCount,
-                            int[] charCounts, ArrayList<String> result) {
+                             int[] charCounts, ArrayList<String> result) {
         int c = 0;
         for (Node n : list) {
             c = n.getValue() - 'a';
