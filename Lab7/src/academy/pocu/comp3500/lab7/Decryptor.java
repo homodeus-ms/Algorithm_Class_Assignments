@@ -2,6 +2,8 @@ package academy.pocu.comp3500.lab7;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+
 
 public class Decryptor {
     private final String[] codewords;
@@ -60,20 +62,20 @@ public class Decryptor {
         int wordLength = word.length();
         int specialCharCount = 0;
 
-        HashMap<Character, Integer> map = new HashMap<>();
+        int[] charCounts = new int[27];
 
         for (int i = 0; i < wordLength; ++i) {
             char c = word.charAt(i);
-            if (c != '?') {
-                c |= 0x20;
-            }
-
-            if (map.containsKey(c)) {
-                map.put(c, map.get(c) + 1);
+            if (c == '?') {
+                ++specialCharCount;
+                ++charCounts[26];
             } else {
-                map.put(c, 1);
+                c |= 0x20;
+                c -= 'a';
+                ++charCounts[c];
             }
         }
+
 
         ArrayList<String> result = new ArrayList<>(wordLength);
         ArrayList<Node> list = new ArrayList<>(wordLength);
@@ -90,9 +92,7 @@ public class Decryptor {
             return new String[]{};
         }
 
-
-        specialCharCount = map.getOrDefault('?', 0);
-        searchTrie(list, specialCharCount, map, result);
+        searchTrie2(list, specialCharCount, charCounts, result);
 
         int resultSize = result.size();
         String[] res = new String[resultSize];
@@ -102,9 +102,38 @@ public class Decryptor {
 
         return res;
     }
+    private void searchTrie2(ArrayList<Node> list, int specialCharCount,
+                            int[] charCounts, ArrayList<String> result) {
+        int c = 0;
+        for (Node n : list) {
+            c = n.getValue() - 'a';
+            if (charCounts[c] > 0) {
+                if (n.getNodes().isEmpty()) {
+                    result.add(n.getWord());
+                    return;
+                }
+                --charCounts[c];
+                searchTrie2(n.getNodes(), specialCharCount, charCounts, result);
+            } else if (specialCharCount > 0) {
+
+                c = 26;
+                if (n.getNodes().isEmpty()) {
+                    result.add(n.getWord());
+                    continue;
+                }
+                --charCounts[c];
+                searchTrie2(n.getNodes(), specialCharCount - 1, charCounts, result);
+            } else {
+                continue;
+            }
+            ++charCounts[c];
+        }
+
+    }
+
 
     private void searchTrie(ArrayList<Node> list, int specialCharCount,
-                                       HashMap<Character, Integer> map, ArrayList<String> result) {
+                            HashMap<Character, Integer> map, ArrayList<String> result) {
         char c = 0;
         for (Node n : list) {
             c = n.getValue();
@@ -116,6 +145,7 @@ public class Decryptor {
                 map.put(c, map.get(c) - 1);
                 searchTrie(n.getNodes(), specialCharCount, map, result);
             } else if (specialCharCount > 0) {
+
                 c = '?';
                 if (n.getNodes().isEmpty()) {
                     result.add(n.getWord());
