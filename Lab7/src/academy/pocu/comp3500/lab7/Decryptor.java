@@ -139,12 +139,54 @@ public class Decryptor {
             idx = 26;
             --charCounts[idx];
             for (Node n : list) {
-                nextIdx = n.getValue() - 'a';
+
+                searchDFS(n, charCounts, specialCharCount - 1, result);
+
+                /*nextIdx = n.getValue() - 'a';
                 if (specialCharCount - 1 == 0 && charCounts[nextIdx] == 0) {
                     continue;
                 }
-                findRecursive2(n, charCounts, specialCharCount - 1, result);
+                findRecursive2(n, charCounts, specialCharCount - 1, result);*/
             }
+
+        } else {
+            return;
+        }
+        ++charCounts[idx];
+    }
+    private void searchDFS(Node node, int[] charCounts, int specialCharCount, ArrayList<String> result) {
+        if (node.getWord() != null) {
+            int i = node.getValue() - 'a';
+            if (charCounts[i] == 1) {
+                result.add(node.getWord());
+            } else if (specialCharCount > 0) {
+                result.add(node.getWord());
+            }
+            return;
+        }
+        char c = node.getValue();
+        int idx = c - 'a';
+        int nextIdx;
+
+        if (charCounts[idx] != 0) {
+            --charCounts[idx];
+            ArrayList<Node> list = node.getNodes();
+            for (Node n : list) {
+                nextIdx = n.getValue() - 'a';
+                if (specialCharCount == 0 && charCounts[nextIdx] == 0) {
+                    continue;
+                }
+                findRecursive2(n, charCounts, specialCharCount, result);
+            }
+        } else if (specialCharCount > 0) {
+            ArrayList<Node> list = node.getNodes();
+            idx = 26;
+            --charCounts[idx];
+            for (Node n : list) {
+                searchDFS(n, charCounts, specialCharCount - 1, result);
+            }
+        } else {
+            return;
         }
         ++charCounts[idx];
     }
