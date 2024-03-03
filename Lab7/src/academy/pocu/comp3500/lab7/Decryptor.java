@@ -54,6 +54,8 @@ public class Decryptor {
             }
             start.setWord(str);
         }
+
+        compressTrie();
     }
     public String[] findCandidates(final String word) {
         if (this.codewords.length == 0) {
@@ -75,9 +77,12 @@ public class Decryptor {
                 ++charCounts[c];
             }
         }
-        /*for (int i = 0; i < charCounts.length; ++i) {
-            charCounts[i] += specialCharCount;
-        }*/
+        for (int i = 0; i < charCounts.length; ++i) {
+            if (charCounts[i] == 0) {
+                charCounts[i] = -1;
+            }
+
+        }
 
 
         ArrayList<String> result = new ArrayList<>(wordLength);
@@ -86,7 +91,11 @@ public class Decryptor {
 
         for (Node n : roots) {
             if (n.getLength() == wordLength) {
-                list.addAll(n.getNodes());
+                if (n.getNodes().isEmpty()) {
+                    list.add(n);
+                } else {
+                    list.addAll(n.getNodes());
+                }
                 break;
             }
         }
@@ -96,7 +105,7 @@ public class Decryptor {
         }
 
         for (Node n : list) {
-            searchTrie3(n, specialCharCount, charCounts, result);
+            searchTrie4(n, specialCharCount, charCounts, result);
         }
 
         //searchTrie2(list, specialCharCount, charCounts, result);
@@ -109,6 +118,93 @@ public class Decryptor {
 
         return res;
     }
+    private void searchTrie4(Node n, int specialCharCount,
+                             int[] charCounts, ArrayList<String> result) {
+        int c = 0;
+        c = n.getValue() - 'a';
+        if (charCounts[c] > 0) {
+            if (n.getNodes().isEmpty()) {
+                if (n.getNextChars().isEmpty()) {
+                    result.add(n.getWord());
+                } else {
+                    if (examine(n, specialCharCount, charCounts)) {
+                        result.add(n.getWord());
+                    }
+                }
+
+                return;
+            }
+            --charCounts[c];
+
+            for (Node node : n.getNodes()) {
+                int nextC = node.getValue() - 'a';
+                if (specialCharCount == 0 && charCounts[nextC] <= 0) {
+                    continue;
+                }
+                searchTrie4(node, specialCharCount, charCounts, result);
+            }
+
+
+        } else if (specialCharCount > 0) {
+
+            c = 26;
+            if (n.getNodes().isEmpty()) {
+                if (n.getNextChars().isEmpty()) {
+                    result.add(n.getWord());
+                } else {
+                    if (examine(n, specialCharCount - 1, charCounts)) {
+                        result.add(n.getWord());
+                    }
+                }
+                return;
+            }
+            --charCounts[c];
+
+            for (Node node : n.getNodes()) {
+                int nextC = node.getValue() - 'a';
+                if (specialCharCount - 1 == 0 && charCounts[nextC] <= 0) {
+                    continue;
+                }
+                searchTrie4(node, specialCharCount - 1, charCounts, result);
+            }
+        } else {
+            return;
+        }
+        ++charCounts[c];
+
+    }
+    private boolean examine(Node n, int wildcardCount, int[] charCounts) {
+        ArrayList<Character> nextChars = n.getNextChars();
+        int size = nextChars.size();
+        boolean result = false;
+        int i = 0;
+        for (i = 0; i < size; ++i) {
+            char c = nextChars.get(i);
+            c -= 'a';
+            if (charCounts[c] > 0) {
+                --charCounts[c];
+            } else if (wildcardCount > 0) {
+                --wildcardCount;
+            } else {
+                break;
+            }
+        }
+        if (i == size) {
+            result = true;
+        }
+        for (int j = 0; j < i; ++j) {
+            char c = nextChars.get(j);
+            c -= 'a';
+            if (charCounts[c] >= 0) {
+                ++charCounts[c];
+            } else {
+                ++wildcardCount;
+            }
+        }
+
+        return result;
+    }
+
     private void searchTrie3(Node n, int specialCharCount,
                              int[] charCounts, ArrayList<String> result) {
         int c = 0;
@@ -209,6 +305,35 @@ public class Decryptor {
             map.put(c, map.get(c) + 1);
         }
 
+    }
+    private void compressTrie() {
+        for (Node n : roots) {
+            for (Node node : n.getNodes()) {
+                compressTrieRecursive(node);
+            }
+        }
+    }
+    private Node compressTrieRecursive(Node node) {
+        if (node.getNodes().isEmpty()) {
+            return node;
+        }
+        Node ret = null;
+        for (Node n : node.getNodes()) {
+            ret = compressTrieRecursive(n);
+        }
+        if (node.getNodes().size() == 1) {
+            addNextChars(node, ret);
+        }
+
+        return node;
+    }
+    private void addNextChars(Node node, Node target) {
+        node.setNextChars(target.getNextChars());
+        node.getNextChars().add(target.getValue());
+        //node.nextChars = target.nextChars;
+        //node.nextChars.add(target.getValue());
+        node.setWord(target.getWord());
+        node.getNodes().clear();
     }
 
 }

@@ -6,7 +6,7 @@ public class Node {
     private char value;
     private int length;
     private ArrayList<Node> nodes = new ArrayList<>();
-    //private ArrayList<String> words = new ArrayList<>();
+    private ArrayList<Character> nextChars = new ArrayList<>();
     private String word = null;
 
     public Node() {
@@ -20,9 +20,7 @@ public class Node {
     public ArrayList<Node> getNodes() {
         return nodes;
     }
-    /*public ArrayList<String> getWord() {
-        return this.words;
-    }*/
+
     public String getWord() {
         return this.word;
     }
@@ -36,9 +34,13 @@ public class Node {
 
         return n;
     }
-    /*public void insertStr(String str) {
-        words.add(str);
-    }*/
+    public ArrayList<Character> getNextChars() {
+        return this.nextChars;
+    }
+    public void setNextChars(ArrayList<Character> newNextChars) {
+        this.nextChars = newNextChars;
+    }
+
     public void setWord(String str) {
         word = str;
     }
