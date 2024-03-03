@@ -50,7 +50,7 @@ public class Decryptor {
                 Node newNode = new Node(str.charAt(j));
                 start = start.insert(start, newNode);
             }
-            start.insertStr(str);
+            start.setWord(str);
         }
     }
     public String[] findCandidates(final String word) {
@@ -115,12 +115,14 @@ public class Decryptor {
     }
     private void findRecursive2(Node node, HashMap<Character, Integer> map,
                                 int specialCharCount, ArrayList<String> result) {
-        if (!node.getWord().isEmpty()) {
+        if (node.getWord() != null) {
             char c = node.getValue();
             if (map.containsKey(c) && map.get(c) > 0) {
-                result.addAll(node.getWord());
+                //result.addAll(node.getWord());
+                result.add(node.getWord());
             } else if (specialCharCount > 0) {
-                result.addAll(node.getWord());
+                //result.addAll(node.getWord());
+                result.add(node.getWord());
             }
             return;
         }
