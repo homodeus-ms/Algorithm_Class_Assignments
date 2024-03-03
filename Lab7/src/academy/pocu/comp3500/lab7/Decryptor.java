@@ -60,24 +60,24 @@ public class Decryptor {
         int wordLength = word.length();
         int specialCharCount = 0;
 
-        //HashMap<Character, Integer> map = new HashMap<>(wordLength);
-        int[] charCounts = new int[27];
+        HashMap<Character, Integer> map = new HashMap<>();
 
         for (int i = 0; i < wordLength; ++i) {
             char c = word.charAt(i);
-            if (c == '?') {
-                ++specialCharCount;
-            } else {
+            if (c != '?') {
                 c |= 0x20;
-                c -= 'a';
-                ++charCounts[c];
+            }
+
+            if (map.containsKey(c)) {
+                map.put(c, map.get(c) + 1);
+            } else {
+                map.put(c, 1);
             }
         }
 
         ArrayList<String> result = new ArrayList<>(wordLength);
         ArrayList<Node> list = new ArrayList<>(wordLength);
 
-        //Node start = null;
 
         for (Node n : roots) {
             if (n.getLength() == wordLength) {
@@ -89,18 +89,10 @@ public class Decryptor {
         if (list.isEmpty()) {
             return new String[]{};
         }
-        int listSize = list.size();
 
-        for (int i = 0; i < listSize; ++i) {
-            Node start = list.get(i);
-            int c = start.getValue() - 'a';
-            if (specialCharCount == 0 && charCounts[c] == 0) {
-                continue;
-            }
-            findRecursive2(start, charCounts, specialCharCount, result);
-        }
 
-        //findRecursive(list, map, list.get(0), specialCharCount, 0, result);
+        specialCharCount = map.getOrDefault('?', 0);
+        searchTrie(list, specialCharCount, map, result);
 
         int resultSize = result.size();
         String[] res = new String[resultSize];
@@ -110,159 +102,33 @@ public class Decryptor {
 
         return res;
     }
-    private void findRecursive2(Node node, int[] charCounts,
-                                int specialCharCount, ArrayList<String> result) {
-        if (node.getWord() != null) {
-            int i = node.getValue() - 'a';
-            if (charCounts[i] == 1) {
-                result.add(node.getWord());
-            } else if (specialCharCount > 0) {
-                result.add(node.getWord());
-            }
-            return;
-        }
 
-        int idx = node.getValue() - 'a';
-        int nextIdx;
-        if (charCounts[idx] != 0) {
-            --charCounts[idx];
-            ArrayList<Node> list = node.getNodes();
-            for (Node n : list) {
-                nextIdx = n.getValue() - 'a';
-                if (specialCharCount == 0 && charCounts[nextIdx] == 0) {
+    private void searchTrie(ArrayList<Node> list, int specialCharCount,
+                                       HashMap<Character, Integer> map, ArrayList<String> result) {
+        char c = 0;
+        for (Node n : list) {
+            c = n.getValue();
+            if (map.containsKey(c) && map.get(c) > 0) {
+                if (n.getNodes().isEmpty()) {
+                    result.add(n.getWord());
+                    return;
+                }
+                map.put(c, map.get(c) - 1);
+                searchTrie(n.getNodes(), specialCharCount, map, result);
+            } else if (specialCharCount > 0) {
+                c = '?';
+                if (n.getNodes().isEmpty()) {
+                    result.add(n.getWord());
                     continue;
                 }
-                findRecursive2(n, charCounts, specialCharCount, result);
+                map.put(c, map.get(c) - 1);
+                searchTrie(n.getNodes(), specialCharCount - 1, map, result);
+            } else {
+                continue;
             }
-        } else if (specialCharCount > 0) {
-            ArrayList<Node> list = node.getNodes();
-            idx = 26;
-            --charCounts[idx];
-            for (Node n : list) {
-
-                searchDFS(n, charCounts, specialCharCount - 1, result);
-
-                /*nextIdx = n.getValue() - 'a';
-                if (specialCharCount - 1 == 0 && charCounts[nextIdx] == 0) {
-                    continue;
-                }
-                findRecursive2(n, charCounts, specialCharCount - 1, result);*/
-            }
-
-        } else {
-            return;
+            map.put(c, map.get(c) + 1);
         }
-        ++charCounts[idx];
-    }
-    private void searchDFS(Node node, int[] charCounts, int specialCharCount, ArrayList<String> result) {
-        if (node.getWord() != null) {
-            int i = node.getValue() - 'a';
-            if (charCounts[i] == 1) {
-                result.add(node.getWord());
-            } else if (specialCharCount > 0) {
-                result.add(node.getWord());
-            }
-            return;
-        }
-        char c = node.getValue();
-        int idx = c - 'a';
-        int nextIdx;
-
-        if (charCounts[idx] != 0) {
-            --charCounts[idx];
-            ArrayList<Node> list = node.getNodes();
-            for (Node n : list) {
-                nextIdx = n.getValue() - 'a';
-                if (specialCharCount == 0 && charCounts[nextIdx] == 0) {
-                    continue;
-                }
-                findRecursive2(n, charCounts, specialCharCount, result);
-            }
-        } else if (specialCharCount > 0) {
-            ArrayList<Node> list = node.getNodes();
-            idx = 26;
-            --charCounts[idx];
-            for (Node n : list) {
-                searchDFS(n, charCounts, specialCharCount - 1, result);
-            }
-        } else {
-            return;
-        }
-        ++charCounts[idx];
-    }
-
-    /*private void findRecursive(ArrayList<Node> list, HashMap<Character, Integer> map, Node n,
-                               int specialCharCount, int depth, ArrayList<String> result) {
-        if (list.isEmpty()) {
-            result.addAll(n.getWord());
-            return;
-        }
-        int listSize = list.size();
-        for (int i = 0; i < listSize; ++i) {
-            Node node = list.get(i);
-            char key = node.getValue();
-
-            if (map.containsKey(key) && map.get(key) > 0) {
-                map.put(key, map.get(key) - 1);
-                findRecursive(node.getNodes(), map, node, specialCharCount, depth + 1, result);
-                map.put(key, map.get(key) + 1);
-            } else if (specialCharCount > 0) {
-                findRecursive(node.getNodes(), map, node, specialCharCount - 1, depth + 1,
-                        result);
-            }
-        }
-    }
-
-    private void sortLexicographical(char[] chars) {
-        sortRecursive(chars, 0, chars.length - 1);
-    }
-    private void sortRecursive(char[] chars, int left, int right) {
-        if (left > right) {
-            return;
-        }
-
-        int originLeft = left;
-
-        for (int i = left; i < right; ++i) {
-            if (chars[i] < chars[right]) {
-                swap(chars, i, left);
-                ++left;
-            }
-        }
-        swap(chars, left, right);
-
-        sortRecursive(chars, originLeft, left - 1);
-        sortRecursive(chars, left + 1, right);
 
     }
-    private void swap(char[] chars, int i, int j) {
-        char temp = chars[i];
-        chars[i] = chars[j];
-        chars[j] = temp;
-    }
-    private ArrayList<Integer> getEachCharCountList(char[] chars) {
-        ArrayList<Integer> result = new ArrayList<>(chars.length * 2);
-        for (int i = 0; i < chars.length; ++i) {
-            int idx = i;
-
-            if (idx == chars.length - 1) {
-                result.add(chars[chars.length - 1] - 'a');
-                result.add(1);
-                break;
-            }
-
-            while (chars[idx] == chars[idx + 1]) {
-                ++idx;
-                if (idx == chars.length - 1) {
-                    break;
-                }
-            }
-            result.add((int) chars[i] - 'a');
-            result.add(idx - i + 1);
-            i = idx;
-        }
-
-        return result;
-    }*/
 
 }

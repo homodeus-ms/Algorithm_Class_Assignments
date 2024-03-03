@@ -18,7 +18,7 @@ public class Program {
 
         Decryptor decryptor = new Decryptor(codewords);
 
-        /*String[] candidates = decryptor.findCandidates("ac??");
+        /*String[] candidates = decryptor.findCandidates("acst");
         for (String str : candidates) {
             System.out.println(str);
         }*/
