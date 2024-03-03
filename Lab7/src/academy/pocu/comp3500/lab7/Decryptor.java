@@ -95,7 +95,11 @@ public class Decryptor {
             return new String[]{};
         }
 
-        searchTrie2(list, specialCharCount, charCounts, result);
+        for (Node n : list) {
+            searchTrie3(n, specialCharCount, charCounts, result);
+        }
+
+        //searchTrie2(list, specialCharCount, charCounts, result);
 
         int resultSize = result.size();
         String[] res = new String[resultSize];
@@ -105,6 +109,49 @@ public class Decryptor {
 
         return res;
     }
+    private void searchTrie3(Node n, int specialCharCount,
+                             int[] charCounts, ArrayList<String> result) {
+        int c = 0;
+        c = n.getValue() - 'a';
+        if (charCounts[c] > 0) {
+            if (n.getNodes().isEmpty()) {
+                result.add(n.getWord());
+                return;
+            }
+            --charCounts[c];
+
+            for (Node node : n.getNodes()) {
+                int nextC = node.getValue() - 'a';
+                if (specialCharCount == 0 && charCounts[nextC] <= 0) {
+                    continue;
+                }
+                searchTrie3(node, specialCharCount, charCounts, result);
+            }
+
+
+        } else if (specialCharCount > 0) {
+
+            c = 26;
+            if (n.getNodes().isEmpty()) {
+                result.add(n.getWord());
+                return;
+            }
+            --charCounts[c];
+
+            for (Node node : n.getNodes()) {
+                int nextC = node.getValue() - 'a';
+                if (specialCharCount - 1 == 0 && charCounts[nextC] <= 0) {
+                    continue;
+                }
+                searchTrie3(node, specialCharCount - 1, charCounts, result);
+            }
+        } else {
+            return;
+        }
+        ++charCounts[c];
+
+    }
+
     private void searchTrie2(ArrayList<Node> list, int specialCharCount,
                              int[] charCounts, ArrayList<String> result) {
         int c = 0;
