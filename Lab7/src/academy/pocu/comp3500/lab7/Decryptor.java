@@ -100,6 +100,9 @@ public class Decryptor {
 
         for (int i = 0; i < listSize; ++i) {
             Node start = list.get(i);
+            if (specialCharCount == 0 && !map.containsKey(start.getValue())) {
+                continue;
+            }
             findRecursive2(start, map, specialCharCount, result);
         }
 
@@ -118,10 +121,8 @@ public class Decryptor {
         if (node.getWord() != null) {
             char c = node.getValue();
             if (map.containsKey(c) && map.get(c) > 0) {
-                //result.addAll(node.getWord());
                 result.add(node.getWord());
             } else if (specialCharCount > 0) {
-                //result.addAll(node.getWord());
                 result.add(node.getWord());
             }
             return;
@@ -130,18 +131,28 @@ public class Decryptor {
         char key = node.getValue();
 
         if (map.containsKey(key) && map.get(key) > 0) {
-            //int value = map.get(key);
             map.put(key, map.get(key) - 1);
             ArrayList<Node> list = node.getNodes();
             for (Node n : list) {
+                if (specialCharCount == 0 || map.get('?') == 0) {
+                    char temp = n.getValue();
+                    if (!map.containsKey(temp) || map.get(temp) == 0) {
+                        continue;
+                    }
+                }
                 findRecursive2(n, map, specialCharCount, result);
-                //map.put(key, map.get(key) + 1);
             }
         } else if (specialCharCount > 0) {
             ArrayList<Node> list = node.getNodes();
             key = '?';
             map.put(key, map.get(key) - 1);
             for (Node n : list) {
+                if (specialCharCount - 1 == 0 || map.get('?') == 0) {
+                    char temp = n.getValue();
+                    if (!map.containsKey(temp) || map.get(temp) == 0) {
+                        continue;
+                    }
+                }
                 findRecursive2(n, map, specialCharCount - 1, result);
             }
         } else {
