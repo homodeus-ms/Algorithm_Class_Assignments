@@ -322,7 +322,9 @@ public class Decryptor {
             ret = compressTrieRecursive(n);
         }
         if (node.getNodes().size() == 1) {
-            addNextChars(node, ret);
+            if (node.getWord() != null || !node.getNextChars().isEmpty()) {
+                addNextChars(node, ret);
+            }
         }
 
         return node;
