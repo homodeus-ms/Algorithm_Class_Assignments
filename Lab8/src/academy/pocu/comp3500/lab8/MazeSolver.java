@@ -2,7 +2,10 @@ package academy.pocu.comp3500.lab8;
 
 import academy.pocu.comp3500.lab8.maze.Point;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public final class MazeSolver {
     private static final char WALL = 'x';
