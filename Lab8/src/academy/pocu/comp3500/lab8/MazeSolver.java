@@ -11,7 +11,6 @@ public final class MazeSolver {
     private static final char WALL = 'x';
     private static final char EXIT = 'E';
 
-    //private static Point exitPos;
     private static int width;
     private static int height;
     private static List<Point> result;
@@ -28,14 +27,9 @@ public final class MazeSolver {
         result = new LinkedList<>();
         resultSize = 0;
 
-
-        //findExitPos(maze);
-        /*if (exitPos == null) {
-            return new LinkedList<>();
-        }*/
         Node root = new Node(start);
 
-        boolean found = getPath(root, root.getPos());
+        getPath(root, root.getPos());
 
 
         return result;
@@ -45,7 +39,7 @@ public final class MazeSolver {
 
         result.add(startPos);
         visitedNodes.put(getVisitedMapKey(startPos.getX(), startPos.getY()), start);
-        start.checkVisited();
+        //start.checkVisited();
         ++resultSize;
 
         int x = startPos.getX();
@@ -57,7 +51,6 @@ public final class MazeSolver {
 
         getNextAvailablePos(start, startPos);
 
-        //PriorityQueue<Node> queue = start.getChildren();
         Queue<Node> queue = start.getChildren();
 
         if (queue.isEmpty()) {
@@ -81,19 +74,6 @@ public final class MazeSolver {
         return false;
     }
 
-    /*private static void findExitPos(char[][] maze) {
-        for (int y = 0; y < maze.length; ++y) {
-            for (int x = 0; x < maze[0].length; ++x) {
-                if (maze[y][x] == 'E') {
-                    exitPos = new Point(x, y);
-                    break;
-                }
-            }
-        }
-    }*/
-    /*private static int getDistanceToExit(Point from) {
-        return Math.abs(exitPos.getX() - from.getX()) + Math.abs(exitPos.getY() - from.getY());
-    }*/
     private static void getNextAvailablePos(Node n, Point p) {
         int xPos = p.getX();
         int yPos = p.getY();
@@ -108,7 +88,6 @@ public final class MazeSolver {
             int key = getVisitedMapKey(xPos, yPos);
             if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
                 n.insertChild(new Node(newP));
             }
         }
@@ -118,7 +97,6 @@ public final class MazeSolver {
             int key = getVisitedMapKey(xPos, yPos);
             if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
                 n.insertChild(new Node(newP));
             }
         }
@@ -129,7 +107,6 @@ public final class MazeSolver {
             int key = getVisitedMapKey(xPos, yPos);
             if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
                 n.insertChild(new Node(newP));
             }
         }
@@ -139,12 +116,10 @@ public final class MazeSolver {
             int key = getVisitedMapKey(xPos, yPos);
             if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
                 n.insertChild(new Node(newP));
             }
         }
     }
-
 
     private static boolean isInBoundary(int x, int y) {
         return (x >= 0 && x < width) && (y >= 0 && y < height);
