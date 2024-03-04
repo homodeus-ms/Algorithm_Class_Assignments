@@ -73,6 +73,7 @@ public class Program {
         assert (result.get(0).getX() == 2 && result.get(0).getY() == 2);
         assert (result.get(6).getX() == 5 && result.get(6).getY() == 1);
 
+        test0();
         test1();
         test2();
         //assert (false);

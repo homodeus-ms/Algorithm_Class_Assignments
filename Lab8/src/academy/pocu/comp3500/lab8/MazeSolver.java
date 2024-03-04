@@ -2,16 +2,13 @@ package academy.pocu.comp3500.lab8;
 
 import academy.pocu.comp3500.lab8.maze.Point;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public final class MazeSolver {
     private static final char WALL = 'x';
     private static final char EXIT = 'E';
 
-    private static Point exitPos;
+    //private static Point exitPos;
     private static int width;
     private static int height;
     private static List<Point> result;
@@ -29,11 +26,11 @@ public final class MazeSolver {
         resultSize = 0;
 
 
-        findExitPos(maze);
-        if (exitPos == null) {
+        //findExitPos(maze);
+        /*if (exitPos == null) {
             return new LinkedList<>();
-        }
-        Node root = new Node(start, getDistanceToExit(start));
+        }*/
+        Node root = new Node(start);
 
         boolean found = getPath(root, root.getPos());
 
@@ -57,7 +54,8 @@ public final class MazeSolver {
 
         getNextAvailablePos(start, startPos);
 
-        PriorityQueue<Node> queue = start.getChildren();
+        //PriorityQueue<Node> queue = start.getChildren();
+        Queue<Node> queue = start.getChildren();
 
         if (queue.isEmpty()) {
             result.remove(resultSize - 1);
@@ -80,7 +78,7 @@ public final class MazeSolver {
         return false;
     }
 
-    private static void findExitPos(char[][] maze) {
+    /*private static void findExitPos(char[][] maze) {
         for (int y = 0; y < maze.length; ++y) {
             for (int x = 0; x < maze[0].length; ++x) {
                 if (maze[y][x] == 'E') {
@@ -89,10 +87,10 @@ public final class MazeSolver {
                 }
             }
         }
-    }
-    private static int getDistanceToExit(Point from) {
+    }*/
+    /*private static int getDistanceToExit(Point from) {
         return Math.abs(exitPos.getX() - from.getX()) + Math.abs(exitPos.getY() - from.getY());
-    }
+    }*/
     private static void getNextAvailablePos(Node n, Point p) {
         int xPos = p.getX();
         int yPos = p.getY();
@@ -105,24 +103,20 @@ public final class MazeSolver {
         yPos -= 1;
         if (isInBoundary(xPos, yPos) && map[yPos][xPos] != WALL) {
             int key = getVisitedMapKey(xPos, yPos);
-            if (visitedNodes.containsKey(key)) {
-                //Node get = visitedNodes.get(key);
-                //n.insertChild(get);
-            } else {
+            if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                n.insertChild(new Node(newP));
             }
         }
         // south
         yPos = p.getY() + 1;
         if (isInBoundary(xPos, yPos) && map[yPos][xPos] != WALL) {
             int key = getVisitedMapKey(xPos, yPos);
-            if (visitedNodes.containsKey(key)) {
-                //Node get = visitedNodes.get(key);
-                //n.insertChild(get);
-            } else {
+            if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                n.insertChild(new Node(newP));
             }
         }
         // east
@@ -130,24 +124,20 @@ public final class MazeSolver {
         yPos = p.getY();
         if (isInBoundary(xPos, yPos) && map[yPos][xPos] != WALL) {
             int key = getVisitedMapKey(xPos, yPos);
-            if (visitedNodes.containsKey(key)) {
-                //Node get = visitedNodes.get(key);
-                //n.insertChild(get);
-            } else {
+            if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                n.insertChild(new Node(newP));
             }
         }
         // west
         xPos = p.getX() - 1;
         if (isInBoundary(xPos, yPos) && map[yPos][xPos] != WALL) {
             int key = getVisitedMapKey(xPos, yPos);
-            if (visitedNodes.containsKey(key)) {
-                //Node get = visitedNodes.get(key);
-                //n.insertChild(get);
-            } else {
+            if (!visitedNodes.containsKey(key)) {
                 Point newP = new Point(xPos, yPos);
-                n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                //n.insertChild(new Node(new Point(xPos, yPos), getDistanceToExit(newP)));
+                n.insertChild(new Node(newP));
             }
         }
     }
