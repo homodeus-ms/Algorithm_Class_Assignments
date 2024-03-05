@@ -176,6 +176,7 @@ public class Player extends PlayerBase {
             System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
             System.out.printf("depth : %d\n", depth);
             System.out.printf("deltaTime : %d\n", deltaTime);
+            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);
 
 
             if (point > maxPoint) {
@@ -188,7 +189,7 @@ public class Player extends PlayerBase {
                 break;
             }
 
-            if (deltaTime >= sqrtLimitTime) {
+            if (deltaTime >= sqrtLimitTime || depth >= 5) {
                 break;
             }
 
@@ -216,9 +217,6 @@ public class Player extends PlayerBase {
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
-        /*if (isKingCaptured) {
-            return 10000;
-        }*/
 
         ArrayList<Byte> moves = isMyTurn ? getMyAvailableMoves() : getOpAvailableMoves();
 
