@@ -94,7 +94,6 @@ public class Player extends PlayerBase {
         super(isWhite, maxMoveTimeMilliseconds);
 
         sqrtLimitTime = Math.sqrt(maxMoveTimeMilliseconds);
-        //myKingPos = isWhite ? (byte) 59 : (byte) 3;
 
         Helper helper = new Helper();
         this.remainCountsToEdge = Helper.getRemainCountsToEdge();
@@ -148,17 +147,10 @@ public class Player extends PlayerBase {
         long limitTime = getMaxMoveTimeMilliseconds();
         int depth = limitTime >= 1000 ? 4 : 3;
 
-        /*maxPoint = minimax(depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                true, this.isWhite(), result);
-        maxResult.fromX = result.fromX;
-        maxResult.fromY = result.fromY;
-        maxResult.toX = result.toX;
-        maxResult.toY = result.toY;*/
-
 
         while (true) {
 
-            //System.out.println(depth);
+            System.out.println(depth);
 
             start = System.nanoTime();
             whiteScore = preWhiteScore;
@@ -168,9 +160,9 @@ public class Player extends PlayerBase {
 
             end = System.nanoTime();
             deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
-            /*System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
+            System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
             System.out.printf("depth : %d\n", depth);
-            System.out.printf("deltaTime : %d\n", deltaTime);*/
+            System.out.printf("deltaTime : %d\n", deltaTime);
 
 
             if (point > maxPoint) {
@@ -179,8 +171,9 @@ public class Player extends PlayerBase {
                 maxResult.fromY = result.fromY;
                 maxResult.toX = result.toX;
                 maxResult.toY = result.toY;
+            } else if (point == maxPoint) {
+                break;
             }
-
 
             if (deltaTime >= sqrtLimitTime) {
                 break;
