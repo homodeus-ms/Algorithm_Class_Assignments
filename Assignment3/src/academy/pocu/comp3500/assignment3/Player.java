@@ -145,7 +145,7 @@ public class Player extends PlayerBase {
         long start;
         long end;
         long limitTime = getMaxMoveTimeMilliseconds();
-        int depth = limitTime >= 1000 ? 4 : 3;
+        int depth = limitTime >= 1000 ? 5 : 4;
 
 
         while (true) {
@@ -182,9 +182,12 @@ public class Player extends PlayerBase {
             ++depth;
         }
 
-        if (isKingCaptured) {
-            return maxResult;
-        }
+        /*if (maxResult.fromX == 0 && maxResult.fromY == 0) {
+            int from = myPiecePositions[0];
+            int to = myPiecePositions[1];
+
+            return new Move(from % BOARD_SIZE, from / BOARD_SIZE, to % BOARD_SIZE, to / BOARD_SIZE);
+        }*/
 
         updateMyPiecePositions(maxResult.fromX, maxResult.fromY, maxResult.toX, maxResult.toY);
         byte toIdx = (byte) (maxResult.toY * BOARD_SIZE + maxResult.toX);
@@ -201,7 +204,7 @@ public class Player extends PlayerBase {
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
         if (isKingCaptured) {
-            return isMyTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            return isMyTurn ? 10000: -10000;
         }
 
         ArrayList<Byte> moves = isMyTurn ? getMyAvailableMoves() : getOpAvailableMoves();
