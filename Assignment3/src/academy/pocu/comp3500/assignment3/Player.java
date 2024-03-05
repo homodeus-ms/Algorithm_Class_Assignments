@@ -76,17 +76,13 @@ public class Player extends PlayerBase {
     private static final int[] NIGHT_MOVE_OFFSET = {-10, -17, -15, -6, 10, 17, 15, 6};
     // { DIR_EASE|WEST, DIR_NORTH|SOUTH, needSpace1, needSpace2 }
     private static final int[] NIGHT_MOVE_HELPER = {2, 0, 2, 1, 2, 0, 1, 2, 3, 0, 1, 2, 3, 0, 2, 1, 3, 1, 2, 1, 3, 1, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1};
-    //Random random = new Random();
 
-    private final double sqrtLimitTime;
     private boolean timeOut = false;
-    private long deltaTime;
     private long startTime;
+    private boolean firstTurn = true;
 
     public Player(boolean isWhite, int maxMoveTimeMilliseconds) {
         super(isWhite, maxMoveTimeMilliseconds);
-
-        sqrtLimitTime = Math.sqrt(maxMoveTimeMilliseconds);
 
         Helper helper = new Helper();
         this.remainCountsToEdge = Helper.getRemainCountsToEdge();
@@ -110,6 +106,7 @@ public class Player extends PlayerBase {
             }
         }
 
+        firstTurn = false;
         Move move;
 
         if (this.isWhite() && isStartBoard) {
@@ -123,6 +120,10 @@ public class Player extends PlayerBase {
     }
 
     public Move getNextMove(char[][] board, Move opponentMove) {
+
+        if (firstTurn) {
+            copyBoard(board);
+        }
 
         if (opponentMove != null) {
             insertMoveToBoard(opponentMove);
