@@ -48,6 +48,8 @@ public class Player extends PlayerBase {
     private byte myPiecePositionsSize;
     private byte[] opPiecePositions = new byte[16];
     private byte opPiecePositionsSize;
+
+    private boolean isKingCaptured = false;
     //private HashSet<Byte> myPiecePositions = new HashSet<>(16);
     //private HashSet<Byte> opPiecePositions = new HashSet<>(16);
 
@@ -57,9 +59,11 @@ public class Player extends PlayerBase {
     private Move maxResult = new Move(0, 0, 0, 0);
     private Move result = new Move(0, 0, 0, 0);
 
-    private int[] bestScores = new int[]{-1, -1, -1, -1, -1};
+    private int[] bestScores = new int[5];
     private int[] bestScoresListIndexes = new int[5];
+    private int bestScoresSize = 0;
     private int bestLeastScore = bestScores[4];
+    //private ArrayList<Byte> scoredMoves = new ArrayList<>(16);
 
     //private byte myKingPos;
     //private boolean kingPosChecked = false;
@@ -185,6 +189,9 @@ public class Player extends PlayerBase {
             ++depth;
         }
 
+        if (isKingCaptured) {
+            return maxResult;
+        }
 
         updateMyPiecePositions(maxResult.fromX, maxResult.fromY, maxResult.toX, maxResult.toY);
         byte toIdx = (byte) (maxResult.toY * BOARD_SIZE + maxResult.toX);
@@ -199,35 +206,12 @@ public class Player extends PlayerBase {
     }
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
-        /*if (depth == 0) {
-            return evaluate(board, this.isWhite());
-        }*/
+
+        if (isKingCaptured) {
+            return isMyTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        }
+
         ArrayList<Byte> moves = isMyTurn ? getMyAvailableMoves() : getOpAvailableMoves();
-        /*if (playerIsWhite) {
-            moves = getWhiteMoves();
-        } else {
-            moves = getBlackMoves();
-        }*/
-
-
-        for (int i = 0; i < 5; ++i) {
-            if (bestScores[i] == -1) {
-                break;
-            }
-            byte tempFrom = moves.get(i * 2);
-            byte tempTo = moves.get(i * 2 + 1);
-
-            int targetIdx = bestScoresListIndexes[i];
-            moves.set(i * 2, moves.get(targetIdx));
-            moves.set(i * 2 + 1, moves.get(targetIdx + 1));
-
-            moves.set(targetIdx, tempFrom);
-            moves.set(targetIdx + 1, tempTo);
-        }
-        for (int j = 0; j < 5; ++j) {
-            bestScores[j] = -1;
-            bestLeastScore = bestScores[4];
-        }
 
         if (moves.isEmpty()) {
             return evaluate(this.isWhite());
@@ -239,10 +223,13 @@ public class Player extends PlayerBase {
             int movesSize = moves.size();
             int tempEarnScore = 0;
 
-            for (int i = 0; i < movesSize; i += 2) {
-                byte from = moves.get(i);
-                byte to = moves.get(i + 1);
+            for (int i = 0; i < movesSize; ++i) {
+
+                byte from = moves.get(i++);
+                byte to = moves.get(i);
+
                 char existingPiece = board[to];
+                isKingCaptured = (existingPiece == 'k' || existingPiece == 'K');
 
 
                 tempEarnScore = move(playerIsWhite, from, to);
@@ -254,7 +241,9 @@ public class Player extends PlayerBase {
                 }
 
                 cancelMove(playerIsWhite, to, from, existingPiece, tempEarnScore);
-
+                if (isKingCaptured) {
+                    isKingCaptured = false;
+                }
 
                 if (currValue > maxValue) {
                     maxValue = currValue;
@@ -287,10 +276,13 @@ public class Player extends PlayerBase {
             int movesSize = moves.size();
             int tempEarnScore = 0;
 
-            for (int i = 0; i < movesSize; i += 2) {
-                byte from = moves.get(i);
-                byte to = moves.get(i + 1);
+            for (int i = 0; i < movesSize; ++i) {
+                byte from = moves.get(i++);
+                byte to = moves.get(i);
+
                 char existingPiece = board[to];
+                isKingCaptured = (existingPiece == 'k' || existingPiece == 'K');
+
 
                 tempEarnScore = move(playerIsWhite, from, to);
                 if (depth > 1) {
@@ -301,6 +293,10 @@ public class Player extends PlayerBase {
                 }
 
                 cancelMove(playerIsWhite, to, from, existingPiece, tempEarnScore);
+                if (isKingCaptured) {
+                    isKingCaptured = false;
+                }
+
 
                 if (currValue < minValue) {
                     minValue = currValue;
@@ -320,50 +316,20 @@ public class Player extends PlayerBase {
 
     private ArrayList<Byte> getMyAvailableMoves() {
         ArrayList<Byte> moves = new ArrayList<>(myPiecePositionsSize * 8);
+
         for (byte i = 0; i < myPiecePositionsSize; ++i) {
             getAvailableMoves(moves, true, myPiecePositions[i]);
         }
+
         return moves;
     }
     private ArrayList<Byte> getOpAvailableMoves() {
         ArrayList<Byte> moves = new ArrayList<>(opPiecePositionsSize * 8);
+
         for (byte i = 0; i < opPiecePositionsSize; ++i) {
             getAvailableMoves(moves, false, opPiecePositions[i]);
         }
-        return moves;
-    }
 
-
-    private ArrayList<Byte> getWhiteMoves() {
-        ArrayList<Byte> moves = new ArrayList<>();
-        moves.ensureCapacity(MAX_MOVE_IN_A_TURN * 2);
-
-
-        for (byte i = BOARD_LAST_IDX; i >= 0; --i) {
-
-            if (board[i] == 0) {
-                continue;
-            }
-            getAvailableMoves(moves, true, i);
-
-        }
-        return moves;
-    }
-
-
-    private ArrayList<Byte> getBlackMoves() {
-        ArrayList<Byte> moves = new ArrayList<>();
-        moves.ensureCapacity(MAX_MOVE_IN_A_TURN * 2);
-
-
-        for (byte i = 0; i <= BOARD_LAST_IDX; ++i) {
-
-            if (board[i] == 0) {
-                continue;
-            }
-
-            getAvailableMoves(moves, false, i);
-        }
         return moves;
     }
 
@@ -371,29 +337,6 @@ public class Player extends PlayerBase {
         return playerIsWhite ? whiteScore - blackScore : blackScore - whiteScore;
     }
 
-    private boolean isGameOver(boolean playerIsWhite) {
-        return playerIsWhite ? whiteScore <= 400 : blackScore <= 400;
-    }
-
-    public void getAvailableKingMoves(char[] board, ArrayList<Byte> moves, boolean playerIsWhite, byte idx) {
-
-        // dir = { N, S, W, E, NW, SE, NE, SW }
-        byte[] remainsToEdge = remainCountsToEdge[idx];
-        byte to;
-        byte dirValue;
-
-        for (byte dir = N_IDX; dir < IDX_END; ++dir) {
-            to = remainsToEdge[dir];
-            if (to == 0) {
-                continue;
-            }
-            dirValue = (byte) (idx + Dir.offset[dir]);
-            if (isMoveablePlace(idx, dirValue)) {
-                moves.add(idx);
-                moves.add(dirValue);
-            }
-        }
-    }
     public void getAvailableMoves(ArrayList<Byte> moves, boolean playerIsWhite, byte idx) {
 
         char piece;
@@ -412,31 +355,25 @@ public class Player extends PlayerBase {
                     if (remainsToEdge[NW_IDX] != 0 && board[to] != 0 && board[to] <= 'R') {
                         moves.add(idx);
                         moves.add(to);
-
-                        writeDownBestMoves(to, listIdx, playerIsWhite);
-
                         listIdx += 2;
-
-
                     }
                     to = (byte) (idx + Dir.NE);
                     if (remainsToEdge[NE_IDX] != 0 && board[to] != 0 && board[to] <= 'R') {
                         moves.add(idx);
                         moves.add(to);
-
-                        writeDownBestMoves(to, listIdx, playerIsWhite);
-
                         listIdx += 2;
                     }
                     to = (byte) (idx + Dir.N);
                     if (remainsToEdge[N_IDX] != 0 && board[to] == 0) {
                         moves.add(idx);
                         moves.add(to);
+                        listIdx += 2;
                     }
                     to += Dir.N;
                     if (idx >= 48 && (board[idx + Dir.N] == 0) && (board[to] == 0)) {
                         moves.add(idx);
                         moves.add(to);
+                        listIdx += 2;
                     }
 
                 } else {
@@ -444,30 +381,26 @@ public class Player extends PlayerBase {
                     if (remainsToEdge[SW_IDX] != 0 && isEnemyPiece(playerIsWhite, to)) {
                         moves.add(idx);
                         moves.add(to);
-
-                        writeDownBestMoves(to, listIdx, playerIsWhite);
-
                         listIdx += 2;
                     }
                     to = (byte) (idx + Dir.SE);
                     if (remainsToEdge[SE_IDX] != 0 && isEnemyPiece(playerIsWhite, to)) {
                         moves.add(idx);
                         moves.add(to);
-
-                        writeDownBestMoves(to, listIdx, playerIsWhite);
-
                         listIdx += 2;
                     }
                     to = (byte) (idx + Dir.S);
                     if (remainsToEdge[S_IDX] != 0 && board[to] == 0) {
                         moves.add(idx);
                         moves.add(to);
+                        listIdx += 2;
                     }
 
                     to += Dir.S;
                     if (idx <= 15 && (board[idx + Dir.S] == 0) && (board[to] == 0)) {
                         moves.add(idx);
                         moves.add(to);
+                        listIdx += 2;
                     }
 
                 }
@@ -493,8 +426,6 @@ public class Player extends PlayerBase {
                     if (isMoveablePlace(idx, to)) {
                         moves.add(idx);
                         moves.add(to);
-
-                        writeDownBestMoves(to, listIdx, playerIsWhite);
                         listIdx += 2;
                     }
                 }
@@ -509,9 +440,8 @@ public class Player extends PlayerBase {
                         if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
-                            if (isEnemyPiece(playerIsWhite, dirValue)) {
-                                writeDownBestMoves(dirValue, listIdx, playerIsWhite);
-                                listIdx += 2;
+                            listIdx += 2;
+                            if (this.board[dirValue] != 0) {
                                 break;
                             }
                         } else {
@@ -530,9 +460,8 @@ public class Player extends PlayerBase {
                         if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
-                            if (isEnemyPiece(playerIsWhite, dirValue)) {
-                                writeDownBestMoves(dirValue, listIdx, playerIsWhite);
-                                listIdx += 2;
+                            listIdx += 2;
+                            if (this.board[dirValue] != 0) {
                                 break;
                             }
                         } else {
@@ -550,9 +479,8 @@ public class Player extends PlayerBase {
                         if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
-                            if (isEnemyPiece(playerIsWhite, dirValue)) {
-                                writeDownBestMoves(dirValue, listIdx, playerIsWhite);
-                                listIdx += 2;
+                            listIdx += 2;
+                            if (this.board[dirValue] != 0) {
                                 break;
                             }
                         } else {
@@ -572,8 +500,6 @@ public class Player extends PlayerBase {
                     if (isMoveablePlace(idx, dirValue)) {
                         moves.add(idx);
                         moves.add(dirValue);
-
-                        writeDownBestMoves(dirValue, listIdx, playerIsWhite);
                         listIdx += 2;
                     }
                 }
@@ -583,171 +509,6 @@ public class Player extends PlayerBase {
         }
     }
 
-    /*public void getLimitedMoves(char[] board, ArrayList<Byte> moves, boolean playerIsWhite, byte idx) {
-
-        char piece;
-        piece = playerIsWhite ? board[idx] : ((char) (board[idx] ^ 0x20));
-
-        // dir = { N, S, W, E, NW, SE, NE, SW }
-        byte[] remainsToEdge = remainCountsToEdge[idx];
-        byte to;
-        byte dirValue;
-
-        switch (piece) {
-            case 'p':
-                if (playerIsWhite) {
-                    to = (byte) (idx + Dir.NW);
-                    if (remainsToEdge[NW_IDX] != 0 && isEnemyPiece(board, playerIsWhite, to)) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-                    to = (byte) (idx + Dir.NE);
-                    if (remainsToEdge[NE_IDX] != 0 && isEnemyPiece(board, playerIsWhite, to)) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-                    to = (byte) (idx + Dir.N);
-                    if (remainsToEdge[N_IDX] != 0 && board[to] == 0) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-                } else {
-                    to = (byte) (idx + Dir.SW);
-                    if (remainsToEdge[SW_IDX] != 0 && isEnemyPiece(board, playerIsWhite, to)) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-                    to = (byte) (idx + Dir.SE);
-                    if (remainsToEdge[SE_IDX] != 0 && isEnemyPiece(board, playerIsWhite, to)) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-
-                    to = (byte) (idx + Dir.S);
-                    if (remainsToEdge[S_IDX] != 0 && board[to] == 0) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-                }
-
-                break;
-
-            case 'n':
-                assert (NIGHT_MOVE_HELPER.length == 32);
-
-                byte helperIdx = 0;
-                for (int i = 0; i < 2; ++i) {
-
-                    byte dir1 = NIGHT_MOVE_HELPER[helperIdx++];
-                    byte dir2 = NIGHT_MOVE_HELPER[helperIdx++];
-                    byte needSpaceForDir1 = NIGHT_MOVE_HELPER[helperIdx++];
-                    byte needSpaceForDir2 = NIGHT_MOVE_HELPER[helperIdx++];
-
-                    // 움직일 여유 공간이 없는 경우 continue;
-                    if (remainsToEdge[dir1] < needSpaceForDir1 || remainsToEdge[dir2] < needSpaceForDir2) {
-                        continue;
-                    }
-
-                    to = (byte) (idx + NIGHT_MOVE_OFFSET[i]);
-                    if (isMoveablePlace(board, idx, to)) {
-                        moves.add(idx);
-                        moves.add(to);
-                    }
-                }
-
-                break;
-
-            case 'b':
-                for (byte dir = NW_IDX; dir < IDX_END; ++dir) {
-                    to = remainsToEdge[dir];
-                    for (int j = 1; j <= Math.min(to, 1); ++j) {
-                        dirValue = (byte) (idx + j * Dir.offset[dir]);
-                        if (isMoveablePlace(board, idx, dirValue)) {
-                            moves.add(idx);
-                            moves.add(dirValue);
-                            if (isEnemyPiece(board, playerIsWhite, dirValue)) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-
-                break;
-
-            case 'r':
-                for (byte dir = N_IDX; dir <= E_IDX; ++dir) {
-                    to = remainsToEdge[dir];
-                    for (int j = 1; j <= Math.min(to, 2); ++j) {
-                        dirValue = (byte) (idx + j * Dir.offset[dir]);
-                        if (isMoveablePlace(board, idx, dirValue)) {
-                            moves.add(idx);
-                            moves.add(dirValue);
-                            if (isEnemyPiece(board, playerIsWhite, dirValue)) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                break;
-
-            case 'q':
-                for (byte dir = N_IDX; dir < IDX_END; ++dir) {
-                    to = remainsToEdge[dir];
-                    for (int j = 1; j <= Math.min(to, 1); ++j) {
-                        dirValue = (byte) (idx + j * Dir.offset[dir]);
-                        if (isMoveablePlace(board, idx, dirValue)) {
-                            moves.add(idx);
-                            moves.add(dirValue);
-                            if (isEnemyPiece(board, playerIsWhite, dirValue)) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-
-                break;
-            case 'k':
-                for (byte dir = N_IDX; dir < 4; ++dir) {
-                    to = remainsToEdge[dir];
-                    if (to == 0) {
-                        continue;
-                    }
-                    dirValue = (byte) (idx + Dir.offset[dir]);
-                    if (isMoveablePlace(board, idx, dirValue)) {
-                        moves.add(idx);
-                        moves.add(dirValue);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-    }*/
-
-
-    private boolean writeDownBestMoves(int pos, int listIdx, boolean isWhite) {
-
-        int score;
-        if (this.board[pos] != 0) {
-            score = SCORE_TABLE[(this.board[pos] | 0x20) - 'b'];
-
-        } else {
-            score = 0;
-        }
-        score = this.isWhite() == isWhite ? score : -score;
-        if (score > bestLeastScore) {
-            return insertTop5BestMoves(score, listIdx);
-        }
-
-        return false;
-    }
 
     private int calculatePoint(char movingPiece, char capturedPiece, byte toPos, boolean playerIsWhite) {
         int colorValue = playerIsWhite ? 1 : -1;
@@ -776,31 +537,6 @@ public class Player extends PlayerBase {
         return score;
     }
 
-    private void calculateStrategyPoint(char[] board, boolean playerIsWhite, byte from, byte to) {
-
-        char movePiece = board[from];
-        //movePiece |= 0x20;
-        int colorValue = playerIsWhite ? 1 : -1;
-
-        switch (movePiece) {
-            case 'p':
-                if (board[to - 9] == 'p' || board[to - 7] == 'p') {
-                    whiteScore += 5 * colorValue;
-                    blackScore -= 5 * colorValue;
-                }
-                return;
-
-            case 'P':
-                if (board[to + 9] == 'P' || board[to + 7] == 'P') {
-                    whiteScore += 5 * colorValue;
-                    blackScore -= 5 * colorValue;
-                }
-                return;
-            default:
-                return;
-        }
-    }
-
     private boolean isEnemyPiece(boolean playerIsWhite, int idx) {
         return playerIsWhite ? (board[idx] != 0 && board[idx] <= 'R') : (board[idx] >= 'b');
     }
@@ -812,29 +548,30 @@ public class Player extends PlayerBase {
 
         return isCaptured;
     }
-    private void copyBoard(char[] dst, char[][] src) {
-
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            for (int i = 0; i < BOARD_SIZE; ++i) {
-                dst[j * BOARD_SIZE + i] = src[j][i];
-            }
-        }
-    }
-
 
     private int move(boolean playerIsWhite, byte from, byte to) {
         char capturedPiece = board[to];
         int earnScore = 0;
 
         if (capturedPiece != 0 || board[from] == 'p' || board[from] == 'P') {
+
             earnScore = calculatePoint(board[from], capturedPiece, to, playerIsWhite);
+
+            if (capturedPiece != 0) {
+                removePiecePosition(to, this.isWhite() != playerIsWhite);
+            }
         }
 
         board[to] = board[from];
         board[from] = 0;
+        if (this.isWhite() == playerIsWhite) {
+            updateMyPiecePositions(from, to);
+        } else {
+            updateOpPiecePositions(from, to);
+        }
         return earnScore;
     }
-    private void cancelMove(boolean playerIsWhite, int from, int to, char existingPiece, int earnScoreInPreTurn) {
+    private void cancelMove(boolean playerIsWhite, byte from, byte to, char existingPiece, int earnScoreInPreTurn) {
         if (earnScoreInPreTurn != 0) {
             if (playerIsWhite) {
                 whiteScore -= earnScoreInPreTurn;
@@ -847,49 +584,23 @@ public class Player extends PlayerBase {
 
         board[to] = board[from];
         board[from] = existingPiece;
-    }
-    /*private void getRandomMove(ArrayList<Byte> moves, Move result) {
-        int pick = random.nextInt(moves.size()) / 2;
-        int from = moves.get(pick);
-        int to = moves.get(pick + 1);
-        result.fromX = from % BOARD_SIZE;
-        result.fromY = from / BOARD_SIZE;
-        result.toX = to % BOARD_SIZE;
-        result.toY = to / BOARD_SIZE;
-    }*/
 
+        if (existingPiece != 0) {
+            insertPiecePostion(from, this.isWhite() != playerIsWhite);
+        }
+        if (this.isWhite() == playerIsWhite) {
+            updateMyPiecePositions(from, to);
+        } else {
+            updateOpPiecePositions(from, to);
+        }
+    }
 
     private void insertMoveToBoard(Move move) {
         char c = this.board[move.fromY * BOARD_SIZE + move.fromX];
         this.board[move.fromY * BOARD_SIZE + move.fromX] = 0;
         this.board[move.toY * BOARD_SIZE + move.toX] = c;
     }
-    private void printBoard() {
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                char c = this.board[y * BOARD_SIZE + x] == 0 ? '.' : this.board[y * BOARD_SIZE + x];
-                System.out.printf("%c", c);
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-    private boolean insertTop5BestMoves(int score, int idx) {
-        for (int i = 0; i < bestScores.length; ++i) {
-            if (bestScores[i] < score) {
-                for (int j = bestScores.length - 2; j >= i; --j) {
-                    bestScores[j + 1] = bestScores[j];
-                    bestScoresListIndexes[j + 1] = bestScoresListIndexes[j];
-                }
-                bestScores[i] = score;
-                bestScoresListIndexes[i] = idx;
-                bestLeastScore = bestScores[4];
 
-                return true;
-            }
-        }
-        return false;
-    }
     private void getPiecePositions(char[][] board) {
 
         if (this.isWhite()) {
@@ -933,9 +644,31 @@ public class Player extends PlayerBase {
         assert (idx != -1);
         myPiecePositions[idx] = to;
     }
+    private void updateMyPiecePositions(byte from, byte to) {
+        int idx = -1;
+        for (int i = 0; i < myPiecePositionsSize; ++i) {
+            if (myPiecePositions[i] == from) {
+                idx = i;
+                break;
+            }
+        }
+        assert (idx != -1);
+        myPiecePositions[idx] = to;
+    }
     private void updateOpPiecePositions(int fromX, int fromY, int toX, int toY) {
         byte from = (byte) (fromY * BOARD_SIZE + fromX);
         byte to = (byte) (toY * BOARD_SIZE + toX);
+        int idx = -1;
+        for (int i = 0; i < opPiecePositionsSize; ++i) {
+            if (opPiecePositions[i] == from) {
+                idx = i;
+                break;
+            }
+        }
+        assert (idx != -1);
+        opPiecePositions[idx] = to;
+    }
+    private void updateOpPiecePositions(byte from, byte to) {
         int idx = -1;
         for (int i = 0; i < opPiecePositionsSize; ++i) {
             if (opPiecePositions[i] == from) {
@@ -969,10 +702,15 @@ public class Player extends PlayerBase {
             opPiecePositions[opPiecePositionsSize - 1] = 0;
             --opPiecePositionsSize;
         }
-
-
-
     }
+    private void insertPiecePostion(byte pos, boolean isMine) {
+        if (isMine) {
+            myPiecePositions[myPiecePositionsSize++] = pos;
+        } else {
+            opPiecePositions[opPiecePositionsSize++] = pos;
+        }
+    }
+
 
 
 }
