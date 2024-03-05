@@ -49,7 +49,7 @@ public class Player extends PlayerBase {
     private byte[] opPiecePositions = new byte[16];
     private byte opPiecePositionsSize;
 
-    private boolean isKingCaptured = false;
+    //private boolean isKingCaptured = false;
     //private HashSet<Byte> myPiecePositions = new HashSet<>(16);
     //private HashSet<Byte> opPiecePositions = new HashSet<>(16);
 
@@ -171,7 +171,7 @@ public class Player extends PlayerBase {
                 maxResult.fromY = result.fromY;
                 maxResult.toX = result.toX;
                 maxResult.toY = result.toY;
-            } else if (point == maxPoint) {
+            } else if (maxPoint != 0 && point == maxPoint) {
                 break;
             }
 
@@ -203,9 +203,9 @@ public class Player extends PlayerBase {
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
-        if (isKingCaptured) {
-            return isMyTurn ? 10000: -10000;
-        }
+        /*if (isKingCaptured) {
+            return 10000;
+        }*/
 
         ArrayList<Byte> moves = isMyTurn ? getMyAvailableMoves() : getOpAvailableMoves();
 
@@ -225,7 +225,6 @@ public class Player extends PlayerBase {
                 byte to = moves.get(i);
 
                 char existingPiece = board[to];
-                isKingCaptured = (existingPiece == 'k' || existingPiece == 'K');
 
 
                 tempEarnScore = move(playerIsWhite, from, to);
@@ -237,9 +236,7 @@ public class Player extends PlayerBase {
                 }
 
                 cancelMove(playerIsWhite, to, from, existingPiece, tempEarnScore);
-                if (isKingCaptured) {
-                    isKingCaptured = false;
-                }
+
 
                 if (currValue > maxValue) {
                     maxValue = currValue;
@@ -277,7 +274,6 @@ public class Player extends PlayerBase {
                 byte to = moves.get(i);
 
                 char existingPiece = board[to];
-                isKingCaptured = (existingPiece == 'k' || existingPiece == 'K');
 
 
                 tempEarnScore = move(playerIsWhite, from, to);
@@ -289,9 +285,6 @@ public class Player extends PlayerBase {
                 }
 
                 cancelMove(playerIsWhite, to, from, existingPiece, tempEarnScore);
-                if (isKingCaptured) {
-                    isKingCaptured = false;
-                }
 
 
                 if (currValue < minValue) {
@@ -706,6 +699,7 @@ public class Player extends PlayerBase {
             opPiecePositions[opPiecePositionsSize++] = pos;
         }
     }
+
 
 
 
