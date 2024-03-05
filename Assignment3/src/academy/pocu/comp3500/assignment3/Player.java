@@ -123,9 +123,7 @@ public class Player extends PlayerBase {
 
         if (firstTurn) {
             copyBoard(board);
-        }
-
-        if (opponentMove != null) {
+        } else {
             insertMoveToBoard(opponentMove);
         }
 
@@ -147,8 +145,8 @@ public class Player extends PlayerBase {
         }*/
 
 
-        int depth = 1;
-
+        int depth = getMaxMoveTimeMilliseconds() >= 1000 ? 5 : 4;
+        int startDepth = depth;
         this.startTime = System.currentTimeMillis();
 
 
@@ -169,7 +167,7 @@ public class Player extends PlayerBase {
             System.out.printf("depth : %d\n", depth);
             System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);
 
-            if (depth == 1) {
+            if (depth == startDepth) {
                 maxResult.fromX = result.fromX;
                 maxResult.fromY = result.fromY;
                 maxResult.toX = result.toX;
