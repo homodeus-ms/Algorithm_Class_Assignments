@@ -145,7 +145,20 @@ public class Player extends PlayerBase {
         long start;
         long end;
         long limitTime = getMaxMoveTimeMilliseconds();
-        int depth = limitTime >= 1000 ? 5 : 4;
+
+        /*{
+            point = minimax(2, 2, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                    true, this.isWhite(), result);
+
+            maxPoint = point;
+            maxResult.fromX = result.fromX;
+            maxResult.fromY = result.fromY;
+            maxResult.toX = result.toX;
+            maxResult.toY = result.toY;
+        }*/
+
+
+        int depth = 2; // limitTime >= 1000 ? 5 : 4;
 
 
         while (true) {
