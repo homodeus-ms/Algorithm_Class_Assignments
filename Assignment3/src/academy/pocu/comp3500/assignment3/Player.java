@@ -79,8 +79,9 @@ public class Player extends PlayerBase {
     //Random random = new Random();
 
     private final double sqrtLimitTime;
-    private boolean timeEnd = false;
+    private boolean timeOut = false;
     private long deltaTime;
+    private long startTime;
 
     public Player(boolean isWhite, int maxMoveTimeMilliseconds) {
         super(isWhite, maxMoveTimeMilliseconds);
@@ -145,52 +146,54 @@ public class Player extends PlayerBase {
         }*/
 
 
-        int depth = limitTime >= 1000 ? 5 : 4;
+        int depth = 1;
+
+        this.startTime = System.currentTimeMillis();
+
 
 
         while (true) {
 
-            //System.out.println(depth);
+            maxResult.fromX = result.fromX;
+            maxResult.fromY = result.fromY;
+            maxResult.toX = result.toX;
+            maxResult.toY = result.toY;
 
-            start = System.nanoTime();
+
             whiteScore = preWhiteScore;
             blackScore = preBlackScore;
             point = minimax(depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
                     true, this.isWhite(), result);
 
-            end = System.nanoTime();
-            deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
-            /*System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
             System.out.printf("depth : %d\n", depth);
-            System.out.printf("deltaTime : %d\n", deltaTime);
-            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);*/
+            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);
 
-
-            if (point > maxPoint) {
-                maxPoint = point;
+            if (depth == 1) {
                 maxResult.fromX = result.fromX;
                 maxResult.fromY = result.fromY;
                 maxResult.toX = result.toX;
                 maxResult.toY = result.toY;
-            } /*else if (maxPoint != 0 && point == maxPoint) {
-                break;
-            }*/
+            }
 
-            if (deltaTime >= sqrtLimitTime) {
-                break;
+
+
+            if (timeOut || point >= 900) {
+                insertMoveToBoard(maxResult);
+                timeOut = false;
+                return maxResult;
             }
 
             ++depth;
         }
 
-
-        insertMoveToBoard(maxResult);
-
-
-        return maxResult;
     }
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
+
+        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 100) {
+            timeOut = true;
+            return alpha;
+        }
 
         ArrayList<Integer> moves = getAvailableMoves(playerIsWhite);
 
@@ -212,6 +215,7 @@ public class Player extends PlayerBase {
 
 
                 tempEarnScore = move(playerIsWhite, from, to);
+
                 if (depth > 1) {
                     currValue = minimax(depth - 1, startDepth, alpha, beta,
                             false, !playerIsWhite, result);
