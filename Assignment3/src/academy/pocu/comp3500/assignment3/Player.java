@@ -42,16 +42,8 @@ public class Player extends PlayerBase {
     public int blackScore = 1400;
 
     // board 관련
-    private final byte[][] remainCountsToEdge;
-    private char[] board = null;
-    private byte[] myPiecePositions = new byte[16];
-    private byte myPiecePositionsSize;
-    private byte[] opPiecePositions = new byte[16];
-    private byte opPiecePositionsSize;
-
-    //private boolean isKingCaptured = false;
-    //private HashSet<Byte> myPiecePositions = new HashSet<>(16);
-    //private HashSet<Byte> opPiecePositions = new HashSet<>(16);
+    private final int[][] remainCountsToEdge;
+    private char[] board = new char[BOARD_SIZE * BOARD_SIZE];
 
 
     // move 관련
@@ -69,7 +61,7 @@ public class Player extends PlayerBase {
     //private boolean kingPosChecked = false;
 
     // result, score 관련
-    private byte[] bestMove = new byte[2];
+    private int[] bestMove = new int[2];
 
 
     // [0] = b (30 point)  |  [9] = k (1000 point)  |  [12] = n (30 point)
@@ -81,9 +73,9 @@ public class Player extends PlayerBase {
 
 
     // etc
-    private static final byte[] NIGHT_MOVE_OFFSET = {-10, -17, -15, -6, 10, 17, 15, 6};
+    private static final int[] NIGHT_MOVE_OFFSET = {-10, -17, -15, -6, 10, 17, 15, 6};
     // { DIR_EASE|WEST, DIR_NORTH|SOUTH, needSpace1, needSpace2 }
-    private static final byte[] NIGHT_MOVE_HELPER = {2, 0, 2, 1, 2, 0, 1, 2, 3, 0, 1, 2, 3, 0, 2, 1, 3, 1, 2, 1, 3, 1, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1};
+    private static final int[] NIGHT_MOVE_HELPER = {2, 0, 2, 1, 2, 0, 1, 2, 3, 0, 1, 2, 3, 0, 2, 1, 3, 1, 2, 1, 3, 1, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1};
     //Random random = new Random();
 
     private final double sqrtLimitTime;
@@ -103,13 +95,18 @@ public class Player extends PlayerBase {
 
     public Move getNextMove(char[][] board) {
 
-        boolean isStartBoard = false;
-        //byte myPosIdx = 0;
+        boolean isStartBoard = true;
 
-        this.board = new char[BOARD_SIZE * BOARD_SIZE];
-        getPiecePositions(board);
-        if (myPiecePositionsSize == 16 && opPiecePositionsSize == 16) {
-            isStartBoard = true;
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                this.board[y * BOARD_SIZE + x] = board[y][x];
+            }
+        }
+        for (int i = 0; i < 64; ++i) {
+            if (this.board[i] != START_BOARD[i]) {
+                isStartBoard = false;
+                break;
+            }
         }
 
         Move move;
@@ -117,10 +114,8 @@ public class Player extends PlayerBase {
         if (this.isWhite() && isStartBoard) {
             move = new Move(3, 6, 3, 4);
             insertMoveToBoard(move);
-            updateMyPiecePositions(move.fromX, move.fromY, move.toX, move.toY);
         } else {
-
-            move = getNextMove(board, new Move(-1, -1, -1, -1));
+            move = getNextMove(board, null);
         }
 
         return move;
@@ -128,15 +123,7 @@ public class Player extends PlayerBase {
 
     public Move getNextMove(char[][] board, Move opponentMove) {
 
-        if (this.board == null) {
-            this.board = new char[BOARD_SIZE * BOARD_SIZE];
-            getPiecePositions(board);
-        } else if (opponentMove.fromX != -1) {
-            updateOpPiecePositions(opponentMove.fromX, opponentMove.fromY, opponentMove.toX, opponentMove.toY);
-            byte opponentMoveToIdx = (byte) (opponentMove.toY * BOARD_SIZE + opponentMove.toX);
-            if (this.board[opponentMoveToIdx] != 0) {
-                removePiecePosition(opponentMoveToIdx, true);
-            }
+        if (opponentMove != null) {
             insertMoveToBoard(opponentMove);
         }
 
@@ -158,12 +145,12 @@ public class Player extends PlayerBase {
         }*/
 
 
-        int depth = 2; // limitTime >= 1000 ? 5 : 4;
+        int depth = limitTime >= 1000 ? 5 : 4;
 
 
         while (true) {
 
-            System.out.println(depth);
+            //System.out.println(depth);
 
             start = System.nanoTime();
             whiteScore = preWhiteScore;
@@ -173,10 +160,10 @@ public class Player extends PlayerBase {
 
             end = System.nanoTime();
             deltaTime = TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS);
-            System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
+            /*System.out.printf("limit Time : %d\n", getMaxMoveTimeMilliseconds());
             System.out.printf("depth : %d\n", depth);
             System.out.printf("deltaTime : %d\n", deltaTime);
-            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);
+            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);*/
 
 
             if (point > maxPoint) {
@@ -185,29 +172,17 @@ public class Player extends PlayerBase {
                 maxResult.fromY = result.fromY;
                 maxResult.toX = result.toX;
                 maxResult.toY = result.toY;
-            } else if (maxPoint != 0 && point == maxPoint) {
+            } /*else if (maxPoint != 0 && point == maxPoint) {
                 break;
-            }
+            }*/
 
-            if (deltaTime >= sqrtLimitTime || depth >= 5) {
+            if (deltaTime >= sqrtLimitTime) {
                 break;
             }
 
             ++depth;
         }
 
-        /*if (maxResult.fromX == 0 && maxResult.fromY == 0) {
-            int from = myPiecePositions[0];
-            int to = myPiecePositions[1];
-
-            return new Move(from % BOARD_SIZE, from / BOARD_SIZE, to % BOARD_SIZE, to / BOARD_SIZE);
-        }*/
-
-        updateMyPiecePositions(maxResult.fromX, maxResult.fromY, maxResult.toX, maxResult.toY);
-        byte toIdx = (byte) (maxResult.toY * BOARD_SIZE + maxResult.toX);
-        if (this.board[toIdx] != 0) {
-            removePiecePosition(toIdx, false);
-        }
 
         insertMoveToBoard(maxResult);
 
@@ -217,8 +192,7 @@ public class Player extends PlayerBase {
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
-
-        ArrayList<Byte> moves = isMyTurn ? getMyAvailableMoves() : getOpAvailableMoves();
+        ArrayList<Integer> moves = getAvailableMoves(playerIsWhite);
 
         if (moves.isEmpty()) {
             return evaluate(this.isWhite());
@@ -232,9 +206,8 @@ public class Player extends PlayerBase {
 
             for (int i = 0; i < movesSize; ++i) {
 
-                byte from = moves.get(i++);
-                byte to = moves.get(i);
-
+                int from = moves.get(i++);
+                int to = moves.get(i);
                 char existingPiece = board[to];
 
 
@@ -281,8 +254,8 @@ public class Player extends PlayerBase {
             int tempEarnScore = 0;
 
             for (int i = 0; i < movesSize; ++i) {
-                byte from = moves.get(i++);
-                byte to = moves.get(i);
+                int from = moves.get(i++);
+                int to = moves.get(i);
 
                 char existingPiece = board[to];
 
@@ -314,56 +287,58 @@ public class Player extends PlayerBase {
         }
     }
 
-    private ArrayList<Byte> getMyAvailableMoves() {
-        ArrayList<Byte> moves = new ArrayList<>(myPiecePositionsSize * 8);
+    private ArrayList<Integer> getAvailableMoves(boolean thisIsWhite) {
+        ArrayList<Integer> moves = new ArrayList<>(MAX_MOVE_IN_A_TURN * 2);
 
-        for (byte i = 0; i < myPiecePositionsSize; ++i) {
-            getAvailableMoves(moves, true, myPiecePositions[i]);
+        if (thisIsWhite) {
+            for (int i = 0; i < 64; ++i) {
+                if (this.board[i] >= 'b') {
+                    getAvailableMoves(moves, thisIsWhite, i);
+                }
+            }
+        } else {
+            for (int i = 0; i < 64; ++i) {
+                if (this.board[i] != 0 && this.board[i] <= 'R') {
+                    getAvailableMoves(moves, thisIsWhite, i);
+                }
+            }
         }
 
         return moves;
     }
-    private ArrayList<Byte> getOpAvailableMoves() {
-        ArrayList<Byte> moves = new ArrayList<>(opPiecePositionsSize * 8);
 
-        for (byte i = 0; i < opPiecePositionsSize; ++i) {
-            getAvailableMoves(moves, false, opPiecePositions[i]);
-        }
-
-        return moves;
-    }
 
     private int evaluate(boolean playerIsWhite) {
         return playerIsWhite ? whiteScore - blackScore : blackScore - whiteScore;
     }
 
-    public void getAvailableMoves(ArrayList<Byte> moves, boolean playerIsWhite, byte idx) {
+    public void getAvailableMoves(ArrayList<Integer> moves, boolean playerIsWhite, int idx) {
 
         char piece;
         piece = playerIsWhite ? board[idx] : ((char) (board[idx] ^ 0x20));
 
         // dir = { N, S, W, E, NW, SE, NE, SW }
-        byte[] remainsToEdge = remainCountsToEdge[idx];
-        byte to;
-        byte dirValue;
+        int[] remainsToEdge = remainCountsToEdge[idx];
+        int to;
+        int dirValue;
         int listIdx = moves.size();
 
         switch (piece) {
             case 'p':
                 if (playerIsWhite) {
-                    to = (byte) (idx + Dir.NW);
+                    to = idx + Dir.NW;
                     if (remainsToEdge[NW_IDX] != 0 && board[to] != 0 && board[to] <= 'R') {
                         moves.add(idx);
                         moves.add(to);
                         listIdx += 2;
                     }
-                    to = (byte) (idx + Dir.NE);
+                    to = idx + Dir.NE;
                     if (remainsToEdge[NE_IDX] != 0 && board[to] != 0 && board[to] <= 'R') {
                         moves.add(idx);
                         moves.add(to);
                         listIdx += 2;
                     }
-                    to = (byte) (idx + Dir.N);
+                    to = idx + Dir.N;
                     if (remainsToEdge[N_IDX] != 0 && board[to] == 0) {
                         moves.add(idx);
                         moves.add(to);
@@ -377,19 +352,19 @@ public class Player extends PlayerBase {
                     }
 
                 } else {
-                    to = (byte) (idx + Dir.SW);
+                    to = idx + Dir.SW;
                     if (remainsToEdge[SW_IDX] != 0 && isEnemyPiece(playerIsWhite, to)) {
                         moves.add(idx);
                         moves.add(to);
                         listIdx += 2;
                     }
-                    to = (byte) (idx + Dir.SE);
+                    to = idx + Dir.SE;
                     if (remainsToEdge[SE_IDX] != 0 && isEnemyPiece(playerIsWhite, to)) {
                         moves.add(idx);
                         moves.add(to);
                         listIdx += 2;
                     }
-                    to = (byte) (idx + Dir.S);
+                    to = idx + Dir.S;
                     if (remainsToEdge[S_IDX] != 0 && board[to] == 0) {
                         moves.add(idx);
                         moves.add(to);
@@ -409,20 +384,20 @@ public class Player extends PlayerBase {
 
             case 'n':
 
-                byte helperIdx = 0;
+                int helperIdx = 0;
                 for (int i = 0; i < 8; ++i) {
 
-                    byte dir1 = NIGHT_MOVE_HELPER[helperIdx++];
-                    byte dir2 = NIGHT_MOVE_HELPER[helperIdx++];
-                    byte needSpaceForDir1 = NIGHT_MOVE_HELPER[helperIdx++];
-                    byte needSpaceForDir2 = NIGHT_MOVE_HELPER[helperIdx++];
+                    int dir1 = NIGHT_MOVE_HELPER[helperIdx++];
+                    int dir2 = NIGHT_MOVE_HELPER[helperIdx++];
+                    int needSpaceForDir1 = NIGHT_MOVE_HELPER[helperIdx++];
+                    int needSpaceForDir2 = NIGHT_MOVE_HELPER[helperIdx++];
 
                     // 움직일 여유 공간이 없는 경우 continue;
                     if (remainsToEdge[dir1] < needSpaceForDir1 || remainsToEdge[dir2] < needSpaceForDir2) {
                         continue;
                     }
 
-                    to = (byte) (idx + NIGHT_MOVE_OFFSET[i]);
+                    to = idx + NIGHT_MOVE_OFFSET[i];
                     if (isMoveablePlace(idx, to)) {
                         moves.add(idx);
                         moves.add(to);
@@ -433,10 +408,10 @@ public class Player extends PlayerBase {
                 break;
 
             case 'b':
-                for (byte dir = NW_IDX; dir < IDX_END; ++dir) {
+                for (int dir = NW_IDX; dir < IDX_END; ++dir) {
                     to = remainsToEdge[dir];
                     for (int j = 1; j <= to; ++j) {
-                        dirValue = (byte) (idx + j * Dir.offset[dir]);
+                        dirValue = idx + j * Dir.offset[dir];
                         if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
@@ -453,10 +428,10 @@ public class Player extends PlayerBase {
                 break;
 
             case 'r':
-                for (byte dir = N_IDX; dir <= E_IDX; ++dir) {
+                for (int dir = N_IDX; dir <= E_IDX; ++dir) {
                     to = remainsToEdge[dir];
                     for (int j = 1; j <= to; ++j) {
-                        dirValue = (byte) (idx + j * Dir.offset[dir]);
+                        dirValue = idx + j * Dir.offset[dir];
                         if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
@@ -472,10 +447,10 @@ public class Player extends PlayerBase {
                 break;
 
             case 'q':
-                for (byte dir = N_IDX; dir < IDX_END; ++dir) {
+                for (int dir = N_IDX; dir < IDX_END; ++dir) {
                     to = remainsToEdge[dir];
                     for (int j = 1; j <= to; ++j) {
-                        dirValue = (byte) (idx + j * Dir.offset[dir]);
+                        dirValue = idx + j * Dir.offset[dir];
                         if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
@@ -491,12 +466,12 @@ public class Player extends PlayerBase {
 
                 break;
             case 'k':
-                for (byte dir = N_IDX; dir < IDX_END; ++dir) {
+                for (int dir = N_IDX; dir < IDX_END; ++dir) {
                     to = remainsToEdge[dir];
                     if (to == 0) {
                         continue;
                     }
-                    dirValue = (byte) (idx + Dir.offset[dir]);
+                    dirValue = idx + Dir.offset[dir];
                     if (isMoveablePlace(idx, dirValue)) {
                         moves.add(idx);
                         moves.add(dirValue);
@@ -510,7 +485,7 @@ public class Player extends PlayerBase {
     }
 
 
-    private int calculatePoint(char movingPiece, char capturedPiece, byte toPos, boolean playerIsWhite) {
+    private int calculatePoint(char movingPiece, char capturedPiece, int toPos, boolean playerIsWhite) {
         int colorValue = playerIsWhite ? 1 : -1;
         int score = 0;
 
@@ -549,29 +524,19 @@ public class Player extends PlayerBase {
         return isCaptured;
     }
 
-    private int move(boolean playerIsWhite, byte from, byte to) {
+    private int move(boolean playerIsWhite, int from, int to) {
         char capturedPiece = board[to];
         int earnScore = 0;
 
         if (capturedPiece != 0 || board[from] == 'p' || board[from] == 'P') {
-
             earnScore = calculatePoint(board[from], capturedPiece, to, playerIsWhite);
-
-            if (capturedPiece != 0) {
-                removePiecePosition(to, this.isWhite() != playerIsWhite);
-            }
         }
 
         board[to] = board[from];
         board[from] = 0;
-        if (this.isWhite() == playerIsWhite) {
-            updateMyPiecePositions(from, to);
-        } else {
-            updateOpPiecePositions(from, to);
-        }
         return earnScore;
     }
-    private void cancelMove(boolean playerIsWhite, byte from, byte to, char existingPiece, int earnScoreInPreTurn) {
+    private void cancelMove(boolean playerIsWhite, int from, int to, char existingPiece, int earnScoreInPreTurn) {
         if (earnScoreInPreTurn != 0) {
             if (playerIsWhite) {
                 whiteScore -= earnScoreInPreTurn;
@@ -584,15 +549,6 @@ public class Player extends PlayerBase {
 
         board[to] = board[from];
         board[from] = existingPiece;
-
-        if (existingPiece != 0) {
-            insertPiecePostion(from, this.isWhite() != playerIsWhite);
-        }
-        if (this.isWhite() == playerIsWhite) {
-            updateMyPiecePositions(from, to);
-        } else {
-            updateOpPiecePositions(from, to);
-        }
     }
 
     private void insertMoveToBoard(Move move) {
@@ -601,117 +557,13 @@ public class Player extends PlayerBase {
         this.board[move.toY * BOARD_SIZE + move.toX] = c;
     }
 
-    private void getPiecePositions(char[][] board) {
-
-        if (this.isWhite()) {
-            for (int y = 0; y < BOARD_SIZE; ++y) {
-                for (int x = 0; x < BOARD_SIZE; ++x) {
-                    char c = board[y][x];
-                    byte idx = (byte) (y * BOARD_SIZE + x);
-                    this.board[idx] = c;
-                    if (c >= 'b') {
-                        myPiecePositions[myPiecePositionsSize++] = idx;
-                    } else if (c != 0 && c <= 'R') {
-                        opPiecePositions[opPiecePositionsSize++] = idx;
-                    }
-                }
-            }
-        } else {
-            for (int y = 0; y < BOARD_SIZE; ++y) {
-                for (int x = 0; x < BOARD_SIZE; ++x) {
-                    char c = board[y][x];
-                    byte idx = (byte) (y * BOARD_SIZE + x);
-                    this.board[idx] = c;
-                    if (c != 0 && c <= 'R') {
-                        myPiecePositions[myPiecePositionsSize++] = idx;
-                    } else if (c >= 'b') {
-                        opPiecePositions[opPiecePositionsSize++] = idx;
-                    }
-                }
+    private void copyBoard(char[][] board) {
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                this.board[y * BOARD_SIZE + x] = board[y][x];
             }
         }
     }
-    private void updateMyPiecePositions(int fromX, int fromY, int toX, int toY) {
-        byte from = (byte) (fromY * BOARD_SIZE + fromX);
-        byte to = (byte) (toY * BOARD_SIZE + toX);
-        int idx = -1;
-        for (int i = 0; i < myPiecePositionsSize; ++i) {
-            if (myPiecePositions[i] == from) {
-                idx = i;
-                break;
-            }
-        }
-        assert (idx != -1);
-        myPiecePositions[idx] = to;
-    }
-    private void updateMyPiecePositions(byte from, byte to) {
-        int idx = -1;
-        for (int i = 0; i < myPiecePositionsSize; ++i) {
-            if (myPiecePositions[i] == from) {
-                idx = i;
-                break;
-            }
-        }
-        assert (idx != -1);
-        myPiecePositions[idx] = to;
-    }
-    private void updateOpPiecePositions(int fromX, int fromY, int toX, int toY) {
-        byte from = (byte) (fromY * BOARD_SIZE + fromX);
-        byte to = (byte) (toY * BOARD_SIZE + toX);
-        int idx = -1;
-        for (int i = 0; i < opPiecePositionsSize; ++i) {
-            if (opPiecePositions[i] == from) {
-                idx = i;
-                break;
-            }
-        }
-        assert (idx != -1);
-        opPiecePositions[idx] = to;
-    }
-    private void updateOpPiecePositions(byte from, byte to) {
-        int idx = -1;
-        for (int i = 0; i < opPiecePositionsSize; ++i) {
-            if (opPiecePositions[i] == from) {
-                idx = i;
-                break;
-            }
-        }
-        assert (idx != -1);
-        opPiecePositions[idx] = to;
-    }
-    private void removePiecePosition(byte pos, boolean isMine) {
-        int idx = -1;
-        if (isMine) {
-            for (int i = 0; i < myPiecePositionsSize; ++i) {
-                if (myPiecePositions[i] == pos) {
-                    idx = i;
-                    break;
-                }
-            }
-            myPiecePositions[idx] = myPiecePositions[myPiecePositionsSize - 1];
-            myPiecePositions[myPiecePositionsSize - 1] = 0;
-            --myPiecePositionsSize;
-        } else {
-            for (int i = 0; i < opPiecePositionsSize; ++i) {
-                if (opPiecePositions[i] == pos) {
-                    idx = i;
-                    break;
-                }
-            }
-            opPiecePositions[idx] = opPiecePositions[opPiecePositionsSize - 1];
-            opPiecePositions[opPiecePositionsSize - 1] = 0;
-            --opPiecePositionsSize;
-        }
-    }
-    private void insertPiecePostion(byte pos, boolean isMine) {
-        if (isMine) {
-            myPiecePositions[myPiecePositionsSize++] = pos;
-        } else {
-            opPiecePositions[opPiecePositionsSize++] = pos;
-        }
-    }
-
-
 
 
 }

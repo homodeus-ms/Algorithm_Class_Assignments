@@ -1,20 +1,20 @@
 package academy.pocu.comp3500.assignment3;
 
 public class Helper {
-    private static final byte[][] remainCountsToEdge = new byte[8 * 8][8];
+    private static final int[][] remainCountsToEdge = new int[8 * 8][8];
 
     public Helper() {
-        for (byte i = 0; i < 64; ++i) {
-            byte north = (byte) (i / 8);
-            byte south = (byte) (7 - i / 8);
-            byte west = (byte) (i & 0b111);
-            byte east = (byte) (7 - (i & 0b111));
-            byte northWest = (byte) Math.min(north, west);
-            byte southEast = (byte) Math.min(south, east);
-            byte northEast = (byte) Math.min(north, east);
-            byte southWest = (byte) Math.min(south, west);
+        for (int i = 0; i < 64; ++i) {
+            int north = i / 8;
+            int south = 7 - i / 8;
+            int west = i & 0b111;
+            int east = 7 - (i & 0b111);
+            int northWest = Math.min(north, west);
+            int southEast = Math.min(south, east);
+            int northEast = Math.min(north, east);
+            int southWest = Math.min(south, west);
 
-            byte[] remainsToEdge = {
+            int[] remainsToEdge = {
                     north,
                     south,
                     west,
@@ -28,7 +28,7 @@ public class Helper {
             remainCountsToEdge[i] = remainsToEdge;
         }
     }
-    public static byte[][] getRemainCountsToEdge() {
+    public static int[][] getRemainCountsToEdge() {
         return remainCountsToEdge;
     }
 }
