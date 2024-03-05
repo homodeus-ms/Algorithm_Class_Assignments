@@ -145,7 +145,7 @@ public class Player extends PlayerBase {
         }*/
 
 
-        int depth = getMaxMoveTimeMilliseconds() >= 1000 ? 5 : 4;
+        int depth = 1;
         int startDepth = depth;
         this.startTime = System.currentTimeMillis();
 
@@ -164,8 +164,8 @@ public class Player extends PlayerBase {
             point = minimax(depth, depth, Integer.MIN_VALUE, Integer.MAX_VALUE,
                     true, this.isWhite(), result);
 
-            System.out.printf("depth : %d\n", depth);
-            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);
+            /*System.out.printf("depth : %d\n", depth);
+            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);*/
 
             if (depth == startDepth) {
                 maxResult.fromX = result.fromX;
