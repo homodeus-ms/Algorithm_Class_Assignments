@@ -20,8 +20,7 @@ public class Player extends PlayerBase {
             'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
             'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r',
     };
-    // DIR = { N, S, W, E, NW, SE, NE, SW }
-    // consts
+
     private static final int N_IDX = 0;
     private static final int S_IDX = 1;
     private static final int W_IDX = 2;
@@ -31,9 +30,13 @@ public class Player extends PlayerBase {
     private static final int NE_IDX = 6;
     private static final int SW_IDX = 7;
     private static final int IDX_END = 8;
+    // DIR = { N, S, W, E, NW, SE, NE, SW }
+    // consts
+
 
     private static final int MAX_MOVE_IN_A_TURN = 138;
     private static final int BOARD_SIZE = 8;
+    private static final int MAX_PIECE_COUNT = 16;
     private static final int BOARD_LAST_IDX = 63;
 
     public int preWhiteScore = 1400;
@@ -41,9 +44,16 @@ public class Player extends PlayerBase {
     public int whiteScore = 1400;
     public int blackScore = 1400;
 
-    // board 관련
+
+    private static Board gameBoard = null;
     private final int[][] remainCountsToEdge;
-    private char[] board = new char[BOARD_SIZE * BOARD_SIZE];
+    private char[] board;
+
+    // piece 관련
+    private int[] myPiecePosIndexes;
+    private char[] myPieceTypeInIndexes;
+    private int[] opPiecePosIndexes;
+    private char[] opPieceTypeInIndexes;
 
 
     // move 관련
@@ -55,10 +65,7 @@ public class Player extends PlayerBase {
     private int[] bestScoresListIndexes = new int[5];
     private int bestScoresSize = 0;
     private int bestLeastScore = bestScores[4];
-    //private ArrayList<Byte> scoredMoves = new ArrayList<>(16);
 
-    //private byte myKingPos;
-    //private boolean kingPosChecked = false;
 
     // result, score 관련
     private int[] bestMove = new int[2];
@@ -84,6 +91,12 @@ public class Player extends PlayerBase {
     public Player(boolean isWhite, int maxMoveTimeMilliseconds) {
         super(isWhite, maxMoveTimeMilliseconds);
 
+        gameBoard = new Board(isWhite);
+        this.board = gameBoard.getBoard();
+        myPiecePosIndexes = gameBoard.getMyPiecePosIndexes();
+        myPieceTypeInIndexes = gameBoard.getMyPieceTypeInIndexes();
+        opPiecePosIndexes = gameBoard.getOpPiecePosIndexes();
+        opPieceTypeInIndexes = gameBoard.getOpPieceTypeInIndexes();
         Helper helper = new Helper();
         this.remainCountsToEdge = Helper.getRemainCountsToEdge();
     }
@@ -94,11 +107,13 @@ public class Player extends PlayerBase {
 
         boolean isStartBoard = true;
 
-        for (int y = 0; y < BOARD_SIZE; ++y) {
+        gameBoard.setBoard(board);
+
+        /*for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
                 this.board[y * BOARD_SIZE + x] = board[y][x];
             }
-        }
+        }*/
         for (int i = 0; i < 64; ++i) {
             if (this.board[i] != START_BOARD[i]) {
                 isStartBoard = false;
@@ -111,7 +126,8 @@ public class Player extends PlayerBase {
 
         if (this.isWhite() && isStartBoard) {
             move = new Move(3, 6, 3, 4);
-            insertMoveToBoard(move);
+            //insertMoveToBoard(move);
+            gameBoard.insertMove(move, true);
         } else {
             move = getNextMove(board, null);
         }
@@ -122,31 +138,17 @@ public class Player extends PlayerBase {
     public Move getNextMove(char[][] board, Move opponentMove) {
 
         if (firstTurn) {
-            copyBoard(board);
+            //copyBoard(board);
+            gameBoard.setBoard(board);
             firstTurn = false;
         } else if (opponentMove != null) {
-            insertMoveToBoard(opponentMove);
+            //insertMoveToBoard(opponentMove);
+            gameBoard.insertMove(opponentMove, false);
         }
 
-        int maxPoint = Integer.MIN_VALUE;
+
         int point = 0;
-        long start;
-        long end;
-        long limitTime = getMaxMoveTimeMilliseconds();
-
-        /*{
-            point = minimax(2, 2, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                    true, this.isWhite(), result);
-
-            maxPoint = point;
-            maxResult.fromX = result.fromX;
-            maxResult.fromY = result.fromY;
-            maxResult.toX = result.toX;
-            maxResult.toY = result.toY;
-        }*/
-
-
-        int depth = getMaxMoveTimeMilliseconds() >= 1000 ? 5 : 4;
+        int depth = 1;
         int startDepth = depth;
         this.startTime = System.currentTimeMillis();
 
@@ -175,10 +177,9 @@ public class Player extends PlayerBase {
                 maxResult.toY = result.toY;
             }
 
-
-
             if (timeOut || point >= 900) {
-                insertMoveToBoard(maxResult);
+                //insertMoveToBoard(maxResult);
+                gameBoard.insertMove(maxResult, true);
                 timeOut = false;
                 return maxResult;
             }
@@ -195,7 +196,7 @@ public class Player extends PlayerBase {
             return alpha;
         }
 
-        ArrayList<Integer> moves = getAvailableMoves(playerIsWhite);
+        ArrayList<Integer> moves = getAvailableMoves(isMyTurn);
 
         if (moves.isEmpty()) {
             return evaluate(this.isWhite());
@@ -214,7 +215,7 @@ public class Player extends PlayerBase {
                 char existingPiece = board[to];
 
 
-                tempEarnScore = move(playerIsWhite, from, to);
+                tempEarnScore = move(true, from, to, existingPiece);
 
                 if (depth > 1) {
                     currValue = minimax(depth - 1, startDepth, alpha, beta,
@@ -223,7 +224,7 @@ public class Player extends PlayerBase {
                     currValue = evaluate(this.isWhite());
                 }
 
-                cancelMove(playerIsWhite, to, from, existingPiece, tempEarnScore);
+                cancelMove(true, to, from, existingPiece, tempEarnScore);
 
 
                 if (currValue > maxValue) {
@@ -264,7 +265,7 @@ public class Player extends PlayerBase {
                 char existingPiece = board[to];
 
 
-                tempEarnScore = move(playerIsWhite, from, to);
+                tempEarnScore = move(false, from, to, existingPiece);
                 if (depth > 1) {
                     currValue = minimax(depth - 1, startDepth, alpha, beta,
                             true, !playerIsWhite, result);
@@ -272,7 +273,7 @@ public class Player extends PlayerBase {
                     currValue = evaluate(this.isWhite());
                 }
 
-                cancelMove(playerIsWhite, to, from, existingPiece, tempEarnScore);
+                cancelMove(false, to, from, existingPiece, tempEarnScore);
 
 
                 if (currValue < minValue) {
@@ -291,7 +292,41 @@ public class Player extends PlayerBase {
         }
     }
 
-    private ArrayList<Integer> getAvailableMoves(boolean thisIsWhite) {
+    private ArrayList<Integer> getAvailableMoves(boolean isMyTurn) {
+        ArrayList<Integer> moves = new ArrayList<>(MAX_MOVE_IN_A_TURN * 2);
+
+
+        if (isMyTurn) {
+            int size = gameBoard.getMyPosSize();
+            for (int i = 0; i < size; ++i) {
+                getAvailableMoves(moves, this.isWhite(), myPiecePosIndexes[i]);
+            }
+        } else {
+            int size = gameBoard.getOpPosSize();
+            for (int i = 0; i < size; ++i) {
+                getAvailableMoves(moves, !this.isWhite(), opPiecePosIndexes[i]);
+            }
+        }
+
+
+        /*if (thisIsWhite) {
+            for (int i = 0; i < 64; ++i) {
+                if (this.board[i] >= 'b') {
+                    getAvailableMoves(moves, thisIsWhite, i);
+                }
+            }
+        } else {
+            for (int i = 0; i < 64; ++i) {
+                if (this.board[i] != 0 && this.board[i] <= 'R') {
+                    getAvailableMoves(moves, thisIsWhite, i);
+                }
+            }
+        }*/
+
+        return moves;
+    }
+
+    /*private ArrayList<Integer> getAvailableMoves(boolean thisIsWhite) {
         ArrayList<Integer> moves = new ArrayList<>(MAX_MOVE_IN_A_TURN * 2);
 
         if (thisIsWhite) {
@@ -309,7 +344,7 @@ public class Player extends PlayerBase {
         }
 
         return moves;
-    }
+    }*/
 
 
     private int evaluate(boolean playerIsWhite) {
@@ -516,6 +551,7 @@ public class Player extends PlayerBase {
         return score;
     }
 
+
     private boolean isEnemyPiece(boolean playerIsWhite, int idx) {
         return playerIsWhite ? (board[idx] != 0 && board[idx] <= 'R') : (board[idx] >= 'b');
     }
@@ -528,7 +564,38 @@ public class Player extends PlayerBase {
         return isCaptured;
     }
 
-    private int move(boolean playerIsWhite, int from, int to) {
+    private int move(boolean isMyTurn, int from, int to, char capturedPiece) {
+        int earnScore = 0;
+        if (capturedPiece != 0 || board[from] == 'p' || board[from] == 'P') {
+            earnScore = calculatePoint(board[from], capturedPiece, to, isMyTurn == this.isWhite());
+        }
+
+        gameBoard.insertMove(from , to, isMyTurn);
+
+        return earnScore;
+    }
+    private void cancelMove(boolean isMyTurn, int from, int to, char existingPiece, int earnScoreInPreTurn) {
+        if (earnScoreInPreTurn != 0) {
+            if (isMyTurn == this.isWhite()) {
+                whiteScore -= earnScoreInPreTurn;
+                blackScore += earnScoreInPreTurn;
+            } else {
+                whiteScore += earnScoreInPreTurn;
+                blackScore -= earnScoreInPreTurn;
+            }
+
+            gameBoard.insertMove(from, to, isMyTurn, existingPiece);
+        } else {
+            assert (existingPiece == 0);
+            gameBoard.insertMove(from, to, isMyTurn);
+        }
+
+
+        /*board[to] = board[from];
+        board[from] = existingPiece;*/
+    }
+
+    /*private int move(boolean playerIsWhite, int from, int to) {
         char capturedPiece = board[to];
         int earnScore = 0;
 
@@ -539,8 +606,8 @@ public class Player extends PlayerBase {
         board[to] = board[from];
         board[from] = 0;
         return earnScore;
-    }
-    private void cancelMove(boolean playerIsWhite, int from, int to, char existingPiece, int earnScoreInPreTurn) {
+    }*/
+    /*private void cancelMove(boolean playerIsWhite, int from, int to, char existingPiece, int earnScoreInPreTurn) {
         if (earnScoreInPreTurn != 0) {
             if (playerIsWhite) {
                 whiteScore -= earnScoreInPreTurn;
@@ -553,13 +620,13 @@ public class Player extends PlayerBase {
 
         board[to] = board[from];
         board[from] = existingPiece;
-    }
+    }*/
 
-    private void insertMoveToBoard(Move move) {
+    /*private void insertMoveToBoard(Move move) {
         char c = this.board[move.fromY * BOARD_SIZE + move.fromX];
         this.board[move.fromY * BOARD_SIZE + move.fromX] = 0;
         this.board[move.toY * BOARD_SIZE + move.toX] = c;
-    }
+    }*/
 
     private void copyBoard(char[][] board) {
         for (int y = 0; y < BOARD_SIZE; ++y) {
@@ -568,6 +635,7 @@ public class Player extends PlayerBase {
             }
         }
     }
+
 
 
 }

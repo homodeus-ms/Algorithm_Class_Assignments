@@ -364,7 +364,7 @@ final class Game {
     }
 
     private static char[][] createNewBoard() {
-        final char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
+        /*final char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
 
         // White pieces
         int y = BOARD_SIZE - 1;
@@ -398,7 +398,7 @@ final class Game {
         board[y][4] = 'Q';
         board[y][5] = 'B';
         board[y][6] = 'N';
-        board[y][7] = 'R';
+        board[y][7] = 'R';*/
 
 
         /*char[][] board = {
@@ -449,7 +449,7 @@ final class Game {
                 { 0 , 0 , 0 ,'r', 0 , 0 , 0 , 0 },
         };*/
 
-        /*char[][] board = {
+        char[][] board = {
                 // A   B   C   D   E   F   G   H
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 ,'P','K', 0 , 0 , 0 },
@@ -459,7 +459,7 @@ final class Game {
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
                 { 0 , 0 , 0 , 0 , 0 , 0 ,'Q', 0 },
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
-        };*/
+        };
         /*char[][] board = {
                 // A   B   C   D   E   F   G   H
                 { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
@@ -529,6 +529,17 @@ final class Game {
                 { 0 , 0 ,'p', 0 , 0 , 0 , 0 , 0 },
                 {'p','p', 0 , 0 ,'p','p','p','p'},
                 {'r','n','b','k','q','b','n','r'},
+        };*/
+        /*char[][] board = {
+                // A   B   C   D   E   F   G   H
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 ,'B', 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 ,'N', 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 ,'n', 0 , 0 , 0 , 0 },
+                { 0 , 0 ,'q', 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
+                { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 },
         };*/
 
 
