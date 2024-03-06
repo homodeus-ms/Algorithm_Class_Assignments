@@ -111,7 +111,6 @@ public class Player extends PlayerBase {
 
         if (this.isWhite() && isStartBoard) {
             move = new Move(3, 6, 3, 4);
-            insertMoveToBoard(move);
         } else {
             move = getNextMove(board, null);
         }
@@ -123,7 +122,8 @@ public class Player extends PlayerBase {
 
         if (firstTurn) {
             copyBoard(board);
-        } else {
+            firstTurn = false;
+        } else if (opponentMove != null) {
             insertMoveToBoard(opponentMove);
         }
 
@@ -145,7 +145,7 @@ public class Player extends PlayerBase {
         }*/
 
 
-        int depth = 1;
+        int depth = getMaxMoveTimeMilliseconds() >= 1000 ? 5 : 4;
         int startDepth = depth;
         this.startTime = System.currentTimeMillis();
 
