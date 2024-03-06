@@ -146,6 +146,7 @@ public class Player extends PlayerBase {
             gameBoard.insertMove(opponentMove, false);
         }
 
+        //System.out.printf("My King Pos : %d\n", gameBoard.getKingPos());
 
         int point = 0;
         int depth = 1;
@@ -168,7 +169,7 @@ public class Player extends PlayerBase {
                     true, this.isWhite(), result);
 
             /*System.out.printf("depth : %d\n", depth);
-            System.out.printf("MaxPoint : %d, Point : %d\n", maxPoint, point);*/
+            System.out.printf("Point : %d\n", point);*/
 
             if (depth == startDepth) {
                 maxResult.fromX = result.fromX;
@@ -570,7 +571,7 @@ public class Player extends PlayerBase {
             earnScore = calculatePoint(board[from], capturedPiece, to, isMyTurn == this.isWhite());
         }
 
-        gameBoard.insertMove(from , to, isMyTurn);
+        gameBoard.insertMove(from, to, isMyTurn);
 
         return earnScore;
     }
@@ -583,11 +584,11 @@ public class Player extends PlayerBase {
                 whiteScore += earnScoreInPreTurn;
                 blackScore -= earnScoreInPreTurn;
             }
-
-            gameBoard.insertMove(from, to, isMyTurn, existingPiece);
-        } else {
-            assert (existingPiece == 0);
+        }
+        if (existingPiece == 0) {
             gameBoard.insertMove(from, to, isMyTurn);
+        } else {
+            gameBoard.insertMove(from, to, isMyTurn, existingPiece);
         }
 
 
@@ -628,13 +629,14 @@ public class Player extends PlayerBase {
         this.board[move.toY * BOARD_SIZE + move.toX] = c;
     }*/
 
-    private void copyBoard(char[][] board) {
+    /*private void copyBoard(char[][] board) {
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
                 this.board[y * BOARD_SIZE + x] = board[y][x];
             }
         }
-    }
+    }*/
+
 
 
 

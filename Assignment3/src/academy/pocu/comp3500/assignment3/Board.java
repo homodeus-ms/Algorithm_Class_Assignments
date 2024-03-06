@@ -14,7 +14,9 @@ public final class Board {
     private int myPosSize = 0;
     private int[] opPiecePosIndexes = new int[MAX_PIECE_COUNT];
     private char[] opPieceTypeInIndexes = new char[MAX_PIECE_COUNT];
-    private int opPosSize= 0;
+    private int opPosSize = 0;
+
+    private int kingPos = 0;
 
     public Board(boolean playerIsWhite) {
         this.playerIsWhite = playerIsWhite;
@@ -45,6 +47,9 @@ public final class Board {
     public int getOpPosSize() {
         return this.opPosSize;
     }
+    public int getKingPos() {
+        return kingPos;
+    }
     public void setBoard(char[][] newBoard) {
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -63,7 +68,7 @@ public final class Board {
         board[to] = c;
 
         if (isMine) {
-            updateMyPiecePos(from , to);
+            updateMyPiecePos(from, to);
             deleteOpPiecePos(to);
         } else {
             updateOpPiecePos(from, to);
@@ -78,7 +83,7 @@ public final class Board {
         board[to] = c;
 
         if (isMine) {
-            updateMyPiecePos(from , to);
+            updateMyPiecePos(from, to);
             deleteOpPiecePos(to);
         } else {
             updateOpPiecePos(from, to);
@@ -92,7 +97,7 @@ public final class Board {
         board[from] = capturedPiece;
 
         if (isMine) {
-            updateMyPiecePos(from , to);
+            updateMyPiecePos(from, to);
             addPosToOppenent(from, capturedPiece);
         } else {
             updateOpPiecePos(from, to);
@@ -136,14 +141,20 @@ public final class Board {
             }
         }
 
-
+        updateMyKingPos();
     }
 
 
     public void updateMyPiecePos(int from, int to) {
+
         for (int i = 0; i < myPosSize; ++i) {
             if (myPiecePosIndexes[i] == from) {
                 myPiecePosIndexes[i] = to;
+
+                if ((myPieceTypeInIndexes[i] | 0x20) == 'k') {
+                    kingPos = to;
+                }
+
                 break;
             }
         }
@@ -192,6 +203,27 @@ public final class Board {
         opPiecePosIndexes[opPosSize] = pos;
         opPieceTypeInIndexes[opPosSize++] = piece;
     }
+
+    private void updateMyKingPos() {
+        for (int i = 0; i < myPosSize; ++i) {
+            int c = myPieceTypeInIndexes[i] | 0x20;
+            if (myPieceTypeInIndexes[i] == 'k') {
+                kingPos = myPiecePosIndexes[i];
+                break;
+            }
+        }
+    }
+
+    private boolean isKingInDanger(boolean playerisWhite) {
+
+        if (playerisWhite) {
+
+        } else {
+
+        }
+        return false;
+    }
+
     public void logPiecePos() {
         System.out.println("===== myPieces =====");
         for (int i = 0; i < myPosSize; ++i) {
