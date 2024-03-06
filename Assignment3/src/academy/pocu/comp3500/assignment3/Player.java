@@ -111,6 +111,7 @@ public class Player extends PlayerBase {
 
         if (this.isWhite() && isStartBoard) {
             move = new Move(3, 6, 3, 4);
+            insertMoveToBoard(move);
         } else {
             move = getNextMove(board, null);
         }
