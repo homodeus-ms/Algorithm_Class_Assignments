@@ -182,7 +182,7 @@ public class Player extends PlayerBase {
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
-        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 10) {
+        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 100) {
             timeOut = true;
             return alpha;
         }
@@ -257,7 +257,7 @@ public class Player extends PlayerBase {
 
                 char existingPiece = board[to];
 
-                tempEarnScore =  move(false, from, to, existingPiece);
+                tempEarnScore = move(false, from, to, existingPiece);
 
                 if (depth > 1) {
                     currValue = minimax(depth - 1, startDepth, alpha, beta,
@@ -580,43 +580,5 @@ public class Player extends PlayerBase {
             }
         }
         return false;
-    }
-    private void sortArray(ArrayList<Integer> moves, ArrayList<Integer> scores) {
-        assert (moves.size() == scores.size() * 2);
-        quickSortRecursive(moves, scores, 0, scores.size() - 1);
-    }
-    private void quickSortRecursive(ArrayList<Integer> moves, ArrayList<Integer> scores, int left, int right) {
-        if (left >= right) {
-            return;
-        }
-
-        int keepLeft = left;
-
-        for (int i = left; i < right; ++i) {
-            if (scores.get(i) > scores.get(right)) {
-                swap(scores, i, left);
-                swapTwoValue(moves, i * 2, left * 2);
-                ++left;
-            }
-        }
-        swap(scores, left, right);
-        swapTwoValue(moves, left * 2, right * 2);
-
-        quickSortRecursive(moves, scores, keepLeft, left - 1);
-        quickSortRecursive(moves, scores, left + 1, right);
-
-    }
-    private void swap(ArrayList<Integer> scores, int i, int j) {
-        int temp = scores.get(i);
-        scores.set(i, scores.get(j));
-        scores.set(j, temp);
-    }
-    private void swapTwoValue(ArrayList<Integer> moves, int i, int j) {
-        int temp1 = moves.get(i);
-        int temp2 = moves.get(i + 1);
-        moves.set(i, moves.get(j));
-        moves.set(i + 1, moves.get(j + 1));
-        moves.set(j, temp1);
-        moves.set(j + 1, temp2);
     }
 }
