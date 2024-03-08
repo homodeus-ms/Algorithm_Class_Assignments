@@ -3,6 +3,7 @@ package academy.pocu.comp3500.assignment3;
 import academy.pocu.comp3500.assignment3.chess.Move;
 import academy.pocu.comp3500.assignment3.chess.PlayerBase;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Player extends PlayerBase {
@@ -52,7 +53,6 @@ public class Player extends PlayerBase {
     private char capturedPiece = 0;
     private Move maxResult = new Move(0, 0, 0, 0);
     private Move result = new Move(0, 0, 0, 0);
-    private int[] bestScores = new int[5];
 
     // result, score 관련
     private int[] bestMove = new int[2];
@@ -171,6 +171,7 @@ public class Player extends PlayerBase {
                 //insertMoveToBoard(maxResult);
                 gameBoard.insertMove(maxResult, true);
                 timeOut = false;
+                //System.out.printf("Count : %d\n", count);
                 return maxResult;
             }
 
@@ -181,13 +182,15 @@ public class Player extends PlayerBase {
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
-        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 100) {
+        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 10) {
             timeOut = true;
             return alpha;
         }
 
         //count++;
+
         LinkedList<Integer> moves = getAvailableMoves(isMyTurn);
+
 
         if (moves.isEmpty()) {
             return evaluate(this.isWhite());
@@ -204,7 +207,6 @@ public class Player extends PlayerBase {
                 int from = moves.get(i++);
                 int to = moves.get(i);
                 char existingPiece = board[to];
-
 
                 tempEarnScore = move(true, from, to, existingPiece);
 
@@ -255,8 +257,7 @@ public class Player extends PlayerBase {
 
                 char existingPiece = board[to];
 
-
-                tempEarnScore = move(false, from, to, existingPiece);
+                tempEarnScore =  move(false, from, to, existingPiece);
 
                 if (depth > 1) {
                     currValue = minimax(depth - 1, startDepth, alpha, beta,
@@ -284,6 +285,8 @@ public class Player extends PlayerBase {
         }
     }
 
+
+
     private LinkedList<Integer> getAvailableMoves(boolean isMyTurn) {
 
         LinkedList<Integer> moves = new LinkedList<>();
@@ -306,6 +309,8 @@ public class Player extends PlayerBase {
     private int evaluate(boolean playerIsWhite) {
         return playerIsWhite ? whiteScore - blackScore : blackScore - whiteScore;
     }
+
+
     public void getAvailableMoves(LinkedList<Integer> moves, boolean playerIsWhite, int idx) {
 
         char piece;
@@ -484,26 +489,19 @@ public class Player extends PlayerBase {
     }
 
 
-    private int calculatePoint(char movingPiece, char capturedPiece, int from, int to, boolean playerIsWhite) {
+
+
+
+    private int calculatePoint(char movingPiece, char capturedPiece, int to, boolean playerIsWhite) {
         int colorValue = playerIsWhite ? 1 : -1;
         int score = 0;
 
         if (capturedPiece != 0) {
             capturedPiece |= 0x20;
             score = SCORE_TABLE[capturedPiece - 'b'];
-        } else if (movingPiece == 'p') {
-            if (to >= 34 && to <= 36) {
-                score = 3;
-            } else if (to >= 42 && to <= 44) {
-                score = 3;
-            }
-        } else if (movingPiece == 'P') {
-            if (to >= 26 && to <= 28) {
-                score = 3;
-            } else if (to >= 18 && to <= 20) {
-                score = 3;
-            }
         }
+
+        score += Positions.getPositionPoints(movingPiece, to);
 
         if (gameBoard.isCheckMate(this.isWhite() == playerIsWhite)) {
             score -= 2000;
@@ -533,13 +531,17 @@ public class Player extends PlayerBase {
 
         gameBoard.insertMove(from, to, isMyTurn);
 
-        earnScore = calculatePoint(board[from], capturedPiece, from, to, isMyTurn == this.isWhite());
+        earnScore = calculatePoint(board[to], capturedPiece, to, isMyTurn == this.isWhite());
 
 
         return earnScore;
     }
     private void cancelMove(boolean isMyTurn, int from, int to, char existingPiece, int earnScoreInPreTurn) {
         if (earnScoreInPreTurn != 0) {
+            /*int colorValue = this.isWhite() ? -1 : 1;
+            whiteScore += earnScoreInPreTurn * colorValue;
+            blackScore -= earnScoreInPreTurn * colorValue;*/
+
             if (isMyTurn == this.isWhite()) {
                 whiteScore -= earnScoreInPreTurn;
                 blackScore += earnScoreInPreTurn;
@@ -578,5 +580,43 @@ public class Player extends PlayerBase {
             }
         }
         return false;
+    }
+    private void sortArray(ArrayList<Integer> moves, ArrayList<Integer> scores) {
+        assert (moves.size() == scores.size() * 2);
+        quickSortRecursive(moves, scores, 0, scores.size() - 1);
+    }
+    private void quickSortRecursive(ArrayList<Integer> moves, ArrayList<Integer> scores, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+
+        int keepLeft = left;
+
+        for (int i = left; i < right; ++i) {
+            if (scores.get(i) > scores.get(right)) {
+                swap(scores, i, left);
+                swapTwoValue(moves, i * 2, left * 2);
+                ++left;
+            }
+        }
+        swap(scores, left, right);
+        swapTwoValue(moves, left * 2, right * 2);
+
+        quickSortRecursive(moves, scores, keepLeft, left - 1);
+        quickSortRecursive(moves, scores, left + 1, right);
+
+    }
+    private void swap(ArrayList<Integer> scores, int i, int j) {
+        int temp = scores.get(i);
+        scores.set(i, scores.get(j));
+        scores.set(j, temp);
+    }
+    private void swapTwoValue(ArrayList<Integer> moves, int i, int j) {
+        int temp1 = moves.get(i);
+        int temp2 = moves.get(i + 1);
+        moves.set(i, moves.get(j));
+        moves.set(i + 1, moves.get(j + 1));
+        moves.set(j, temp1);
+        moves.set(j + 1, temp2);
     }
 }
