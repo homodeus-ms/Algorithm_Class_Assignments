@@ -3,6 +3,7 @@ package academy.pocu.comp3500.assignment3;
 public class Helper {
     private static final int[][] remainCountsToEdge = new int[8 * 8][8];
 
+
     public Helper() {
         for (int i = 0; i < 64; ++i) {
             int north = i / 8;
