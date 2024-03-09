@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public final class Board {
     private static final int BOARD_SIZE = 8;
     private static final int MAX_PIECE_COUNT = 16;
-    private final static char[] board = new char[BOARD_SIZE * BOARD_SIZE];
+    private final char[] board = new char[BOARD_SIZE * BOARD_SIZE];
     private final Player player;
     private final boolean playerIsWhite;
 

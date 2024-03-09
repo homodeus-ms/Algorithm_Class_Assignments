@@ -4,6 +4,7 @@ import academy.pocu.comp3500.assignment3.chess.Move;
 import academy.pocu.comp3500.assignment3.chess.PlayerBase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Player extends PlayerBase {
@@ -41,6 +42,8 @@ public class Player extends PlayerBase {
     private static Board gameBoard = null;
     private final int[][] remainCountsToEdge;
     private char[] board;
+
+    private final HashMap<Long, int[]> zobristMap = new HashMap<>();
 
     // piece 관련
     private int[] myPiecePosIndexes;
@@ -89,6 +92,7 @@ public class Player extends PlayerBase {
         opPieceTypeInIndexes = gameBoard.getOpPieceTypeInIndexes();
         Helper helper = new Helper();
         this.remainCountsToEdge = Helper.getRemainCountsToEdge();
+        ZobristHashing.init();
     }
 
 
@@ -165,13 +169,26 @@ public class Player extends PlayerBase {
                 timeOut = false;
                 System.out.printf("Count : %d\n", count);
                 count = 0;
+
+
                 return maxResult;
             }*/
             if (timeOut || point >= 9900) {
                 //insertMoveToBoard(maxResult);
+
+                long hashKey = ZobristHashing.getHash(this.board);
+                int[] values = new int[3];
+                values[0] = maxResult.fromY * BOARD_SIZE + maxResult.fromX;
+                values[1] = maxResult.toY * BOARD_SIZE + maxResult.toX;
+                values[2] = point;
+                zobristMap.put(hashKey, values);
+
                 gameBoard.insertMove(maxResult, true);
                 timeOut = false;
                 //System.out.printf("Count : %d\n", count);
+                count = 0;
+
+
                 return maxResult;
             }
 
@@ -185,6 +202,17 @@ public class Player extends PlayerBase {
         if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 50) {
             timeOut = true;
             return alpha;
+        }
+
+        long hashKey = ZobristHashing.getHash(this.board);
+        if (zobristMap.containsKey(hashKey)) {
+            int[] values = zobristMap.get(hashKey);
+            result.fromX = values[0] % BOARD_SIZE;
+            result.fromY = values[0] / BOARD_SIZE;
+            result.toX = values[1] % BOARD_SIZE;
+            result.toY = values[1] / BOARD_SIZE;
+
+            return values[2];
         }
 
         //count++;
@@ -216,6 +244,7 @@ public class Player extends PlayerBase {
                 } else {
                     currValue = evaluate(this.isWhite());
                 }
+
 
                 cancelMove(true, to, from, existingPiece, tempEarnScore);
 
