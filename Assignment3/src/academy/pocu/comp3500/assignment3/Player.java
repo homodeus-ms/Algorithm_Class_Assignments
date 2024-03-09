@@ -182,7 +182,7 @@ public class Player extends PlayerBase {
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
-        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 100) {
+        if (System.currentTimeMillis() - startTime > getMaxMoveTimeMilliseconds() - 50) {
             timeOut = true;
             return alpha;
         }
