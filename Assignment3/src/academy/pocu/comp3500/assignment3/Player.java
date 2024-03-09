@@ -92,7 +92,6 @@ public class Player extends PlayerBase {
         opPieceTypeInIndexes = gameBoard.getOpPieceTypeInIndexes();
         Helper helper = new Helper();
         this.remainCountsToEdge = Helper.getRemainCountsToEdge();
-        ZobristHashing.init();
     }
 
 
@@ -163,7 +162,7 @@ public class Player extends PlayerBase {
             }
 
             // for debug
-            /*if (depth == 5 || point >= 9900) { //timeOut || point >= 9900) {
+            /*if (depth == 10 || point >= 9900) { //timeOut || point >= 9900) {
 
                 gameBoard.insertMove(maxResult, true);
                 timeOut = false;
@@ -174,14 +173,7 @@ public class Player extends PlayerBase {
                 return maxResult;
             }*/
             if (timeOut || point >= 9900) {
-                //insertMoveToBoard(maxResult);
-
-                long hashKey = ZobristHashing.getHash(this.board);
-                int[] values = new int[3];
-                values[0] = maxResult.fromY * BOARD_SIZE + maxResult.fromX;
-                values[1] = maxResult.toY * BOARD_SIZE + maxResult.toX;
-                values[2] = point;
-                zobristMap.put(hashKey, values);
+                //insertMoveToBoard(maxResult)
 
                 gameBoard.insertMove(maxResult, true);
                 timeOut = false;
@@ -204,16 +196,6 @@ public class Player extends PlayerBase {
             return alpha;
         }
 
-        long hashKey = ZobristHashing.getHash(this.board);
-        if (zobristMap.containsKey(hashKey)) {
-            int[] values = zobristMap.get(hashKey);
-            result.fromX = values[0] % BOARD_SIZE;
-            result.fromY = values[0] / BOARD_SIZE;
-            result.toX = values[1] % BOARD_SIZE;
-            result.toY = values[1] / BOARD_SIZE;
-
-            return values[2];
-        }
 
         //count++;
 
