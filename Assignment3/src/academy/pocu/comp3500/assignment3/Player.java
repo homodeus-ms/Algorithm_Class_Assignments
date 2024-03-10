@@ -188,6 +188,7 @@ public class Player extends PlayerBase {
         }
     }
 
+
     private int minimax(int depth, int startDepth, int alpha, int beta,
                         boolean isMyTurn, boolean playerIsWhite, Move result) {
 
@@ -423,9 +424,9 @@ public class Player extends PlayerBase {
                         } else if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
-                            if (this.board[dirValue] != 0) {
+                            /*if (this.board[dirValue] != 0) {
                                 break;
-                            }
+                            }*/
                         } else {
                             break;
                         }
@@ -446,9 +447,9 @@ public class Player extends PlayerBase {
                         } else if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
-                            if (this.board[dirValue] != 0) {
+                            /*if (this.board[dirValue] != 0) {
                                 break;
-                            }
+                            }*/
                         } else {
                             break;
                         }
@@ -468,9 +469,9 @@ public class Player extends PlayerBase {
                         } else if (isMoveablePlace(idx, dirValue)) {
                             moves.add(idx);
                             moves.add(dirValue);
-                            if (this.board[dirValue] != 0) {
+                            /*if (this.board[dirValue] != 0) {
                                 break;
-                            }
+                            }*/
                         } else {
                             break;
                         }
