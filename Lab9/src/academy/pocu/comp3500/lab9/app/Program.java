@@ -18,6 +18,15 @@ public class Program {
         videoTest3();
         videoTest4();
 
+        /*VideoClip[] clips = new VideoClip[] {
+                new VideoClip(0, 3),
+                new VideoClip(1, 3),
+                new VideoClip(5, 27),
+                new VideoClip(2, 26),
+                new VideoClip(3, 25),
+        };
+        CodingMan.sortArrDescending(clips);
+        printArr2(clips);*/
 
         System.out.println("NoAssert!");
     }

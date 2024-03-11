@@ -2,6 +2,7 @@ package academy.pocu.comp3500.lab9;
 
 import academy.pocu.comp3500.lab9.data.VideoClip;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class CodingMan {
@@ -12,7 +13,66 @@ public class CodingMan {
             return -1;
         }
 
-        sortArrAscending(clips);
+        VideoClip[] copyArr = new VideoClip[clips.length];
+        int idx = 0;
+        boolean noPossibleEndTime = true;
+        for (VideoClip v : clips) {
+            copyArr[idx++] = v;
+            if (v.getEndTime() >= time) {
+                noPossibleEndTime = false;
+            }
+        }
+        if (noPossibleEndTime) {
+            return -1;
+        }
+
+        VideoClip[] buffer = new VideoClip[clips.length];
+        int bufferSize = 0;
+        int endTime = time;
+        int minStartTime = Integer.MAX_VALUE;
+        int length = copyArr.length;
+        int count = 0;
+        boolean countNext;
+
+        do {
+            bufferSize = 0;
+            countNext = false;
+
+            for (int i = 0; i < length; ++i) {
+                VideoClip clip = copyArr[i];
+                if (clip.getEndTime() >= endTime) {
+                    if (minStartTime > clip.getStartTime()) {
+                        minStartTime = clip.getStartTime();
+                    }
+                    countNext = true;
+                } else {
+                    buffer[bufferSize++] = clip;
+                }
+            }
+
+            if (countNext) {
+                ++count;
+            } else {
+                return -1;
+            }
+
+            if (minStartTime == 0) {
+                break;
+            }
+
+
+            copyArr = buffer;
+            length = bufferSize;
+            endTime = minStartTime;
+            minStartTime = Integer.MAX_VALUE;
+
+        } while (true);
+
+
+        return count;
+
+
+        /*sortArrAscending(clips);
 
         if (clips[0].getStartTime() != 0) {
             return -1;
@@ -52,9 +112,9 @@ public class CodingMan {
             return -1;
         }
 
-        return requireClipsCount;
+        return requireClipsCount;*/
     }
-    public static void sortArrAscending(VideoClip[] clips) {
+    public static void sortArrDescending(VideoClip[] clips) {
         sortRecursive(clips, 0, clips.length - 1);
     }
     public static void sortRecursive(VideoClip[] clips, int left, int right) {
@@ -72,12 +132,12 @@ public class CodingMan {
             int startTime = clips[i].getStartTime();
             int endTime = clips[i].getEndTime();
 
-            if (startTime == rightStartTime) {
-                if (endTime < rightEndTime) {
+            if (endTime == rightEndTime) {
+                if (startTime < rightStartTime) {
                     swap(clips, i, left);
                     ++left;
                 }
-            } else if (startTime < rightStartTime) {
+            } else if (endTime > rightEndTime) {
                 swap(clips, i, left);
                 ++left;
             }
