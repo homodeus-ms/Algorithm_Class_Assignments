@@ -9,9 +9,9 @@ public class Program {
 
     public static void main(String[] args) {
 
-        basicTest();
+        //basicTest();
         test1();
-        test2();
+        //test2();
 
         System.out.println("No Assert");
     }
@@ -66,9 +66,11 @@ public class Program {
             };
 
             List<String> list = Project.findSchedule(tasks, false); // 요 경우에서 사이즈가 다름
-            //printList(list);
+            System.out.println(list.size());
+            printList(list);
             list = Project.findSchedule(tasks, true);
-            //printList(list);
+            System.out.println(list.size());
+            printList(list);
             assert (list != null);
         }
 
@@ -127,6 +129,7 @@ public class Program {
 
             assert (schedule.indexOf("C") < schedule.indexOf("D"));
             assert (schedule.indexOf("D") < schedule.indexOf("G"));
+
             assert (schedule.indexOf("G") < schedule.indexOf("H"));
         }
     }

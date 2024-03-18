@@ -12,10 +12,115 @@ import java.util.LinkedList;
 
 public class Project {
 
-    private static ArrayList<Task> starts = new ArrayList<>();
-    private static HashMap<String, ArrayList<Task>> next = new HashMap<>();
+    //private static ArrayList<Task> starts = new ArrayList<>();
+    //private static HashMap<String, ArrayList<Task>> next = new HashMap<>();
+    private static HashSet<String> visited = new HashSet<>();
+    private static HashSet<String> discovered = new HashSet<>();
 
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
+        visited.clear();
+        discovered.clear();
+
+        List<String> result = new LinkedList<>();
+        HashSet<Task> cycles = new HashSet<>();
+
+        for (Task task : tasks) {
+            getProcessExceptCycles(task, result, cycles);
+        }
+
+        if (includeMaintenance) {
+            discovered.clear();
+            Task cycleEntrance = null;
+            for (Task task : cycles) {
+                if (task.getPredecessors().size() > 1) {
+                    cycleEntrance = task;
+                    break;
+                }
+            }
+
+            assert (cycleEntrance != null);
+
+            getCycleToResult(cycleEntrance, result);
+        }
+
+        return result;
+    }
+    private static boolean getProcessExceptCycles(Task task, List<String> result, HashSet<Task> cycles) {
+        if (task.getPredecessors().isEmpty()) {
+            if (!visited.contains(task.getTitle())) {
+                String title = task.getTitle();
+                discovered.add(title);
+                visited.add(title);
+                result.add(title);
+            }
+
+            return true;
+        }
+        List<Task> pres = task.getPredecessors();
+        boolean isCycle = false;
+
+        if (visitedAllPreNodes(pres)) {
+            if (!visited.contains(task.getTitle())) {
+                String title = task.getTitle();
+                discovered.add(title);
+                visited.add(title);
+                result.add(title);
+            }
+            return true;
+        } else {
+            for (Task t : pres) {
+                if (discovered.contains(t.getTitle())) {
+                    if (!visited.contains(t.getTitle())) {
+                        isCycle = true;
+                    }
+                } else {
+                    discovered.add(t.getTitle());
+                    if (!getProcessExceptCycles(t, result, cycles)) {
+                        cycles.add(t);
+                        return false;
+                    }
+                }
+            }
+
+        }
+        if (!visited.contains(task.getTitle()) && !isCycle) {
+            String title = task.getTitle();
+            discovered.add(title);
+            visited.add(title);
+            result.add(title);
+        }
+
+        return false;
+    }
+
+    private static void getCycleToResult(Task task, List<String> result) {
+        if (discovered.contains(task.getTitle())) {
+            return;
+        }
+
+        discovered.add(task.getTitle());
+        for (Task t : task.getPredecessors()) {
+            if (visited.contains(t.getTitle())) {
+                continue;
+            }
+            getCycleToResult(t, result);
+            if (!visited.contains(t.getTitle())) {
+                result.add(t.getTitle());
+                visited.add(t.getTitle());
+            }
+        }
+    }
+
+    private static boolean visitedAllPreNodes(List<Task> pres) {
+        for (Task t : pres) {
+            if (!visited.contains(t.getTitle())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
         starts.clear();
         next.clear();
 
@@ -77,9 +182,9 @@ public class Project {
         //printList(list);
 
         return result;
-    }
+    }*/
 
-    private static void setNext(final Task[] tasks) {
+    /*private static void setNext(final Task[] tasks) {
         for (Task task : tasks) {
             if (!next.containsKey(task.getTitle())) {
                 next.put(task.getTitle(), new ArrayList<>());
@@ -110,7 +215,7 @@ public class Project {
             }
         }
 
-    }
+    }*/
     /*public static void printStarts() {
         for (Task t : starts) {
             System.out.printf("%s ", t.getTitle());
