@@ -10,8 +10,8 @@ public class Program {
     public static void main(String[] args) {
 
         //basicTest();
-        test1();
-        //test2();
+        //test1();
+        test2();
 
         System.out.println("No Assert");
     }

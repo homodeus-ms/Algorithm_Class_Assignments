@@ -38,9 +38,9 @@ public class Project {
                 }
             }
 
-            assert (cycleEntrance != null);
-
-            getCycleToResult(cycleEntrance, result);
+            if (cycleEntrance != null) {
+                getCycleToResult(cycleEntrance, result);
+            }
         }
 
         return result;
