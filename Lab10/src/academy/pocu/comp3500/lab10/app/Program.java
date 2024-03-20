@@ -10,10 +10,77 @@ public class Program {
     public static void main(String[] args) {
 
         //basicTest();
+        //basicTest();
         //test1();
-        test2();
+        //test3();
+        //test2();
+        test4();
 
         System.out.println("No Assert");
+    }
+    private static void test4() {
+        Task t1 = new Task("1", 1);
+        Task t2 = new Task("2", 1);
+        Task t3 = new Task("3", 1);
+        Task t4 = new Task("4", 1);
+        Task t5 = new Task("5", 1);
+        Task t6 = new Task("6", 1);
+        Task t7 = new Task("7", 1);
+        Task t8 = new Task("8", 1);
+        Task t9 = new Task("9", 1);
+        Task t10 = new Task("10", 1);
+
+        t2.addPredecessor(t1);
+        t3.addPredecessor(t5);
+        t3.addPredecessor(t2);
+        t4.addPredecessor(t8);
+        t4.addPredecessor(t3);
+        t5.addPredecessor(t4);
+        t6.addPredecessor(t2);
+        t7.addPredecessor(t2);
+
+        /*t7.addPredecessor(t6);
+        t8.addPredecessor(t7);
+        t9.addPredecessor(t8);
+        t10.addPredecessor(t9);*/
+
+        Task[] tasks = new Task[]{
+                t1, t2, t3, t4, t5, t6, t7, t8
+        };
+
+        List<String> result = Project.findSchedule(tasks, false);
+        printList(result);
+        result = Project.findSchedule(tasks, true);
+        printList(result);
+    }
+    private static void test3() {
+        Task t1 = new Task("1", 1);
+        Task t2 = new Task("2", 1);
+        Task t3 = new Task("3", 1);
+        Task t4 = new Task("4", 1);
+        Task t5 = new Task("5", 1);
+        Task t6 = new Task("6", 1);
+        Task t7 = new Task("7", 1);
+        Task t8 = new Task("8", 1);
+        Task t9 = new Task("9", 1);
+        Task t10 = new Task("10", 1);
+
+        t2.addPredecessor(t1);
+        t3.addPredecessor(t2);
+        t4.addPredecessor(t3);
+        t5.addPredecessor(t4);
+        t6.addPredecessor(t5);
+        t7.addPredecessor(t6);
+        t8.addPredecessor(t7);
+        t9.addPredecessor(t8);
+        t10.addPredecessor(t9);
+
+        Task[] tasks = new Task[]{
+                t10, t9, t8, t7, t6, t5, t4, t3, t2, t1
+        };
+
+        List<String> result = Project.findSchedule(tasks, false);
+        printList(result);
     }
     private static void test2() {
         Task a = new Task("A", 1);
@@ -112,12 +179,16 @@ public class Program {
             assert (schedule.get(3).equals("E"));
             assert (schedule.get(4).equals("F"));
             assert (schedule.get(5).equals("I"));
+
+            printList(schedule);
         }
 
         {
             Task[] tasks = createTasks();
 
             List<String> schedule = Project.findSchedule(tasks, true);
+
+            printList(schedule);
 
             assert (schedule.size() == 9);
             assert (schedule.get(0).equals("A"));
