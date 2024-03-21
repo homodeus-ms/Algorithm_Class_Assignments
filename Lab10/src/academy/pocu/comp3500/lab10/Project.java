@@ -129,6 +129,7 @@ public class Project {
     }
     private static void getTaskOrderRecursive(Task task) {
         if (task.getPredecessors().isEmpty() || hasVisitedAllPres(task)) {
+
             result.add(task.getTitle());
             orderedTask.add(task);
             visited.add(task.getTitle());
@@ -137,11 +138,15 @@ public class Project {
 
         List<Task> pres = task.getPredecessors();
         for (Task pre : pres) {
-            visited.add(pre.getTitle());
-            getTaskOrderRecursive(pre);
+            if (!visited.contains(pre.getTitle())) {
+                visited.add(pre.getTitle());
+                getTaskOrderRecursive(pre);
+            }
+
             if (hasVisitedAllPres(task)) {
                 result.add(task.getTitle());
                 orderedTask.add(task);
+
             }
             /*result.add(task.getTitle());
             orderedTask.add(task);*/
