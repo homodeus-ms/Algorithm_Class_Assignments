@@ -10,10 +10,10 @@ public class Program {
     public static void main(String[] args) {
 
         //basicTest();
-        //basicTest();
-        //test1();
-        //test3();
-        //test2();
+        basicTest();
+        test1();
+        test3();
+        test2();
         test4();
 
         System.out.println("No Assert");
@@ -31,13 +31,11 @@ public class Program {
         Task t10 = new Task("10", 1);
 
         t2.addPredecessor(t1);
-        t3.addPredecessor(t5);
+        t2.addPredecessor(t4);
         t3.addPredecessor(t2);
-        t4.addPredecessor(t8);
         t4.addPredecessor(t3);
-        t5.addPredecessor(t4);
-        t6.addPredecessor(t2);
-        t7.addPredecessor(t2);
+        t5.addPredecessor(t2);
+
 
         /*t7.addPredecessor(t6);
         t8.addPredecessor(t7);
@@ -45,7 +43,7 @@ public class Program {
         t10.addPredecessor(t9);*/
 
         Task[] tasks = new Task[]{
-                t1, t2, t3, t4, t5, t6, t7, t8
+                t1, t2, t3, t4, t5
         };
 
         List<String> result = Project.findSchedule(tasks, false);
@@ -133,12 +131,12 @@ public class Program {
             };
 
             List<String> list = Project.findSchedule(tasks, false); // 요 경우에서 사이즈가 다름
-            System.out.println(list.size());
+            /*System.out.println(list.size());
             printList(list);
             list = Project.findSchedule(tasks, true);
             System.out.println(list.size());
             printList(list);
-            assert (list != null);
+            assert (list != null);*/
         }
 
     }

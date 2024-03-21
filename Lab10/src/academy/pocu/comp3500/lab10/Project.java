@@ -6,24 +6,38 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.LinkedList;
 
 
 public class Project {
 
-    private static ArrayList<Task> starts = new ArrayList<>();
-    private static HashMap<String, ArrayList<Task>> next = new HashMap<>();
-    //private static HashSet<String> visited;
-    //private static HashSet<String> discovered;
+    private static LinkedList<String> result;
+    private static ArrayList<Task> starts;
+    private static ArrayList<Task> ends;
+    private static LinkedList<Task> orderedTask;
+    private static HashMap<Task, ArrayList<Task>> nextMap;
+    private static HashSet<String> visited;
 
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
-        starts.clear();
-        next.clear();
 
-        setNext(tasks);
+        result = new LinkedList<>();
+        starts = new ArrayList<>();
+        ends = new ArrayList<>();
+        nextMap = new HashMap<>();
+        visited = new HashSet<>();
+        orderedTask = new LinkedList<>();
 
-        HashSet<Task> visited = new HashSet<>();
+        getNextMap(tasks);
+        getEndNode();
+        getTaskOrderExceptCycle(ends.get(0));
+        if (includeMaintenance) {
+            getCycles();
+        }
+
+        return result;
+        /*HashSet<Task> visited = new HashSet<>();
         HashSet<Task> processed = new HashSet<>();
         Stack<Task> stack = new Stack<>();
         LinkedList<Task> list = new LinkedList<>();
@@ -76,203 +90,99 @@ public class Project {
             result.add(t.getTitle());
         }
 
-        //printList(list);
 
-        return result;
+        return result;*/
     }
-
-    private static void setNext(final Task[] tasks) {
+    private static void getNextMap(final Task[] tasks) {
         for (Task task : tasks) {
-
-            if(!next.containsKey(task.getTitle())) {
-                next.put(task.getTitle(), new ArrayList<>());
+            if (!nextMap.containsKey(task)) {
+                nextMap.put(task, new ArrayList<>());
             }
 
             List<Task> pres = task.getPredecessors();
-
             if (pres.isEmpty()) {
                 starts.add(task);
             }
 
             for (Task pre : pres) {
-                if (!next.containsKey(pre.getTitle())) {
-                    ArrayList<Task> nexts = new ArrayList<>();
-                    nexts.add(task);
-                    next.put(pre.getTitle(), nexts);
+                if (!nextMap.containsKey(pre)) {
+                    nextMap.put(pre, new ArrayList<>());
+                    nextMap.get(pre).add(task);
                 } else {
-                    next.get(pre.getTitle()).add(task);
+                    nextMap.get(pre).add(task);
                 }
             }
         }
-
-        /*for (Task task : tasks) {
-            if (!next.containsKey(task.getTitle())) {
-                next.put(task.getTitle(), new ArrayList<>());
-            }
-
-            List<Task> pres = task.getPredecessors();
-            if (pres.isEmpty()) {
-                starts.add(task);
-            }
-
-            for (Task t : pres) {
-                if (t.getPredecessors().isEmpty()) {
-                    if (!next.containsKey(t.getTitle())) {
-                        next.put(t.getTitle(), new ArrayList<>());
-
-                    }
-
-                    next.get(t.getTitle()).add(task);
-
-                } else {
-                    if (next.containsKey(t.getTitle())) {
-                        next.get(t.getTitle()).add(task);
-                    } else {
-                        next.put(t.getTitle(), new ArrayList<>());
-                        next.get(t.getTitle()).add(task);
-                    }
-                }
-            }
-        }*/
     }
-
-
-    /*public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
-        visited = new HashSet<>();
-        discovered = new HashSet<>();
-
-        List<String> result = new LinkedList<>();
-        HashSet<Task> cycles = new HashSet<>();
-
-        LinkedList<Task> starts = new LinkedList<>();
-        for (Task t : tasks) {
-            if (t.getPredecessors().isEmpty()) {
-                starts.addFirst(t);
-            } else {
-                starts.add(t);
+    private static void getEndNode() {
+        for (Task key : nextMap.keySet()) {
+            if (nextMap.get(key).isEmpty()) {
+                ends.add(key);
             }
         }
+    }
+    private static void getTaskOrderExceptCycle(Task start) {
 
-        for (Task task : starts) {
-            getProcessExceptCycles(task, result, cycles);
-        }
+        Stack<Task> stack = new Stack<>();
+        stack.add(start);
+        visited.add(start.getTitle());
 
-        if (includeMaintenance) {
-            discovered.clear();
-            Task cycleEntrance = null;
-            for (Task task : cycles) {
-                if (task.getPredecessors().size() > 1) {
-                    cycleEntrance = task;
-                    break;
+        while (!stack.isEmpty()) {
+            Task pop = stack.pop();
+            List<Task> pres = pop.getPredecessors();
+            result.addFirst(pop.getTitle());
+            orderedTask.addFirst(pop);
+
+            for (Task pre : pres) {
+                if (!visited.contains(pre.getTitle())) {
+                    stack.add(pre);
+                    visited.add(pre.getTitle());
                 }
             }
-
-            if (cycleEntrance != null) {
-                getCycleToResult(cycleEntrance, result);
-            }
         }
-
-        return result;
     }
-    private static boolean getProcessExceptCycles(Task task,
-                                                  List<String> result,
-                                                  HashSet<Task> cycles) {
-        if (task.getPredecessors().isEmpty()) {
-            if (!visited.contains(task.getTitle())) {
-                String title = task.getTitle();
-                discovered.add(title);
-                visited.add(title);
-                result.add(title);
-            }
+    private static void getCycles() {
 
-            return true;
-        }
-        List<Task> pres = task.getPredecessors();
-        boolean isCycle = false;
+        int currResultSize = result.size();
+        for (int i = 0; i < currResultSize; ++i) {
+            Task start = orderedTask.get(i);
+            List<Task> nexts = nextMap.get(start);
 
-        if (visitedAllPreNodes(pres)) {
-            if (!visited.contains(task.getTitle())) {
-                String title = task.getTitle();
-                discovered.add(title);
-                visited.add(title);
-                result.add(title);
-            }
-            return true;
-        } else {
-            for (Task t : pres) {
-                if (discovered.contains(t.getTitle())) {
-                    if (!visited.contains(t.getTitle())) {
-                        isCycle = true;
-                    }
-                } else {
-                    discovered.add(t.getTitle());
-                    if (!getProcessExceptCycles(t, result, cycles)) {
-                        cycles.add(t);
-                        return false;
-                    }
+            for (Task next : nexts) {
+                if (!visited.contains(next.getTitle())) {
+                    getCycleRecursive(next);
                 }
             }
-
         }
-        if (!visited.contains(task.getTitle()) && !isCycle) {
-            String title = task.getTitle();
-            discovered.add(title);
-            visited.add(title);
-            result.add(title);
-        }
-
-        return false;
     }
-
-    private static void getCycleToResult(Task task, List<String> result) {
-        if (discovered.contains(task.getTitle())) {
+    private static void getCycleRecursive(Task task) {
+        if (visited.contains(task.getTitle())) {
             return;
         }
+        result.add(task.getTitle());
+        visited.add(task.getTitle());
 
-        discovered.add(task.getTitle());
-        for (Task t : task.getPredecessors()) {
-            if (visited.contains(t.getTitle())) {
-                continue;
-            }
-            getCycleToResult(t, result);
-            if (!visited.contains(t.getTitle())) {
-                result.add(t.getTitle());
-                visited.add(t.getTitle());
-            }
+        for (Task next : nextMap.get(task)) {
+            getCycleRecursive(next);
         }
     }
 
-    private static boolean visitedAllPreNodes(List<Task> pres) {
-        for (Task t : pres) {
-            if (!visited.contains(t.getTitle())) {
-                return false;
-            }
-        }
-        return true;
-    }*/
 
-
-    /*public static void printStarts() {
-        for (Task t : starts) {
+    private static void printList(List<Task> tasks) {
+        for (Task t : tasks) {
             System.out.printf("%s ", t.getTitle());
         }
         System.out.println();
     }
-    public static void printNexts() {
-        for (String s : next.keySet()) {
-            ArrayList<Task> values = next.get(s);
-            System.out.printf("%s -> ", s);
-            for (Task t : values) {
-                System.out.printf("%s, ", t.getTitle());
+    private static void printMap() {
+        for (Task task : nextMap.keySet()) {
+            System.out.println(task.getTitle());
+            List<Task> nexts = nextMap.get(task);
+            for (Task next : nexts) {
+                System.out.printf("    - %s\n", next.getTitle());
             }
             System.out.println();
         }
-        System.out.println();
     }
-    public static void printList(LinkedList<Task> list) {
-        for (Task t : list) {
-            System.out.printf("%s ", t.getTitle());
-        }
-        System.out.println();
-    }*/
+
 }
