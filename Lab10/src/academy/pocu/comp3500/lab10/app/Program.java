@@ -15,8 +15,36 @@ public class Program {
         test3();
         test2();
         test4();
+        test5();
 
         System.out.println("No Assert");
+    }
+    private static void test5() {
+        Task t0 = new Task("0", 1);
+        Task t1 = new Task("1", 1);
+        Task t2 = new Task("2", 1);
+        Task t3 = new Task("3", 1);
+        Task t4 = new Task("4", 1);
+        Task t5 = new Task("5", 1);
+        Task t6 = new Task("6", 1);
+
+        t1.addPredecessor(t0);
+        t2.addPredecessor(t1);
+        t3.addPredecessor(t2);
+
+        t5.addPredecessor(t1);
+        t5.addPredecessor(t4);
+        t6.addPredecessor(t3);
+        t6.addPredecessor(t5);
+
+
+        Task[] tasks = new Task[]{
+                t0, t1, t2, t3, t4, t5, t6
+        };
+
+        List<String> result = Project.findSchedule(tasks, false);
+        System.out.println(result.size());
+        printList(result);
     }
     private static void test4() {
         Task t1 = new Task("1", 1);

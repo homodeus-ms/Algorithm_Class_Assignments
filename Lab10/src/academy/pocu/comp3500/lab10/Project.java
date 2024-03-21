@@ -31,6 +31,7 @@ public class Project {
 
         getNextMap(tasks);
         getEndNode();
+
         getTaskOrderExceptCycle(ends.get(0));
         if (includeMaintenance) {
             getCycles();
@@ -122,24 +123,38 @@ public class Project {
         }
     }
     private static void getTaskOrderExceptCycle(Task start) {
-
-        Stack<Task> stack = new Stack<>();
-        stack.add(start);
         visited.add(start.getTitle());
+        getTaskOrderRecursive(start);
 
-        while (!stack.isEmpty()) {
-            Task pop = stack.pop();
-            List<Task> pres = pop.getPredecessors();
-            result.addFirst(pop.getTitle());
-            orderedTask.addFirst(pop);
+    }
+    private static void getTaskOrderRecursive(Task task) {
+        if (task.getPredecessors().isEmpty() || hasVisitedAllPres(task)) {
+            result.add(task.getTitle());
+            orderedTask.add(task);
+            visited.add(task.getTitle());
+            return;
+        }
 
-            for (Task pre : pres) {
-                if (!visited.contains(pre.getTitle())) {
-                    stack.add(pre);
-                    visited.add(pre.getTitle());
-                }
+        List<Task> pres = task.getPredecessors();
+        for (Task pre : pres) {
+            visited.add(pre.getTitle());
+            getTaskOrderRecursive(pre);
+            if (hasVisitedAllPres(task)) {
+                result.add(task.getTitle());
+                orderedTask.add(task);
+            }
+            /*result.add(task.getTitle());
+            orderedTask.add(task);*/
+        }
+    }
+    private static boolean hasVisitedAllPres(Task task) {
+        List<Task> pres = task.getPredecessors();
+        for (Task pre : pres) {
+            if (!visited.contains(pre.getTitle())) {
+                return false;
             }
         }
+        return true;
     }
     private static void getCycles() {
 
