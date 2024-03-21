@@ -12,12 +12,35 @@ public class Program {
         //basicTest();
         basicTest();
         test1();
-        test3();
-        test2();
-        test4();
-        test5();
+        //test3();
+        //test2();
+        //test4();
+        //test5();
+        //test6();
 
         System.out.println("No Assert");
+    }
+    private static void test6() {
+        Task t1 = new Task("1", 1);
+        Task t2 = new Task("2", 1);
+        Task t3 = new Task("3", 1);
+        Task t4 = new Task("4", 1);
+        Task t5 = new Task("5", 1);
+
+        t5.addPredecessor(t3);
+        t4.addPredecessor(t3);
+        t3.addPredecessor(t2);
+        t2.addPredecessor(t1);
+
+        Task[] tasks = {
+                t1, t2, t3, t4, t5
+        };
+
+        List<String> result = Project.findSchedule(tasks, false);
+
+        printList(result);
+
+
     }
     private static void test5() {
         Task t0 = new Task("0", 1);
@@ -159,12 +182,12 @@ public class Program {
             };
 
             List<String> list = Project.findSchedule(tasks, false); // 요 경우에서 사이즈가 다름
-            /*System.out.println(list.size());
+            System.out.println(list.size());
             printList(list);
             list = Project.findSchedule(tasks, true);
             System.out.println(list.size());
             printList(list);
-            assert (list != null);*/
+            assert (list != null);
         }
 
     }

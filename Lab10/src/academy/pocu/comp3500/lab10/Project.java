@@ -32,7 +32,10 @@ public class Project {
         getNextMap(tasks);
         getEndNode();
 
-        getTaskOrderExceptCycle(ends.get(0));
+        for (Task start : ends) {
+            getTaskOrderExceptCycle(start);
+        }
+
         if (includeMaintenance) {
             getCycles();
         }
