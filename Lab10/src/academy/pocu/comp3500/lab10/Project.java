@@ -29,11 +29,17 @@ public class Project {
         visited = new HashSet<>();
         orderedTask = new LinkedList<>();
 
-        getNextMap(tasks);
-        getEndNode();
+        initNextMap(tasks);
+        getEndTasks();
 
         for (Task start : ends) {
             getTaskOrderExceptCycle(start);
+        }
+
+        for (Task start : starts) {
+            if (!visited.contains(start.getTitle())) {
+                getTaskOrderExceptCycle(start);
+            }
         }
 
         if (includeMaintenance) {
@@ -41,69 +47,15 @@ public class Project {
         }
 
         return result;
-        /*HashSet<Task> visited = new HashSet<>();
-        HashSet<Task> processed = new HashSet<>();
-        Stack<Task> stack = new Stack<>();
-        LinkedList<Task> list = new LinkedList<>();
-
-
-        for (Task start : starts) {
-            visited.add(start);
-            stack.add(start);
-
-            while (!stack.isEmpty()) {
-                Task pop = stack.pop();
-                ArrayList<Task> nexts = next.get(pop.getTitle());
-                list.add(pop);
-                processed.add(pop);
-
-                for (Task nextT : nexts) {
-                    if (!visited.contains(nextT)) {
-                        if (processed.containsAll(nextT.getPredecessors())) {
-                            visited.add(nextT);
-                            stack.add(nextT);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (includeMaintenance) {
-            int listSize = list.size();
-            for (int i = listSize - 1; i >= 0; --i) {
-
-                stack.add(list.get(i));
-
-                while (!stack.isEmpty()) {
-                    Task pop = stack.pop();
-                    ArrayList<Task> nexts = next.get(pop.getTitle());
-
-                    for (Task nextT : nexts) {
-                        if (!visited.contains(nextT)) {
-                            list.add(nextT);
-                            visited.add(nextT);
-                            stack.add(nextT);
-                        }
-                    }
-                }
-            }
-        }
-
-        List<String> result = new ArrayList<>(list.size());
-        for (Task t : list) {
-            result.add(t.getTitle());
-        }
-
-
-        return result;*/
     }
-    private static void getNextMap(final Task[] tasks) {
+    private static void initNextMap(final Task[] tasks) {
         for (Task task : tasks) {
             if (!nextMap.containsKey(task)) {
                 nextMap.put(task, new ArrayList<>());
             }
 
             List<Task> pres = task.getPredecessors();
+
             if (pres.isEmpty()) {
                 starts.add(task);
             }
@@ -118,13 +70,14 @@ public class Project {
             }
         }
     }
-    private static void getEndNode() {
+    private static void getEndTasks() {
         for (Task key : nextMap.keySet()) {
             if (nextMap.get(key).isEmpty()) {
                 ends.add(key);
             }
         }
     }
+
     private static void getTaskOrderExceptCycle(Task start) {
         visited.add(start.getTitle());
         getTaskOrderRecursive(start);
@@ -140,6 +93,7 @@ public class Project {
         }
 
         List<Task> pres = task.getPredecessors();
+
         for (Task pre : pres) {
             if (!visited.contains(pre.getTitle())) {
                 visited.add(pre.getTitle());
@@ -149,10 +103,7 @@ public class Project {
             if (hasVisitedAllPres(task)) {
                 result.add(task.getTitle());
                 orderedTask.add(task);
-
             }
-            /*result.add(task.getTitle());
-            orderedTask.add(task);*/
         }
     }
     private static boolean hasVisitedAllPres(Task task) {
