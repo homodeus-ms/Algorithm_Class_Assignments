@@ -77,18 +77,18 @@ public class Project {
     }
 
     private static void getTaskOrderExceptCycle(Task start) {
-        visited.add(start.getTitle());
+        //visited.add(start.getTitle());
         getTaskOrderRecursive(start);
 
     }
     private static void getTaskOrderRecursive(Task task) {
-        if (task.getPredecessors().isEmpty() || hasVisitedAllPres(task)) {
+        /*if (task.getPredecessors().isEmpty() || hasVisitedAllPres(task)) {
 
             result.add(task.getTitle());
             orderedTask.add(task);
             visited.add(task.getTitle());
             return;
-        }
+        }*/
 
         List<Task> pres = task.getPredecessors();
 
@@ -97,14 +97,10 @@ public class Project {
                 visited.add(pre.getTitle());
                 getTaskOrderRecursive(pre);
             }
-
-            /*if (hasVisitedAllPres(task)) {
-                result.add(task.getTitle());
-                orderedTask.add(task);
-            }*/
         }
         result.add(task.getTitle());
         orderedTask.add(task);
+        visited.add(task.getTitle());
     }
     private static boolean hasVisitedAllPres(Task task) {
         List<Task> pres = task.getPredecessors();

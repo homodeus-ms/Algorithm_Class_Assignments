@@ -12,7 +12,7 @@ public class Program {
 
         //basicTest();
         basicTest();
-        test1();
+        //test1();
         //test3();
         //test2();
         //test4();
@@ -21,7 +21,7 @@ public class Program {
         //test7();
         //test8();
         //test9();
-        test10();
+        //test10();
 
         System.out.println("No Assert");
     }
@@ -50,7 +50,7 @@ public class Program {
         Task[] tasks = new Task[]{
                 t4, t3, t2, t1
         };
-        //shuffleTasks(tasks);
+        shuffleTasks(tasks);
 
         List<String> result = Project.findSchedule(tasks, false);
         printList(result);
@@ -397,6 +397,7 @@ public class Program {
 
         {
             Task[] tasks = createTasks();
+            shuffleTasks(tasks);
 
             List<String> schedule = Project.findSchedule(tasks, false);
 
@@ -413,7 +414,7 @@ public class Program {
 
         {
             Task[] tasks = createTasks();
-
+            shuffleTasks(tasks);
             List<String> schedule = Project.findSchedule(tasks, true);
 
             printList(schedule);
