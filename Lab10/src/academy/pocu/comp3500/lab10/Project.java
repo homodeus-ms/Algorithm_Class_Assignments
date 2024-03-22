@@ -63,10 +63,8 @@ public class Project {
             for (Task pre : pres) {
                 if (!nextMap.containsKey(pre)) {
                     nextMap.put(pre, new ArrayList<>());
-                    nextMap.get(pre).add(task);
-                } else {
-                    nextMap.get(pre).add(task);
                 }
+                nextMap.get(pre).add(task);
             }
         }
     }
@@ -100,11 +98,13 @@ public class Project {
                 getTaskOrderRecursive(pre);
             }
 
-            if (hasVisitedAllPres(task)) {
+            /*if (hasVisitedAllPres(task)) {
                 result.add(task.getTitle());
                 orderedTask.add(task);
-            }
+            }*/
         }
+        result.add(task.getTitle());
+        orderedTask.add(task);
     }
     private static boolean hasVisitedAllPres(Task task) {
         List<Task> pres = task.getPredecessors();

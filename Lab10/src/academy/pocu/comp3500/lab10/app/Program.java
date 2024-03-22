@@ -11,18 +11,51 @@ public class Program {
     public static void main(String[] args) {
 
         //basicTest();
-        //basicTest();
-        //test1();
+        basicTest();
+        test1();
         //test3();
         //test2();
         //test4();
         //test5();
         //test6();
-        test7();
+        //test7();
         //test8();
         //test9();
+        test10();
 
         System.out.println("No Assert");
+    }
+    private static void test10() {
+        Task t1 = new Task("1", 1);
+        Task t2 = new Task("2", 1);
+        Task t3 = new Task("3", 1);
+        Task t4 = new Task("4", 1);
+        Task t5 = new Task("5", 1);
+        Task t6 = new Task("6", 1);
+        Task t7 = new Task("7", 1);
+        Task t8 = new Task("8", 1);
+        Task t9 = new Task("9", 1);
+        Task t10 = new Task("10", 1);
+        Task t11 = new Task("11", 1);
+        Task t12 = new Task("12", 1);
+        Task t13 = new Task("13", 1);
+        Task t14 = new Task("14", 1);
+        Task t15 = new Task("15", 1);
+
+        t2.addPredecessor(t1);
+        t3.addPredecessor(t1);
+        t3.addPredecessor(t4);
+        t1.addPredecessor(t4);
+
+        Task[] tasks = new Task[]{
+                t4, t3, t2, t1
+        };
+        //shuffleTasks(tasks);
+
+        List<String> result = Project.findSchedule(tasks, false);
+        printList(result);
+        result = Project.findSchedule(tasks, true);
+        printList(result);
     }
     private static void test9() {
         Task t1 = new Task("1", 1);
@@ -124,6 +157,10 @@ public class Program {
         Task t9 = new Task("9", 1);
         Task t10 = new Task("10", 1);
         Task t11 = new Task("11", 1);
+        Task t12 = new Task("12", 1);
+        Task t13 = new Task("13", 1);
+        Task t14 = new Task("14", 1);
+        Task t15 = new Task("15", 1);
 
         t2.addPredecessor(t1);
         t3.addPredecessor(t2);
@@ -136,7 +173,12 @@ public class Program {
         t8.addPredecessor(t7);
         t9.addPredecessor(t8);
         t10.addPredecessor(t6);
-        t4.addPredecessor(t11);
+        t2.addPredecessor(t11);
+        t12.addPredecessor(t11);
+        t13.addPredecessor(t12);
+        t13.addPredecessor(t15);
+        t14.addPredecessor(t13);
+        t15.addPredecessor(t14);
 
 
 
@@ -146,7 +188,7 @@ public class Program {
         t10.addPredecessor(t9);*/
 
         Task[] tasks = new Task[]{
-                t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11
+                t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15
         };
         //shuffleTasks(tasks);
 
