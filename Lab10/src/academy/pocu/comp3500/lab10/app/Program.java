@@ -12,12 +12,12 @@ public class Program {
 
         //basicTest();
         basicTest();
-        //test1();
+        test1();
         //test3();
         //test2();
         //test4();
         //test5();
-        //test6();
+        test6();
         //test7();
         //test8();
         //test9();
@@ -44,11 +44,15 @@ public class Program {
 
         t2.addPredecessor(t1);
         t3.addPredecessor(t1);
-        t3.addPredecessor(t4);
+        t4.addPredecessor(t3);
         t1.addPredecessor(t4);
+        t4.addPredecessor(t2);
+        t5.addPredecessor(t1);
+        t2.addPredecessor(t5);
+        t1.addPredecessor(t6);
 
         Task[] tasks = new Task[]{
-                t4, t3, t2, t1
+                t4, t3, t2, t1, t5, t6
         };
         shuffleTasks(tasks);
 
@@ -203,17 +207,31 @@ public class Program {
         Task t3 = new Task("3", 1);
         Task t4 = new Task("4", 1);
         Task t5 = new Task("5", 1);
+        Task t6 = new Task("6", 1);
+        Task t7 = new Task("7", 1);
+        Task t8 = new Task("8", 1);
 
-        t5.addPredecessor(t3);
-        t4.addPredecessor(t3);
-        t3.addPredecessor(t2);
         t2.addPredecessor(t1);
+        t3.addPredecessor(t1);
+        t3.addPredecessor(t5);
+        t4.addPredecessor(t3);
+        t5.addPredecessor(t4);
+        t6.addPredecessor(t2);
+        t6.addPredecessor(t8);
+        t7.addPredecessor(t6);
+        t8.addPredecessor(t7);
+
 
         Task[] tasks = {
-                t1, t2, t3, t4, t5
+                t1, t2, t3, t4, t5, t6, t7, t8
         };
+        shuffleTasks(tasks);
 
         List<String> result = Project.findSchedule(tasks, false);
+
+        printList(result);
+
+        result = Project.findSchedule(tasks, true);
 
         printList(result);
 
@@ -353,12 +371,16 @@ public class Program {
             t10.addPredecessor(t12);
             t14.addPredecessor(t13);
             t10.addPredecessor(t14);
-            t13.addPredecessor(t12);
+            //t13.addPredecessor(t12);
 
             Task[] tasks = new Task[]{
                     t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14
             };
             shuffleTasks(tasks);
+
+            /*Task[] tasks = new Task[]{
+                    t1, t2, t5, t13, t8, t7, t3, t10, t9, t12, t6, t14, t11, t4
+            };*/
 
             List<String> list = Project.findSchedule(tasks, false); // 요 경우에서 사이즈가 다름
             System.out.println(list.size());

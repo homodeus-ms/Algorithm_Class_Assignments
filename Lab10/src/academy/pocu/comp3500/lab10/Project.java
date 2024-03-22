@@ -29,25 +29,69 @@ public class Project {
         visited = new HashSet<>();
         orderedTask = new LinkedList<>();
 
+        LinkedList<Task> firstDfs = new LinkedList<>();
         initNextMap(tasks);
-        getEndTasks();
 
-        for (Task start : ends) {
-            getTaskOrderExceptCycle(start);
+        for (Task task : starts) {
+            visited.add(task.getTitle());
+            searchDepthFirst1(task, firstDfs);
         }
 
-        for (Task start : starts) {
-            if (!visited.contains(start.getTitle())) {
-                getTaskOrderExceptCycle(start);
+        LinkedList<Task> normal = new LinkedList<>();
+        LinkedList<Task> cycles = new LinkedList<>();
+        visited.clear();
+
+
+        for (Task task : firstDfs) {
+            if (!visited.contains(task.getTitle())) {
+                seperate(task, cycles, normal);
             }
         }
 
         if (includeMaintenance) {
-            getCycles();
+            for (Task task : cycles) {
+                result.add(task.getTitle());
+            }
         }
 
         return result;
     }
+    private static void searchDepthFirst1(Task task, LinkedList<Task> dfsList) {
+        List<Task> nexts = nextMap.get(task);
+
+        for (Task next : nexts) {
+            if (!visited.contains(next.getTitle())) {
+                visited.add(next.getTitle());
+                searchDepthFirst1(next, dfsList);
+            }
+        }
+        dfsList.addFirst(task);
+    }
+    private static void seperate(Task task, LinkedList<Task> cycles, LinkedList<Task> normal) {
+        List<Task> pres = task.getPredecessors();
+
+        if (!pres.isEmpty() && !hasVisitedAllPres(task)) {
+            visited.add(task.getTitle());
+            putCycles(task, cycles);
+        } else {
+            result.add(task.getTitle());
+            visited.add(task.getTitle());
+        }
+
+    }
+    private static void putCycles(Task task, LinkedList<Task> cycles) {
+
+        List<Task> nexts = nextMap.get(task);
+        for (Task next : nexts) {
+            if (!visited.contains(next.getTitle())) {
+                visited.add(next.getTitle());
+                putCycles(next, cycles);
+            }
+        }
+        cycles.addFirst(task);
+    }
+
+
     private static void initNextMap(final Task[] tasks) {
         for (Task task : tasks) {
             if (!nextMap.containsKey(task)) {
@@ -77,18 +121,10 @@ public class Project {
     }
 
     private static void getTaskOrderExceptCycle(Task start) {
-        //visited.add(start.getTitle());
         getTaskOrderRecursive(start);
 
     }
     private static void getTaskOrderRecursive(Task task) {
-        /*if (task.getPredecessors().isEmpty() || hasVisitedAllPres(task)) {
-
-            result.add(task.getTitle());
-            orderedTask.add(task);
-            visited.add(task.getTitle());
-            return;
-        }*/
 
         List<Task> pres = task.getPredecessors();
 
