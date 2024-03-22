@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.LinkedList;
 
 
@@ -24,10 +22,10 @@ public class Project {
 
         result = new LinkedList<>();
         starts = new ArrayList<>();
-        ends = new ArrayList<>();
+        //ends = new ArrayList<>();
         nextMap = new HashMap<>();
         visited = new HashSet<>();
-        orderedTask = new LinkedList<>();
+        //orderedTask = new LinkedList<>();
 
         LinkedList<Task> firstDfs = new LinkedList<>();
         initNextMap(tasks);
@@ -44,7 +42,7 @@ public class Project {
 
         for (Task task : firstDfs) {
             if (!visited.contains(task.getTitle())) {
-                seperate(task, cycles, normal);
+                seperate(task, cycles);
             }
         }
 
@@ -67,7 +65,7 @@ public class Project {
         }
         dfsList.addFirst(task);
     }
-    private static void seperate(Task task, LinkedList<Task> cycles, LinkedList<Task> normal) {
+    private static void seperate(Task task, LinkedList<Task> cycles) {
         List<Task> pres = task.getPredecessors();
 
         if (!pres.isEmpty() && !hasVisitedAllPres(task)) {
@@ -112,32 +110,8 @@ public class Project {
             }
         }
     }
-    private static void getEndTasks() {
-        for (Task key : nextMap.keySet()) {
-            if (nextMap.get(key).isEmpty()) {
-                ends.add(key);
-            }
-        }
-    }
 
-    private static void getTaskOrderExceptCycle(Task start) {
-        getTaskOrderRecursive(start);
 
-    }
-    private static void getTaskOrderRecursive(Task task) {
-
-        List<Task> pres = task.getPredecessors();
-
-        for (Task pre : pres) {
-            if (!visited.contains(pre.getTitle())) {
-                visited.add(pre.getTitle());
-                getTaskOrderRecursive(pre);
-            }
-        }
-        result.add(task.getTitle());
-        orderedTask.add(task);
-        visited.add(task.getTitle());
-    }
     private static boolean hasVisitedAllPres(Task task) {
         List<Task> pres = task.getPredecessors();
         for (Task pre : pres) {
@@ -147,48 +121,4 @@ public class Project {
         }
         return true;
     }
-    private static void getCycles() {
-
-        int currResultSize = result.size();
-        for (int i = 0; i < currResultSize; ++i) {
-            Task start = orderedTask.get(i);
-            List<Task> nexts = nextMap.get(start);
-
-            for (Task next : nexts) {
-                if (!visited.contains(next.getTitle())) {
-                    getCycleRecursive(next);
-                }
-            }
-        }
-    }
-    private static void getCycleRecursive(Task task) {
-        if (visited.contains(task.getTitle())) {
-            return;
-        }
-        result.add(task.getTitle());
-        visited.add(task.getTitle());
-
-        for (Task next : nextMap.get(task)) {
-            getCycleRecursive(next);
-        }
-    }
-
-
-    private static void printList(List<Task> tasks) {
-        for (Task t : tasks) {
-            System.out.printf("%s ", t.getTitle());
-        }
-        System.out.println();
-    }
-    private static void printMap() {
-        for (Task task : nextMap.keySet()) {
-            System.out.println(task.getTitle());
-            List<Task> nexts = nextMap.get(task);
-            for (Task next : nexts) {
-                System.out.printf("    - %s\n", next.getTitle());
-            }
-            System.out.println();
-        }
-    }
-
 }

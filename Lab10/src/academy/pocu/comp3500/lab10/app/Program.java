@@ -11,8 +11,8 @@ public class Program {
     public static void main(String[] args) {
 
         //basicTest();
-        basicTest();
-        test1();
+        //basicTest();
+        //test1();
         //test3();
         //test2();
         //test4();
