@@ -2,17 +2,16 @@ package academy.pocu.comp3500.lab11;
 
 import academy.pocu.comp3500.lab11.data.Point;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
-import static java.util.Collections.sort;
 
 public class BallBoy {
     private static final Point START = new Point(0, 0);
     private static Point[] pointArr;
-    private static ArrayList<DisjointSet> setArr;
     private static HashMap<Point, ArrayList<Edge>> edgeMap;
-    //private static ArrayList<Edge> edges;
-    //private static ArrayList<Edge> mst = new ArrayList<>();
 
     public static List<Point> findPath(final Point[] points) {
 
@@ -67,14 +66,6 @@ public class BallBoy {
             }
         }
         result.add(from);
-
-        /*result.add(start);*/
-
-        /*if (edges.size() == 1) {
-            Edge e = edges.get(0);
-            Point to = e.getP1() == start ? e.getP2() : e.getP1();
-            result.add(to);
-        }*/
     }
 
     private static ArrayList<Edge> getMst(DisjointSet set, ArrayList<Edge> edges) {
@@ -129,14 +120,6 @@ public class BallBoy {
             }
         }
         return edges;
-    }
-
-    private static void printEdges(ArrayList<Edge> edges) {
-        System.out.printf("Edge Count : %d\n", edges.size());
-        for (Edge edge : edges) {
-            System.out.println(edge.toString());
-        }
-        System.out.println();
     }
 
 }
