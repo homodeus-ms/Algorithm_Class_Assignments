@@ -11,8 +11,57 @@ public class Program {
         test1();
         test2();
         test3();
+        test4();
         //testTaskOrder();
         System.out.println("NoAssert");
+    }
+    public static void test4() {
+        Task a = new Task("A", 3);
+        Task b = new Task("B", 5);
+        Task c = new Task("C", 1);
+        Task d = new Task("D", 2);
+        Task e = new Task("E", 3);
+        Task f = new Task("F", 1);
+        Task g = new Task("G", 2);
+        Task h = new Task("H", 3);
+
+        Task z = new Task("Z", 7);
+        Task y = new Task("Y", 10);
+        Task x = new Task("X", 10);
+
+        a.addPredecessor(z, b, x);
+        y.addPredecessor(a);
+        x.addPredecessor(z);
+        z.addPredecessor(b);
+        c.addPredecessor(a, e);
+        e.addPredecessor(d);
+        d.addPredecessor(c);
+        f.addPredecessor(b, h);
+        h.addPredecessor(g);
+        g.addPredecessor(f);
+
+        Task[] tasks = new Task[] {
+                a, b, c, d, e, f, g, h, z, y, x
+        };
+
+        Project project = new Project(tasks);
+
+        int result = 0;
+
+        result = project.findTotalManMonths("A");
+        System.out.println(result);
+        result = project.findTotalManMonths("B");
+        System.out.println(result);
+        result = project.findTotalManMonths("Z");
+        System.out.println(result);
+        result = project.findTotalManMonths("Y");
+        System.out.println(result);
+        result = project.findTotalManMonths("X");
+        System.out.println(result);
+        result = project.findTotalManMonths("S");
+        System.out.println(result);
+
+        System.out.println();
     }
     public static void test3() {
         Task a = new Task("A", 8);

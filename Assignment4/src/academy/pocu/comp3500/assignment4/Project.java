@@ -2,7 +2,10 @@ package academy.pocu.comp3500.assignment4;
 
 import academy.pocu.comp3500.assignment4.project.Task;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public final class Project {
     private final Task[] tasks;
@@ -21,18 +24,30 @@ public final class Project {
     public Project(final Task[] tasks) {
         this.tasks = tasks;
         getTasksMap();
-        //findSchedule(false);
 
     }
     public int findTotalManMonths(final String task) {
         visited.clear();
         int result = 0;
-        for (Task t : tasks) {
+        Task target = tasksMap.get(task);
+
+        if (target == null) {
+            return 0;
+        }
+
+        ArrayList<Task> path = new ArrayList<>();
+        findTotalManMonthRecursive2(target, path);
+        /*for (Task t : tasks) {
             if (t.getTitle().equals(task)) {
                 result = findTotalManMonthRecursive(t);
                 break;
             }
+        }*/
+        for (Task t : path) {
+            result += t.getEstimate();
         }
+        result += target.getEstimate();
+
         return result;
     }
     public int findMinDuration(final String task) {
@@ -193,27 +208,6 @@ public final class Project {
         flowMap.get(from).add(backEdge);
         added.put(backEdge, true);
     }
-    /*private void addFlowMap(Task task) {
-        if (!flowMap.containsKey(task)) {
-            flowMap.put(task, new ArrayList<>());
-        }
-        List<Task> nexts = nextMap.get(task);
-        for (Task next : nexts) {
-            Flow flow = new Edge(task, next);
-            flowMap.get(task).add(flow);
-
-            Flow backFlow = new BackEdge(next, task);
-            if (!flowMap.containsKey(next)) {
-                flowMap.put(next, new ArrayList<>());
-            }
-            flowMap.get(next).add(backFlow);
-        }
-    }*/
-
-
-
-
-
 
 
     private int findMinDurationRecursive(final Task task) {
@@ -245,6 +239,22 @@ public final class Project {
         return result;
     }
 
+    private void findTotalManMonthRecursive2(final Task task, ArrayList<Task> path) {
+        if (task.getPredecessors().isEmpty()) {
+            //path.add(task);
+            return;
+        }
+        List<Task> pres = task.getPredecessors();
+
+        for (Task pre : pres) {
+            if (!visited.containsKey(pre.getTitle())) {
+                visited.put(pre.getTitle(), true);
+                findTotalManMonthRecursive2(pre, path);
+                path.add(pre);
+            }
+        }
+    }
+
     private int findTotalManMonthRecursive(final Task task) {
         if (task.getPredecessors().isEmpty()) {
             visited.put(task.getTitle(), true);
@@ -260,7 +270,9 @@ public final class Project {
         int sum = 0;
 
         for (Task pre : pres) {
-            if (!visited.containsKey(pre.getTitle())) {
+            if (estimateSum.containsKey(pre.getTitle())) {
+                sum += estimateSum.get(pre.getTitle());
+            } else if (!visited.containsKey(pre.getTitle())) {
                 sum += findTotalManMonthRecursive(pre);
             }
         }
