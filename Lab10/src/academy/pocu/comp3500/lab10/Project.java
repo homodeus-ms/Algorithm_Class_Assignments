@@ -13,8 +13,6 @@ public class Project {
 
     private static LinkedList<String> result;
     private static ArrayList<Task> starts;
-    private static ArrayList<Task> ends;
-    private static LinkedList<Task> orderedTask;
     private static HashMap<Task, ArrayList<Task>> nextMap;
     private static HashSet<String> visited;
 
@@ -22,10 +20,8 @@ public class Project {
 
         result = new LinkedList<>();
         starts = new ArrayList<>();
-        //ends = new ArrayList<>();
         nextMap = new HashMap<>();
         visited = new HashSet<>();
-        //orderedTask = new LinkedList<>();
 
         LinkedList<Task> firstDfs = new LinkedList<>();
         initNextMap(tasks);
@@ -35,7 +31,6 @@ public class Project {
             searchDepthFirst1(task, firstDfs);
         }
 
-        LinkedList<Task> normal = new LinkedList<>();
         LinkedList<Task> cycles = new LinkedList<>();
         visited.clear();
 
