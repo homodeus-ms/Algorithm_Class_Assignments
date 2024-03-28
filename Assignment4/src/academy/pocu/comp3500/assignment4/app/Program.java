@@ -7,14 +7,51 @@ import java.util.List;
 
 public class Program {
     public static void main(String[] args) {
-	    //basicTest();
+	    basicTest();
         test1();
         test2();
         test3();
         test4();
         test5();
+        //test3_3();
+        test3_2();
+        //test6();
         //testTaskOrder();
         System.out.println("NoAssert");
+    }
+    public static void test6() {
+        Task a = new Task("A", 7);
+        Task b = new Task("B", 5);
+        Task c = new Task("C", 6);
+        Task d = new Task("D", 2);
+        Task e = new Task("E", 6);
+        Task f = new Task("F", 6);
+
+        b.addPredecessor(a);
+        d.addPredecessor(b, c);
+        c.addPredecessor(a);
+        e.addPredecessor(c, d);
+        f.addPredecessor(d, e);
+
+        Task[] tasks = new Task[] {
+                a, b, c, d, e, f
+        };
+        Project project = new Project(tasks);
+        int result = 0;
+        int idx = 0;
+        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        System.out.println(result);
+        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        System.out.println(result);
+        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        System.out.println(result);
+        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        System.out.println(result);
+        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        System.out.println(result);
+        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        System.out.println(result);
+
     }
     public static void test5() {
         Task a = new Task("A", 3);
@@ -33,14 +70,7 @@ public class Program {
         d.addPredecessor(b, c);
 
         int result = 0;
-        result = project.findMaxBonusCount("A");
-        System.out.printf("%s : %d\n", "A", result);
-        result = project.findMaxBonusCount("B");
-        System.out.printf("%s : %d\n", "B", result);
-        result = project.findMaxBonusCount("C");
-        System.out.printf("%s : %d\n", "C", result);
-        result = project.findMaxBonusCount("D");
-        System.out.printf("%s : %d\n", "D", result);
+
     }
     public static void test4() {
         Task a = new Task("A", 3);
@@ -78,6 +108,111 @@ public class Program {
 
 
         System.out.println();
+    }
+    public static void test3_3() {
+        Task a = new Task("A", 5);
+        Task b = new Task("B", 4);
+        Task c = new Task("C", 8);
+        Task d = new Task("D", 7);
+
+        c.addPredecessor(a);
+        d.addPredecessor(b, a);
+
+        Task[] tasks = new Task[] {
+                d, c, b, a
+        };
+        Project project = new Project(tasks);
+
+        int result = 0;
+        /*result = project.findMaxBonusCount("A");
+        System.out.println(result);
+        result = project.findMaxBonusCount("B");
+        System.out.println(result);
+        result = project.findMaxBonusCount("C");
+        System.out.println(result);*/
+        result = project.findMaxBonusCount("D");
+        System.out.println(result);
+    }
+    public static void test3_2() {
+        Task a = new Task("A", 3);
+        Task b = new Task("B", 5);
+        Task c = new Task("C", 7);
+        Task d = new Task("D", 5);
+        Task e = new Task("E", 2);
+        Task f = new Task("F", 5);
+        Task g = new Task("G", 6);
+        Task h = new Task("H", 9);
+        Task i = new Task("I", 5);
+        Task j = new Task("J", 4);
+        Task k = new Task("K", 3);
+        Task l = new Task("L", 6);
+        Task m = new Task("M", 8);
+        Task n = new Task("N", 4);
+        Task o = new Task("O", 3);
+        Task p = new Task("P", 2);
+        Task q = new Task("Q", 5);
+        Task r = new Task("R", 7);
+        Task s = new Task("S", 8);
+        Task t = new Task("T", 20);
+
+        b.addPredecessor(a);
+        c.addPredecessor(b, l);
+        d.addPredecessor(c);
+        e.addPredecessor(j);
+        f.addPredecessor(d, e);
+        g.addPredecessor(i);
+        h.addPredecessor(g, e);
+        i.addPredecessor(n);
+        j.addPredecessor(m, n);
+        l.addPredecessor(k, m);
+        o.addPredecessor(i, q);
+        p.addPredecessor(o);
+        q.addPredecessor(p);
+        r.addPredecessor(f, h);
+        s.addPredecessor(f);
+        t.addPredecessor(s);
+
+
+        Task[] tasks = new Task[]{
+                a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t,
+        };
+
+        Project project = new Project(tasks);
+
+        int result = 0;
+        //result = project.findMaxBonusCount("H");
+
+        /*int[] bonusResult = new int[tasks.length];
+        int idx = 0;
+        for (Task task : tasks) {
+            result = project.findMaxBonusCount(task.getTitle());
+            bonusResult[idx++] = result;
+        }*/
+
+        assert (project.findMaxBonusCount("A") == 3); // a
+        assert (project.findMaxBonusCount("B") == 3); // b
+        assert (project.findMaxBonusCount("C") == 7); // c
+        assert (project.findMaxBonusCount("D") == 5); // d
+        assert (project.findMaxBonusCount("E") == 2); // e
+        assert (project.findMaxBonusCount("F") == 5); // f
+        assert (project.findMaxBonusCount("G") == 4); // g
+        assert (project.findMaxBonusCount("H") == 6); // h
+        assert (project.findMaxBonusCount("I") == 4); // i
+        assert (project.findMaxBonusCount("J") == 4); // j
+        assert (project.findMaxBonusCount("K") == 3); // k
+        assert (project.findMaxBonusCount("L") == 6); // l
+        assert (project.findMaxBonusCount("M") == 8); // m
+        assert (project.findMaxBonusCount("N") == 4); // n
+        assert (project.findMaxBonusCount("O") == 3); // o
+        assert (project.findMaxBonusCount("P") == 2); // p
+        assert (project.findMaxBonusCount("Q") == 2); // q
+
+        result = project.findMaxBonusCount("R");
+        assert (result == 7); // r
+        result = project.findMaxBonusCount("S");
+        assert (result == 5); // s
+        result = project.findMaxBonusCount("T");
+        assert (result == 5); // t
     }
     public static void test3() {
         Task a = new Task("A", 8);
@@ -128,7 +263,7 @@ public class Program {
         Project project = new Project(tasks);
 
         int result = 0;
-        //result = project.findMaxBonusCount("H");
+        result = project.findMaxBonusCount("F");
 
         int[] bonusResult = new int[tasks.length];
         int idx = 0;
@@ -152,6 +287,11 @@ public class Program {
         assert (bonusResult[12] == 3); // m
         assert (bonusResult[13] == 7); // n
         assert (bonusResult[14] == 9); // o
+        assert (bonusResult[15] == 4); // p
+        assert (bonusResult[16] == 4); // q
+        assert (bonusResult[17] == 4); // r
+        assert (bonusResult[18] == 4); // s
+        assert (bonusResult[19] == 7); // t
 
 
     }

@@ -286,15 +286,23 @@ public final class Project {
             } else {
                 List<Task> pres = task.getPredecessors();
                 int sum = 0;
+                int limit = task.getEstimate();
+                int preEst = 0;
+                int required = 0;
+
                 for (Task pre : pres) {
-                    sum += bonusMap.get(pre);
+                    preEst = bonusMap.get(pre);
+                    required = limit - sum;
+                    sum += preEst;
+
+                    int value = Math.max(0, preEst - required);
+                    bonusMap.put(pre, value);
+                    if (sum >= limit) {
+                        sum = limit;
+                        break;
+                    }
                 }
-                sum = Math.min(sum, task.getEstimate());
-                for (Task pre : pres) {
-                    int value = bonusMap.get(pre);
-                    value -= sum;
-                    bonusMap.put(pre, Math.max(0, value));
-                }
+
                 bonusMap.put(task, sum);
             }
         }
