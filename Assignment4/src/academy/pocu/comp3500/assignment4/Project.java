@@ -261,7 +261,8 @@ public final class Project {
         if (task.getPredecessors().isEmpty()) {
             return;
         }
-        List<Task> pres = task.getPredecessors();
+        ArrayList<Task> pres = new ArrayList<>(task.getPredecessors());
+        sortPres(pres);
 
         for (Task pre : pres) {
             if (!visited.containsKey(pre.getTitle())) {
@@ -333,6 +334,33 @@ public final class Project {
             tasksMap.put(task.getTitle(), task);
         }
     }
+    private void sortPres(ArrayList<Task> pres) {
+        //printList(pres);
+        quickSortRecursive(pres, 0, pres.size() - 1);
+        //printList(pres);
+    }
+    private void quickSortRecursive(ArrayList<Task> list, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int keepLeft = left;
+
+        for (int i = left; i < right; ++i) {
+            if (list.get(i).getEstimate() > list.get(right).getEstimate()) {
+                swap(list, i, left);
+                ++left;
+            }
+        }
+        swap(list, left, right);
+
+        quickSortRecursive(list, keepLeft, left - 1);
+        quickSortRecursive(list, left + 1, right);
+    }
+    private void swap(ArrayList<Task> list, int i, int j) {
+        Task temp = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, temp);
+    }
     /*private void printMap() {
         for (Task task : nextMap.keySet()) {
             System.out.printf("=== %s ===\n", task.getTitle());
@@ -344,9 +372,9 @@ public final class Project {
         }
         System.out.println();
     }*/
-    private void printMap(HashMap<String, Boolean> map) {
-        for (String str : map.keySet()) {
-            System.out.printf("%s ", str);
+    private void printList(ArrayList<Task> list) {
+        for (Task task : list) {
+            System.out.printf("%s ", task.getTitle());
         }
         System.out.println();
     }

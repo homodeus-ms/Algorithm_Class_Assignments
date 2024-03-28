@@ -3,7 +3,11 @@ package academy.pocu.comp3500.assignment4.app;
 import academy.pocu.comp3500.assignment4.Project;
 import academy.pocu.comp3500.assignment4.project.Task;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Random;
+import java.util.ArrayList;
 
 public class Program {
     public static void main(String[] args) {
@@ -17,7 +21,52 @@ public class Program {
         test3_2();
         //test6();
         //testTaskOrder();
+        //testPq();
+        //sort();
         System.out.println("NoAssert");
+    }
+    public static void sort() {
+        Task a = new Task("A", 8);
+        Task b = new Task("B", 5);
+        Task c = new Task("C", 4);
+        Task d = new Task("D", 6);
+        Task[] tasks = new Task[] {
+                a, b, c, d
+        };
+        ArrayList<Task> list = new ArrayList<>();
+        list.add(a);
+        list.add(b);
+        list.add(c);
+        list.add(d);
+
+        Project project = new Project(tasks);
+
+        //project.sortPres(list);
+
+    }
+    public static void testPq() {
+        Task a = new Task("A", 3);
+        Task b = new Task("B", 5);
+        Task c = new Task("C", 4);
+        Task[] tasks = new Task[] {
+                a, b, c
+        };
+
+        Comparator<Task> comparator = new Comparator<Task>() {
+            @Override
+            public int compare(Task t1, Task t2) {
+                return Integer.compare(t2.getEstimate(), t1.getEstimate());
+            }
+        };
+
+        PriorityQueue<Task> pq = new PriorityQueue<>(comparator);
+
+        for (Task t : tasks) {
+            pq.add(t);
+        }
+        while (!pq.isEmpty()) {
+            System.out.println(pq.poll().getTitle());
+        }
     }
     public static void test6() {
         Task a = new Task("A", 7);
@@ -28,7 +77,7 @@ public class Program {
         Task f = new Task("F", 6);
 
         b.addPredecessor(a);
-        d.addPredecessor(b, c);
+        d.addPredecessor(c, b);
         c.addPredecessor(a);
         e.addPredecessor(c, d);
         f.addPredecessor(d, e);
@@ -36,20 +85,21 @@ public class Program {
         Task[] tasks = new Task[] {
                 a, b, c, d, e, f
         };
+        shuffle(tasks);
         Project project = new Project(tasks);
         int result = 0;
         int idx = 0;
-        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        /*result = project.findMaxBonusCount("A");
         System.out.println(result);
-        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        result = project.findMaxBonusCount("B");
         System.out.println(result);
-        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        result = project.findMaxBonusCount("C");
         System.out.println(result);
-        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        result = project.findMaxBonusCount("D");
         System.out.println(result);
-        result = project.findMaxBonusCount(tasks[idx++].getTitle());
-        System.out.println(result);
-        result = project.findMaxBonusCount(tasks[idx++].getTitle());
+        result = project.findMaxBonusCount("E");
+        System.out.println(result);*/
+        result = project.findMaxBonusCount("F");
         System.out.println(result);
 
     }
@@ -518,5 +568,27 @@ public class Program {
             System.out.printf("(%s %d) ", task.getTitle(), task.getEstimate());
         }
         System.out.println();
+    }
+    private static void shuffle(Task[] tasks) {
+        int size = tasks.length;
+        boolean[] visited = new boolean[size];
+        Random random = new Random();
+        int count = 10;
+        while (count-- != 0) {
+            int first = random.nextInt(size);
+            int second = random.nextInt(size);
+            if (first == second) {
+                second = (second + 1) % size;
+            }
+            swap(tasks, first, second);
+        }
+
+
+
+    }
+    private static void swap(Task[] tasks, int i, int j) {
+        Task temp = tasks[i];
+        tasks[i] = tasks[j];
+        tasks[j] = temp;
     }
 }
