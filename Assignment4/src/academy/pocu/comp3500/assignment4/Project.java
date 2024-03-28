@@ -10,15 +10,12 @@ import java.util.LinkedList;
 public final class Project {
     private final Task[] tasks;
     private final HashMap<String, Task> tasksMap = new HashMap<>();
-    private final HashMap<Task, List<Task>> nextMap = new HashMap<>();
+    //private final HashMap<Task, List<Task>> nextMap = new HashMap<>();
     private final HashMap<String, Boolean> visited = new HashMap<>();
-    private final LinkedList<Task> cycle = new LinkedList<>();
-    private final HashMap<String, Boolean> cycleMap = new HashMap<>();
 
-    private final HashMap<String, Integer> estimateSum = new HashMap<>();
     private final HashMap<String, Integer> estimateMinSum = new HashMap<>();
-    private final HashMap<Task, Integer> bonusCountMap = new HashMap<>();
-    private final HashMap<Task, ArrayList<Flow>> flowMap = new HashMap<>();
+    //private final HashMap<Task, Integer> bonusCountMap = new HashMap<>();
+    //private final HashMap<Task, ArrayList<Flow>> flowMap = new HashMap<>();
 
 
     public Project(final Task[] tasks) {
@@ -36,13 +33,8 @@ public final class Project {
         }
 
         ArrayList<Task> path = new ArrayList<>();
-        findTotalManMonthRecursive2(target, path);
-        /*for (Task t : tasks) {
-            if (t.getTitle().equals(task)) {
-                result = findTotalManMonthRecursive(t);
-                break;
-            }
-        }*/
+        getPathRecursive(target, path);
+
         for (Task t : path) {
             result += t.getEstimate();
         }
@@ -65,17 +57,31 @@ public final class Project {
 
     public int findMaxBonusCount(final String task) {
 
-        Task target = tasksMap.get(task);
-        if (target.getPredecessors().isEmpty()) {
-            return target.getEstimate();
+        Task end = tasksMap.get(task);
+        if (end.getPredecessors().isEmpty()) {
+            return end.getEstimate();
         }
 
-        getNextMap();
+        //getNextMap();
         visited.clear();
-        flowMap.clear();
+        HashMap<Task, Integer> bonusMap = new HashMap<>();
+        ArrayList<Task> path = new ArrayList<>();
+        getPathRecursive(end, path, bonusMap);
+        getBonus(path, bonusMap);
+
+        List<Task> pres = end.getPredecessors();
+        int sum = 0;
+        for (Task pre : pres) {
+            sum += bonusMap.get(pre);
+        }
+
+        return Math.min(sum, end.getEstimate());
 
 
-        ArrayList<Task> starts = new ArrayList<>();
+        //flowMap.clear();
+
+
+        /*ArrayList<Task> starts = new ArrayList<>();
         HashMap<Flow, Boolean> added = new HashMap<>();
         getFlows(target, starts, added);
 
@@ -120,12 +126,10 @@ public final class Project {
             if (value > 0) {
                 sum += value;
             }
-        }
+        }*/
 
-
-        return Math.min(sum, target.getEstimate());
     }
-    private boolean getProcess(Task start, Task end, ArrayList<Flow> flows) {
+    /*private boolean getProcess(Task start, Task end, ArrayList<Flow> flows) {
         if (start == null) {
             return false;
         }
@@ -140,7 +144,7 @@ public final class Project {
             flows.add(flow);
         }
         return getProcess(nextTask, end, flows);
-    }
+    }*/
     private void subtractFlowAmount(ArrayList<Flow> flows, int value) {
         for (Flow flow : flows) {
             flow.addFlow(value);
@@ -155,7 +159,7 @@ public final class Project {
         }
         return min;
     }
-    private Flow getFlowOrNull(Task task) {
+    /*private Flow getFlowOrNull(Task task) {
         ArrayList<Flow> flows = flowMap.get(task);
         for (Flow flow : flows) {
             if (flow.isAlive()) {
@@ -207,8 +211,7 @@ public final class Project {
         }
         flowMap.get(from).add(backEdge);
         added.put(backEdge, true);
-    }
-
+    }*/
 
     private int findMinDurationRecursive(final Task task) {
         if (task.getPredecessors().isEmpty()) {
@@ -239,9 +242,8 @@ public final class Project {
         return result;
     }
 
-    private void findTotalManMonthRecursive2(final Task task, ArrayList<Task> path) {
+    private void getPathRecursive(final Task task, ArrayList<Task> path) {
         if (task.getPredecessors().isEmpty()) {
-            //path.add(task);
             return;
         }
         List<Task> pres = task.getPredecessors();
@@ -249,41 +251,56 @@ public final class Project {
         for (Task pre : pres) {
             if (!visited.containsKey(pre.getTitle())) {
                 visited.put(pre.getTitle(), true);
-                findTotalManMonthRecursive2(pre, path);
+                getPathRecursive(pre, path);
                 path.add(pre);
             }
         }
     }
-
-    private int findTotalManMonthRecursive(final Task task) {
+    private void getPathRecursive(final Task task, ArrayList<Task> path,
+                                  HashMap<Task, Integer> bonusMap) {
         if (task.getPredecessors().isEmpty()) {
-            visited.put(task.getTitle(), true);
-            estimateSum.put(task.getTitle(), task.getEstimate());
-            return task.getEstimate();
+            return;
         }
-        if (estimateSum.containsKey(task.getTitle())) {
-            return estimateSum.get(task.getTitle());
-        }
-
         List<Task> pres = task.getPredecessors();
 
-        int sum = 0;
-
         for (Task pre : pres) {
-            if (estimateSum.containsKey(pre.getTitle())) {
-                sum += estimateSum.get(pre.getTitle());
-            } else if (!visited.containsKey(pre.getTitle())) {
-                sum += findTotalManMonthRecursive(pre);
+            if (!visited.containsKey(pre.getTitle())) {
+                visited.put(pre.getTitle(), true);
+                getPathRecursive(pre, path, bonusMap);
+                path.add(pre);
+                bonusMap.put(pre, pre.getEstimate());
             }
         }
-
-        visited.put(task.getTitle(), true);
-        int result = sum + task.getEstimate();
-        estimateSum.put(task.getTitle(), result);
-        return result;
+    }
+    private void getBonus(ArrayList<Task> path, HashMap<Task, Integer> bonusMap) {
+        for (Task task : path) {
+            if (task.getPredecessors().isEmpty()) {
+                continue;
+            } else if (task.getPredecessors().size() == 1) {
+                Task preTask = task.getPredecessors().get(0);
+                int preCount = bonusMap.get(preTask);
+                int nextCount = task.getEstimate();
+                int bonus = Math.min(preCount, nextCount);
+                bonusMap.put(preTask, preCount - bonus);
+                bonusMap.put(task, bonus);
+            } else {
+                List<Task> pres = task.getPredecessors();
+                int sum = 0;
+                for (Task pre : pres) {
+                    sum += bonusMap.get(pre);
+                }
+                sum = Math.min(sum, task.getEstimate());
+                for (Task pre : pres) {
+                    int value = bonusMap.get(pre);
+                    value -= sum;
+                    bonusMap.put(pre, Math.max(0, value));
+                }
+                bonusMap.put(task, sum);
+            }
+        }
     }
 
-    private void getNextMap() {
+    /*private void getNextMap() {
         for (Task task : tasks) {
             if (!nextMap.containsKey(task)) {
                 nextMap.put(task, new ArrayList<>());
@@ -301,80 +318,14 @@ public final class Project {
                 nextMap.get(t).add(task);
             }
         }
-    }
-
-    private List<Task> findSchedule(boolean includeMaintenance) {
-        getNextMap();
-        List<Task> orderedTasks = new LinkedList<>();
-        LinkedList<Task> dfsList = new LinkedList<>();
-        visited.clear();
-
-        for (Task task : bonusCountMap.keySet()) {
-            visited.put(task.getTitle(), true);
-            searchDfs1(task, dfsList);
-        }
-        visited.clear();
-
-        for (Task task : dfsList) {
-            if (!visited.containsKey(task.getTitle())) {
-                getTaskOrder(task, orderedTasks);
-            }
-        }
-
-        if (includeMaintenance) {
-            orderedTasks.addAll(cycle);
-        }
-
-        return orderedTasks;
-    }
-    private void getTaskOrder(Task task, List<Task> orderedTasks) {
-        List<Task> pres = task.getPredecessors();
-
-        if (!pres.isEmpty() && !hasVisitedAllpres(task)) {
-            visited.put(task.getTitle(), true);
-            putCycle(task);
-        } else {
-            orderedTasks.add(task);
-            visited.put(task.getTitle(), true);
-        }
-    }
-    private void searchDfs1(Task task, LinkedList<Task> dfsList) {
-        List<Task> nexts = nextMap.get(task);
-        for (Task next : nexts) {
-            if (!visited.containsKey(next.getTitle())) {
-                visited.put(next.getTitle(), true);
-                searchDfs1(next, dfsList);
-            }
-        }
-        dfsList.addFirst(task);
-    }
-    private void putCycle(Task task) {
-        List<Task> nexts = nextMap.get(task);
-        for (Task next : nexts) {
-            if (!visited.containsKey(next.getTitle())) {
-                visited.put(next.getTitle(), true);
-                putCycle(next);
-            }
-        }
-        cycle.addFirst(task);
-        cycleMap.put(task.getTitle(), true);
-    }
-    private boolean hasVisitedAllpres(Task task) {
-        List<Task> pres = task.getPredecessors();
-        for (Task pre : pres) {
-            if (!visited.containsKey(pre.getTitle())) {
-                return false;
-            }
-        }
-        return true;
-    }
+    }*/
 
     private void getTasksMap() {
         for (Task task : tasks) {
             tasksMap.put(task.getTitle(), task);
         }
     }
-    private void printMap() {
+    /*private void printMap() {
         for (Task task : nextMap.keySet()) {
             System.out.printf("=== %s ===\n", task.getTitle());
             List<Task> nexts = nextMap.get(task);
@@ -384,7 +335,7 @@ public final class Project {
             System.out.println();
         }
         System.out.println();
-    }
+    }*/
     private void printMap(HashMap<String, Boolean> map) {
         for (String str : map.keySet()) {
             System.out.printf("%s ", str);

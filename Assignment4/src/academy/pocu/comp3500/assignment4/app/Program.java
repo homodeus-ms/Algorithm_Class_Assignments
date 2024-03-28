@@ -7,13 +7,40 @@ import java.util.List;
 
 public class Program {
     public static void main(String[] args) {
-	    basicTest();
+	    //basicTest();
         test1();
         test2();
         test3();
         test4();
+        test5();
         //testTaskOrder();
         System.out.println("NoAssert");
+    }
+    public static void test5() {
+        Task a = new Task("A", 3);
+        Task b = new Task("B", 5);
+        Task c = new Task("C", 7);
+        Task d = new Task("D", 2);
+
+        Task[] tasks = new Task[] {
+                a, b, c, d
+        };
+
+        Project project = new Project(tasks);
+
+        b.addPredecessor(a);
+        c.addPredecessor(a, b);
+        d.addPredecessor(b, c);
+
+        int result = 0;
+        result = project.findMaxBonusCount("A");
+        System.out.printf("%s : %d\n", "A", result);
+        result = project.findMaxBonusCount("B");
+        System.out.printf("%s : %d\n", "B", result);
+        result = project.findMaxBonusCount("C");
+        System.out.printf("%s : %d\n", "C", result);
+        result = project.findMaxBonusCount("D");
+        System.out.printf("%s : %d\n", "D", result);
     }
     public static void test4() {
         Task a = new Task("A", 3);
@@ -48,18 +75,7 @@ public class Program {
 
         int result = 0;
 
-        result = project.findTotalManMonths("A");
-        System.out.println(result);
-        result = project.findTotalManMonths("B");
-        System.out.println(result);
-        result = project.findTotalManMonths("Z");
-        System.out.println(result);
-        result = project.findTotalManMonths("Y");
-        System.out.println(result);
-        result = project.findTotalManMonths("X");
-        System.out.println(result);
-        result = project.findTotalManMonths("S");
-        System.out.println(result);
+
 
         System.out.println();
     }
@@ -111,12 +127,13 @@ public class Program {
 
         Project project = new Project(tasks);
 
-        //int result = project.findMaxBonusCount("H");
+        int result = 0;
+        //result = project.findMaxBonusCount("H");
 
         int[] bonusResult = new int[tasks.length];
         int idx = 0;
         for (Task task : tasks) {
-            int result = project.findMaxBonusCount(task.getTitle());
+            result = project.findMaxBonusCount(task.getTitle());
             bonusResult[idx++] = result;
         }
 
